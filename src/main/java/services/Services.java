@@ -6,6 +6,8 @@
 
 package services;
 
+import modele.BusStop;
+
 
 /**
  *
@@ -13,4 +15,12 @@ package services;
  */
 public class Services {
     
+    public static String getBusMapDisplay(){
+        
+        return "";
+    }
+    
+    public static void postBusRequest(BusStop start, BusStop end){
+        
+    }
 }

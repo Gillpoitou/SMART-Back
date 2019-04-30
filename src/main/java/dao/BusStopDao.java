@@ -5,6 +5,8 @@
  */
 package dao;
 
+import modele.BusStop;
+
 
 /**
  *
@@ -12,4 +14,7 @@ package dao;
  */
 public class BusStopDao {
     
+    public BusStop getBusStop(){
+       return null; 
+    }
 }

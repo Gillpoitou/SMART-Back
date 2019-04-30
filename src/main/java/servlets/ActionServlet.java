@@ -5,12 +5,15 @@
  */
 package servlets;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import modele.BusStop;
+import services.Services;
 
 /**
  *
@@ -27,20 +30,30 @@ public class ActionServlet extends HttpServlet {
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
      */
+    
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        response.setContentType("text/html;charset=UTF-8");
-        try (PrintWriter out = response.getWriter()) {
-            /* TODO output your page here. You may use following sample code. */
-            out.println("<!DOCTYPE html>");
-            out.println("<html>");
-            out.println("<head>");
-            out.println("<title>Servlet ActionServlet</title>");            
-            out.println("</head>");
-            out.println("<body>");
-            out.println("<h1>Servlet ActionServlet at " + request.getContextPath() + "</h1>");
-            out.println("</body>");
-            out.println("</html>");
+        response.setContentType("application/json");
+        
+        switch(request.getParameter("action")){
+            case  "getBusMapDisplay" :
+                try (PrintWriter out = response.getWriter()){
+                    out.println(Services.getBusMapDisplay());
+                }
+            break;
+            case "postBusRequest":
+                
+                StringBuilder buffer = new StringBuilder();
+                BufferedReader reader = request.getReader();
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    buffer.append(line);
+                }
+                String data = buffer.toString();
+                BusStop start = new BusStop();
+                BusStop end = new BusStop();
+                Services.postBusRequest(start,end);
+            break;
         }
     }
 
