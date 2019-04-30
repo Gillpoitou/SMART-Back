@@ -5,6 +5,7 @@
  */
 package dao;
 
+
 import com.mongodb.MongoClient;
 import com.mongodb.client.MongoCollection;
 import converter.BusConverter;
@@ -31,4 +32,9 @@ public class PersonDAO {
         p.setId(id);
         return p;
     } 
+  
+  public void insertPerson(Person person){
+        
+    }
+
 }

@@ -5,6 +5,7 @@
  */
 package converter;
 
+
 import java.util.Date;
 import modele.BusStop;
 import modele.Bus;
@@ -40,4 +41,20 @@ public class PersonConverter {
 		return p;
 
 	}
+  public static Person jsonToPerson(String json) throws Exception{
+        
+    JsonElement jelement = new JsonParser().parse(json);
+    JsonObject  jsonPerson = jelement.getAsJsonObject();
+    jsonPerson = jsonPerson.getAsJsonObject("person");
+    SimpleDateFormat sdf = new SimpleDateFormat("dd-MMM-yyyy HH:mm:ss");
+    Date date = sdf.parse(jsonPerson.get("departure_date").toString());
+    
+    BusStopDAO bsdao = new BusStopDAO();
+    BusStop departure = bsdao.getBusStopById(jsonPerson.get("departure").toString());
+    BusStop arrival = bsdao.getBusStopById(jsonPerson.get("arrival").toString());
+    
+    Person person = new Person();
+    
+    return person;
+    }
 }

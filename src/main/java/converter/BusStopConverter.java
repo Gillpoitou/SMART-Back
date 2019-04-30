@@ -5,6 +5,7 @@
  */
 package converter;
 
+
 import java.util.Date;
 import modele.Bus;
 import modele.BusStop;
@@ -39,5 +40,9 @@ public class BusStopConverter {
 		return busStop;
 
 	}
+  
+  public static BusStop jsonToBusStop(String json){
+       return null;
+  }
     
 }

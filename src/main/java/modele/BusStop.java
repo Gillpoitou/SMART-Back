@@ -13,6 +13,7 @@ import org.bson.types.ObjectId;
  * @author etien
  */
 public class BusStop {
+
    private ObjectId id;
     private String name;
     private double latitude;

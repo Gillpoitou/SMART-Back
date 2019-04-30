@@ -6,6 +6,10 @@
 
 package services;
 
+import dao.PersonDAO;
+import modele.BusStop;
+import modele.Person;
+
 
 /**
  *
@@ -13,4 +17,13 @@ package services;
  */
 public class Services {
     
+    public static String getBusMapDisplay(){
+        
+        return "";
+    }
+    
+    public static void postBusRequest(Person person){
+        PersonDAO psdao = new PersonDAO();
+        psdao.insertPerson(person);
+    }
 }
