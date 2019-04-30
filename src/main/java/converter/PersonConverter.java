@@ -6,6 +6,11 @@
 package converter;
 
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import dao.BusStopDAO;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import modele.BusStop;
 import modele.Bus;
@@ -49,12 +54,14 @@ public class PersonConverter {
     SimpleDateFormat sdf = new SimpleDateFormat("dd-MMM-yyyy HH:mm:ss");
     Date date = sdf.parse(jsonPerson.get("departure_date").toString());
     
-    BusStopDAO bsdao = new BusStopDAO();
+    BusStopDAO bsdao = new BusStopDAO(null);
     BusStop departure = bsdao.getBusStopById(jsonPerson.get("departure").toString());
     BusStop arrival = bsdao.getBusStopById(jsonPerson.get("arrival").toString());
     
     Person person = new Person();
-    
+    person.setArrival(arrival);
+    person.setDeparture(departure);
+    person.setTimeDeparture(date);
     return person;
     }
 }

@@ -23,7 +23,7 @@ public class Services {
     }
     
     public static void postBusRequest(Person person){
-        PersonDAO psdao = new PersonDAO();
+        PersonDAO psdao = new PersonDAO(null);
         psdao.insertPerson(person);
     }
 }
