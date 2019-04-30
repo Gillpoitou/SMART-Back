@@ -5,16 +5,14 @@
  */
 package dao;
 
-import modele.BusStop;
-
+import modele.Person;
 
 /**
  *
  * @author etien
  */
-public class BusStopDao {
-    
-    public BusStop getBusStopById(String id){
-       return null; 
+public class PersonDAO {
+    public void insertPerson(Person person){
+        
     }
 }

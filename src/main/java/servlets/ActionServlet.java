@@ -5,6 +5,7 @@
  */
 package servlets;
 
+import converter.PersonConverter;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -13,6 +14,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import modele.BusStop;
+import modele.Person;
 import services.Services;
 
 /**
@@ -50,9 +52,13 @@ public class ActionServlet extends HttpServlet {
                     buffer.append(line);
                 }
                 String data = buffer.toString();
-                BusStop start = new BusStop();
-                BusStop end = new BusStop();
-                Services.postBusRequest(start,end);
+                try{
+                    Person person = PersonConverter.jsonToPerson(data);
+                    Services.postBusRequest(person);
+                }catch(Exception e){
+                    e.printStackTrace();
+                    response.sendError(422, "Unprocessable entity");
+                }   
             break;
         }
     }

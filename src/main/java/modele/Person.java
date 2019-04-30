@@ -3,18 +3,24 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package dao;
+package modele;
 
+import java.util.Date;
+import modele.Bus;
 import modele.BusStop;
-
 
 /**
  *
  * @author etien
  */
-public class BusStopDao {
+public class Person {
+
+    int id;
+    BusStop departure;
+    BusStop arrival;
+    Date timeDeparture;
+    Bus bus;
+
     
-    public BusStop getBusStopById(String id){
-       return null; 
-    }
+    
 }

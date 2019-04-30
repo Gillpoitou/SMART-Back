@@ -6,7 +6,9 @@
 
 package services;
 
+import dao.PersonDAO;
 import modele.BusStop;
+import modele.Person;
 
 
 /**
@@ -20,7 +22,8 @@ public class Services {
         return "";
     }
     
-    public static void postBusRequest(BusStop start, BusStop end){
-        
+    public static void postBusRequest(Person person){
+        PersonDAO psdao = new PersonDAO();
+        psdao.insertPerson(person);
     }
 }
