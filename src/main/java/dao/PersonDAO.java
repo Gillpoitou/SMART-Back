@@ -5,14 +5,36 @@
  */
 package dao;
 
+
+import com.mongodb.MongoClient;
+import com.mongodb.client.MongoCollection;
+import converter.BusConverter;
+import converter.PersonConverter;
 import modele.Person;
+import org.bson.Document;
+import org.bson.types.ObjectId;
 
 /**
  *
- * @author etien
+ * @author elise
  */
 public class PersonDAO {
-    public void insertPerson(Person person){
+   private MongoCollection<Document> coll;
+
+    public PersonDAO(MongoClient mongo) {
+        this.coll = mongo.getDatabase("optibus").getCollection("Persons");
+    }
+
+    public Person createPerson(Person p) {
+        Document doc = PersonConverter.toDocument(p);
+        this.coll.insertOne(doc);
+        ObjectId id = (ObjectId) doc.get("_id");
+        p.setId(id);
+        return p;
+    } 
+  
+  public void insertPerson(Person person){
         
     }
+
 }
