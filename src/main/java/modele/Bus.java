@@ -3,21 +3,19 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package modele;
 
 import org.bson.types.ObjectId;
 
 /**
  *
- * @author etien
+ * @author thomasmalvoisin
  */
-public class BusStop {
-
-   private ObjectId id;
+public class Bus {
+    
+    private ObjectId id;
     private String name;
-    private double latitude;
-    private double longitude;
+    private int nbPlaces;
 
     public ObjectId getId() {
         return id;
@@ -35,20 +33,11 @@ public class BusStop {
         this.name = name;
     }
 
-    public double getLatitude() {
-        return latitude;
+    public int getNbPlaces() {
+        return nbPlaces;
     }
 
-    public void setLatitude(double latitude) {
-        this.latitude = latitude;
+    public void setNbPlaces(int nbPlaces) {
+        this.nbPlaces = nbPlaces;
     }
-
-    public double getLongitude() {
-        return longitude;
-    }
-
-    public void setLongitude(double longitude) {
-        this.longitude = longitude;
-    }
-    
 }

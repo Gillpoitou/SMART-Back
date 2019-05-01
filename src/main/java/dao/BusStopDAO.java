@@ -5,11 +5,16 @@
  */
 package dao;
 
+import modele.BusStop;
+
 
 /**
  *
  * @author etien
  */
-public class BusStopDao {
+public class BusStopDAO {
     
+    public BusStop getBusStopById(String id){
+       return null; 
+    }
 }
