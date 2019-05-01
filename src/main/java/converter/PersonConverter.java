@@ -54,7 +54,7 @@ public class PersonConverter {
     SimpleDateFormat sdf = new SimpleDateFormat("dd-MMM-yyyy HH:mm:ss");
     Date date = sdf.parse(jsonPerson.get("departure_date").toString());
     
-    BusStopDAO bsdao = new BusStopDAO(null);
+    BusStopDAO bsdao = new BusStopDAO();
     BusStop departure = bsdao.getBusStopById(jsonPerson.get("departure").toString());
     BusStop arrival = bsdao.getBusStopById(jsonPerson.get("arrival").toString());
     
