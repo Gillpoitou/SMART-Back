@@ -13,4 +13,9 @@
             30
         </session-timeout>
     </session-config>
+    
+    <context-param>
+        <param-name>MONGODB_STRING_CONNEXION</param-name>
+        <param-value>mongodb+srv://backend:backend@pldsmart-onf2l.mongodb.net/admin?retryWrites=true</param-value>
+    </context-param>
 </web-app>

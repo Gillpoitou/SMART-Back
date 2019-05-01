@@ -3,10 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package modele;
-
-import org.bson.types.ObjectId;
 
 /**
  *
@@ -14,16 +11,28 @@ import org.bson.types.ObjectId;
  */
 public class BusStop {
 
-   private ObjectId id;
+    private String id;
     private String name;
     private double latitude;
     private double longitude;
 
-    public ObjectId getId() {
+    public BusStop() {
+    }
+
+    public BusStop(String id, String name, double latitude, double longitude) {
+        this.id = id;
+        this.name = name;
+        this.latitude = latitude;
+        this.longitude = longitude;
+    }
+    
+    
+
+    public String getId() {
         return id;
     }
 
-    public void setId(ObjectId id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -50,5 +59,5 @@ public class BusStop {
     public void setLongitude(double longitude) {
         this.longitude = longitude;
     }
-    
+
 }

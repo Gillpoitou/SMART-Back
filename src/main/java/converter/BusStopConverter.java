@@ -16,12 +16,11 @@ import org.bson.types.ObjectId;
  */
 public class BusStopConverter {
     public static Document toDocument(BusStop busStop) {
-
         Document doc = new Document("name", busStop.getName())
                 .append("latitude", busStop.getLatitude())
                 .append("longitude", busStop.getLongitude());
         if (busStop.getId() != null) {
-            doc.append("_id", busStop.getId());
+            doc.append("_id", new ObjectId(busStop.getId()));
         }
         return doc;
     }
@@ -33,7 +32,7 @@ public class BusStopConverter {
                 busStop.setName((String) doc.get("name"));
 
 		ObjectId id = (ObjectId) doc.get("_id");
-		busStop.setId(id);
+		busStop.setId(id.toHexString());
 		return busStop;
 
 	}

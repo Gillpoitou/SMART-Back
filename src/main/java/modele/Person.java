@@ -13,17 +13,28 @@ import org.bson.types.ObjectId;
  * @author elise
  */
 public class Person {
-     private ObjectId id;
-     private BusStop departure;
-     private BusStop arrival;
-     private Date timeDeparture;
-     private Bus bus;
+    private String id;
+    private BusStop departure;
+    private BusStop arrival;
+    private Date timeDeparture;
+    private Bus bus;
 
-    public ObjectId getId() {
+    public Person() {
+    }
+
+    public Person(String id, BusStop departure, BusStop arrival, Date timeDeparture, Bus bus) {
+        this.id = id;
+        this.departure = departure;
+        this.arrival = arrival;
+        this.timeDeparture = timeDeparture;
+        this.bus = bus;
+    }
+
+    public String getId() {
         return id;
     }
 
-    public void setId(ObjectId id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -58,5 +69,5 @@ public class Person {
     public void setBus(Bus bus) {
         this.bus = bus;
     }
-     
+
 }

@@ -5,7 +5,9 @@
  */
 package servlets;
 
+import com.mongodb.client.MongoClient;
 import converter.PersonConverter;
+import dao.BusDAO;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -13,6 +15,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import modele.Bus;
 import modele.BusStop;
 import modele.Person;
 import services.Services;
@@ -38,6 +41,9 @@ public class ActionServlet extends HttpServlet {
             
            System.out.println(request.getParameter("action")); 
         
+        MongoClient mongoClient = (MongoClient) request.getServletContext()
+				.getAttribute("MONGO_CLIENT");
+
         switch(request.getParameter("action")){
             case  "getBusMapDisplay" :
                 response.setContentType("application/json");

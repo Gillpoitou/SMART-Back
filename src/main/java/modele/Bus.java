@@ -12,16 +12,25 @@ import org.bson.types.ObjectId;
  * @author thomasmalvoisin
  */
 public class Bus {
-    
-    private ObjectId id;
+
+    private String id;
     private String name;
     private int nbPlaces;
 
-    public ObjectId getId() {
+    public Bus() {
+    }
+
+    public Bus(String id, String name, int nbPlaces) {
+        this.id = id;
+        this.name = name;
+        this.nbPlaces = nbPlaces;
+    }
+
+    public String getId() {
         return id;
     }
 
-    public void setId(ObjectId id) {
+    public void setId(String id) {
         this.id = id;
     }
 
