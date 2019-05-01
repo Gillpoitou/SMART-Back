@@ -38,43 +38,44 @@ public class ActionServlet extends HttpServlet {
     
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        response.setContentType("application/json");
+            
+           System.out.println(request.getParameter("action")); 
         
         MongoClient mongoClient = (MongoClient) request.getServletContext()
 				.getAttribute("MONGO_CLIENT");
-        
-        BusDAO busDAO = new BusDAO(mongoClient);
-        
-        Bus bus = new Bus();
-        bus.setName("test");
-        bus.setNbPlaces(10);
-        
-        busDAO.createBus(bus);
-        
-//        switch(request.getParameter("action")){
-//            case  "getBusMapDisplay" :
-//                try (PrintWriter out = response.getWriter()){
-//                    out.println(Services.getBusMapDisplay());
-//                }
-//            break;
-//            case "postBusRequest":
-//                
-//                StringBuilder buffer = new StringBuilder();
-//                BufferedReader reader = request.getReader();
-//                String line;
-//                while ((line = reader.readLine()) != null) {
-//                    buffer.append(line);
-//                }
-//                String data = buffer.toString();
-//                try{
-//                    Person person = PersonConverter.jsonToPerson(data);
-//                    Services.postBusRequest(person);
-//                }catch(Exception e){
-//                    e.printStackTrace();
-//                    response.sendError(422, "Unprocessable entity");
-//                }   
-//            break;
-//        }
+
+        switch(request.getParameter("action")){
+            case  "getBusMapDisplay" :
+                response.setContentType("application/json");
+                try (PrintWriter out = response.getWriter()){
+                    out.println(Services.getBusMapDisplay());
+                }
+            break;
+            case "postBusRequest":
+                response.setContentType("text");
+                StringBuilder buffer = new StringBuilder();
+                BufferedReader reader = request.getReader();
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    buffer.append(line);
+                }
+                String data = buffer.toString();
+                try{
+                    Person person = PersonConverter.jsonToPerson(data);
+                    if(Services.postBusRequest(person)){
+                        try (PrintWriter out = response.getWriter()){
+                            out.println("Request Posted");
+                        }
+                    }
+                }catch(Exception e){
+                    e.printStackTrace();
+                    response.sendError(422, "Unprocessable entity");
+                }   
+            break;
+            default :
+                response.sendError(422, "Unprocessable entity, please ");
+            break;
+        }
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
