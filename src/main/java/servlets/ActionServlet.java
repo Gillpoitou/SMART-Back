@@ -43,7 +43,10 @@ public class ActionServlet extends HttpServlet {
         
         MongoClient mongoClient = (MongoClient) request.getServletContext()
 				.getAttribute("MONGO_CLIENT");
-
+        if(request.getParameter("action")==null){
+            response.sendError(400, "Bad Request, the current request has no action parameter");
+            return;
+        }
         switch(request.getParameter("action")){
             case  "getBusMapDisplay" :
                 response.setContentType("application/json");
@@ -62,7 +65,7 @@ public class ActionServlet extends HttpServlet {
                 String data = buffer.toString();
                 try{
                     Person person = PersonConverter.jsonToPerson(data);
-                    if(Services.postBusRequest(person)){
+                    if(Services.postBusRequest(mongoClient,person)){
                         try (PrintWriter out = response.getWriter()){
                             out.println("Request Posted");
                         }
@@ -73,7 +76,7 @@ public class ActionServlet extends HttpServlet {
                 }   
             break;
             default :
-                response.sendError(422, "Unprocessable entity, please ");
+                response.sendError(422, "Unprocessable entity, please specify a valid action type ");
             break;
         }
     }
