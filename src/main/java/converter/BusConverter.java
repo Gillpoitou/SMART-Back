@@ -7,7 +7,6 @@ package converter;
 
 import modele.Bus;
 
-import com.mongodb.BasicDBObjectBuilder;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 
@@ -15,7 +14,7 @@ import org.bson.types.ObjectId;
  *
  * @author thomasmalvoisin
  */
-public class BusConverter {
+public class BusConverter{
 
     public static Document toDocument(Bus bus) {
 
