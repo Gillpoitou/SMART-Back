@@ -7,7 +7,7 @@ package dao;
 
 import modele.Bus;
 
-import com.mongodb.MongoClient;
+import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoCollection;
 import converter.BusConverter;
 import org.bson.Document;
@@ -29,7 +29,7 @@ public class BusDAO {
         Document doc = BusConverter.toDocument(bus);
         this.coll.insertOne(doc);
         ObjectId id = (ObjectId) doc.get("_id");
-        bus.setId(id);
+        bus.setId(id.toHexString());
         return bus;
     }
 

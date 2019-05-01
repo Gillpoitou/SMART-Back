@@ -30,7 +30,7 @@ public class PersonConverter {
                 .append("bus", person.getBus())
                 .append("timeDeparture", person.getTimeDeparture());
         if (person.getId() != null) {
-            doc.append("_id", person.getId());
+            doc.append("_id", new ObjectId(person.getId()));
         }
         return doc;
     }
@@ -42,7 +42,7 @@ public class PersonConverter {
                 p.setBus((Bus) BusConverter.toBus((Document)doc.get("bus")));
                 p.setTimeDeparture((Date) doc.get("timeDeparture"));
 		ObjectId id = (ObjectId) doc.get("_id");
-		p.setId(id);
+		p.setId(id.toHexString());
 		return p;
 
 	}

@@ -21,7 +21,7 @@ public class BusConverter{
         Document doc = new Document("name", bus.getName())
                 .append("nbPlaces", bus.getNbPlaces());
         if (bus.getId() != null) {
-            doc.append("_id", bus.getId());
+            doc.append("_id", new ObjectId(bus.getId()));
         }
         return doc;
     }
@@ -31,9 +31,8 @@ public class BusConverter{
 		bus.setName((String) doc.get("name"));
 		bus.setNbPlaces((Integer) doc.get("nbPlaces"));
 		ObjectId id = (ObjectId) doc.get("_id");
-		bus.setId(id);
+		bus.setId(id.toHexString());
 		return bus;
-
 	}
     
 }

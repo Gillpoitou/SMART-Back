@@ -13,17 +13,17 @@ import org.bson.types.ObjectId;
  * @author elise
  */
 public class Person {
-     private ObjectId id;
+     private String id;
      private BusStop departure;
      private BusStop arrival;
      private Date timeDeparture;
      private Bus bus;
 
-    public ObjectId getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(ObjectId id) {
+    public void setId(String id) {
         this.id = id;
     }
 

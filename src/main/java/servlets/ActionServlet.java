@@ -5,7 +5,9 @@
  */
 package servlets;
 
+import com.mongodb.client.MongoClient;
 import converter.PersonConverter;
+import dao.BusDAO;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -13,6 +15,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import modele.Bus;
 import modele.BusStop;
 import modele.Person;
 import services.Services;
@@ -37,30 +40,41 @@ public class ActionServlet extends HttpServlet {
             throws ServletException, IOException {
         response.setContentType("application/json");
         
-        switch(request.getParameter("action")){
-            case  "getBusMapDisplay" :
-                try (PrintWriter out = response.getWriter()){
-                    out.println(Services.getBusMapDisplay());
-                }
-            break;
-            case "postBusRequest":
-                
-                StringBuilder buffer = new StringBuilder();
-                BufferedReader reader = request.getReader();
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    buffer.append(line);
-                }
-                String data = buffer.toString();
-                try{
-                    Person person = PersonConverter.jsonToPerson(data);
-                    Services.postBusRequest(person);
-                }catch(Exception e){
-                    e.printStackTrace();
-                    response.sendError(422, "Unprocessable entity");
-                }   
-            break;
-        }
+        MongoClient mongoClient = (MongoClient) request.getServletContext()
+				.getAttribute("MONGO_CLIENT");
+        
+        BusDAO busDAO = new BusDAO(mongoClient);
+        
+        Bus bus = new Bus();
+        bus.setName("test");
+        bus.setNbPlaces(10);
+        
+        busDAO.createBus(bus);
+        
+//        switch(request.getParameter("action")){
+//            case  "getBusMapDisplay" :
+//                try (PrintWriter out = response.getWriter()){
+//                    out.println(Services.getBusMapDisplay());
+//                }
+//            break;
+//            case "postBusRequest":
+//                
+//                StringBuilder buffer = new StringBuilder();
+//                BufferedReader reader = request.getReader();
+//                String line;
+//                while ((line = reader.readLine()) != null) {
+//                    buffer.append(line);
+//                }
+//                String data = buffer.toString();
+//                try{
+//                    Person person = PersonConverter.jsonToPerson(data);
+//                    Services.postBusRequest(person);
+//                }catch(Exception e){
+//                    e.printStackTrace();
+//                    response.sendError(422, "Unprocessable entity");
+//                }   
+//            break;
+//        }
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
