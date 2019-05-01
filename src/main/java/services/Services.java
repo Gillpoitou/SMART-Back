@@ -19,11 +19,14 @@ public class Services {
     
     public static String getBusMapDisplay(){
         
-        return "";
+        return "GET_BUS_MAP_DISPLAY";
     }
     
-    public static void postBusRequest(Person person){
-        PersonDAO psdao = new PersonDAO(null);
-        psdao.insertPerson(person);
+    public static boolean postBusRequest(Person person){
+        
+        System.out.println("RequestPosted");
+        //PersonDAO psdao = new PersonDAO(null);
+        //psdao.insertPerson(person);
+        return true;
     }
 }

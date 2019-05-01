@@ -35,16 +35,18 @@ public class ActionServlet extends HttpServlet {
     
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        response.setContentType("application/json");
+            
+           System.out.println(request.getParameter("action")); 
         
         switch(request.getParameter("action")){
             case  "getBusMapDisplay" :
+                response.setContentType("application/json");
                 try (PrintWriter out = response.getWriter()){
                     out.println(Services.getBusMapDisplay());
                 }
             break;
             case "postBusRequest":
-                
+                response.setContentType("text");
                 StringBuilder buffer = new StringBuilder();
                 BufferedReader reader = request.getReader();
                 String line;
@@ -54,11 +56,18 @@ public class ActionServlet extends HttpServlet {
                 String data = buffer.toString();
                 try{
                     Person person = PersonConverter.jsonToPerson(data);
-                    Services.postBusRequest(person);
+                    if(Services.postBusRequest(person)){
+                        try (PrintWriter out = response.getWriter()){
+                            out.println("Request Posted");
+                        }
+                    }
                 }catch(Exception e){
                     e.printStackTrace();
                     response.sendError(422, "Unprocessable entity");
                 }   
+            break;
+            default :
+                response.sendError(422, "Unprocessable entity, please ");
             break;
         }
     }
