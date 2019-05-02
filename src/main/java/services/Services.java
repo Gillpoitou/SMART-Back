@@ -6,6 +6,7 @@
 
 package services;
 
+import com.mongodb.client.MongoClient;
 import dao.PersonDAO;
 import modele.BusStop;
 import modele.Person;
@@ -22,11 +23,14 @@ public class Services {
         return "GET_BUS_MAP_DISPLAY";
     }
     
-    public static boolean postBusRequest(Person person){
+    public static boolean postBusRequest(MongoClient mongoClient,Person person){
         
-        System.out.println("RequestPosted");
-        //PersonDAO psdao = new PersonDAO(null);
-        //psdao.insertPerson(person);
-        return true;
+        try{
+            PersonDAO personDAO = new PersonDAO(mongoClient);
+            personDAO.createPerson(person);
+            return true;
+        }catch(Exception e){
+            return false;
+        }
     }
 }
