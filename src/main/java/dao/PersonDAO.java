@@ -7,6 +7,7 @@ package dao;
 
 import com.mongodb.MongoClient;
 import com.mongodb.client.MongoCollection;
+import static com.mongodb.client.model.Filters.eq;
 import converter.PersonConverter;
 import modele.Person;
 import org.bson.Document;
@@ -32,8 +33,22 @@ public class PersonDAO {
         return p;
     }
 
-    public void insertPerson(Person person) {
-
+    public Person getPersonById(String id){
+        Person p =  (Person) PersonConverter.toPerson((Document)coll.find(eq("_id", id)));
+        return p;
+    }
+    
+    public Person updatePerson(Person p) {
+        Document doc = PersonConverter.toDocument(p);
+        this.coll.updateOne(
+                eq("_id", new ObjectId(p.getId())),
+                doc);
+        return p;
+    } 
+    
+    public void deletePerson(Person p){
+        this.coll.deleteOne(
+                eq("_id", new ObjectId(p.getId())));
     }
 
 }

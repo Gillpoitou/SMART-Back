@@ -36,11 +36,11 @@ public class LineConverter {
 		l.setDeparture((BusStop) BusStopConverter.toBusStop((Document)doc.get("departure")));
                 l.setArrival((BusStop) BusStopConverter.toBusStop((Document)doc.get("arrival")));
                 l.setBus((Bus) BusConverter.toBus((Document)doc.get("Bus")));
-                l.setBusStops((ArrayList<Line.BusStopLine>) doc.get("busStops"));
+                l.setBusStops((ArrayList<Line.BusStopLine>) BusStopLineConverter.toBusStopLine((Document)doc.get("busStops")));
 
 		ObjectId id = (ObjectId) doc.get("_id");
 		l.setId(id.toHexString());
 		return l;
 
-	}
+	}   
 }

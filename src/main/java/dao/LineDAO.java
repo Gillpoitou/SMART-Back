@@ -7,6 +7,8 @@ package dao;
 
 import com.mongodb.MongoClient;
 import com.mongodb.client.MongoCollection;
+import static com.mongodb.client.model.Filters.eq;
+import static com.mongodb.client.model.Updates.set;
 import converter.LineConverter;
 import modele.Line;
 import org.bson.Document;
@@ -30,4 +32,17 @@ public class LineDAO {
         l.setId(id.toHexString());
         return l;
     } 
+    
+    public Line updateLine(Line l) {
+        Document doc = LineConverter.toDocument(l);
+        this.coll.updateOne(
+                eq("_id", new ObjectId(l.getId())),
+                doc);
+        return l;
+    } 
+    
+    public void deleteLine(Line l){
+        this.coll.deleteOne(
+                eq("_id", new ObjectId(l.getId())));
+    }
 }
