@@ -6,7 +6,6 @@
 package modele;
 
 import java.util.ArrayList;
-import java.util.Date;
 
 /**
  *
@@ -14,6 +13,8 @@ import java.util.Date;
  */
 public class Line {
 
+    private String id;
+    private String name;
     private Warehouse departure;
     private Warehouse arrival;
     ArrayList<BusStopLine> busStops;
@@ -22,11 +23,28 @@ public class Line {
     public Line() {
     }
 
-    public Line(Warehouse departure, Warehouse arrival, ArrayList<BusStopLine> busStops, Bus bus) {
+    public Line(String name, Warehouse departure, Warehouse arrival, ArrayList<BusStopLine> busStops, Bus bus) {
+        this.name = name;
         this.departure = departure;
         this.arrival = arrival;
         this.busStops = busStops;
         this.bus = bus;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+    
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public Warehouse getDeparture() {
@@ -66,23 +84,23 @@ public class Line {
         private BusStop busStop;
         private int nbGetOn;
         private int nbGetOff;
-        private Date time;
+        private float time;
 
         public BusStopLine() {
         }
 
-        public BusStopLine(BusStop busStop, int nbGetOn, int nbGetOff, Date time) {
+        public BusStopLine(BusStop busStop, int nbGetOn, int nbGetOff, float time) {
             this.busStop = busStop;
             this.nbGetOn = nbGetOn;
             this.nbGetOff = nbGetOff;
             this.time = time;
         }
 
-        public Date getTime() {
+        public float getTime() {
             return time;
         }
 
-        public void setTime(Date time) {
+        public void setTime(float time) {
             this.time = time;
         }
 
