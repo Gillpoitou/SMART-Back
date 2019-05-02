@@ -89,6 +89,7 @@ public class ActionServlet extends HttpServlet {
                 }
             break;
             case "getBusStops":
+                response.setContentType("application/json");
                 JsonObject result = new JsonObject();
                 if(Services.getBusStops(mongoClient,result)){
                    try (PrintWriter out = response.getWriter()){
