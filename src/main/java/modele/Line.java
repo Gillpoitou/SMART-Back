@@ -15,8 +15,8 @@ public class Line {
 
     private String id;
     private String name;
-    private Warehouse departure;
-    private Warehouse arrival;
+    private BusStop departure;
+    private BusStop arrival;
     ArrayList<BusStopLine> busStops;
     private Bus bus;
 
@@ -47,19 +47,19 @@ public class Line {
         this.name = name;
     }
 
-    public Warehouse getDeparture() {
+    public BusStop getDeparture() {
         return departure;
     }
 
-    public void setDeparture(Warehouse departure) {
+    public void setDeparture(BusStop departure) {
         this.departure = departure;
     }
 
-    public Warehouse getArrival() {
+    public BusStop getArrival() {
         return arrival;
     }
 
-    public void setArrival(Warehouse arrival) {
+    public void setArrival(BusStop arrival) {
         this.arrival = arrival;
     }
 

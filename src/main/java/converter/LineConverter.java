@@ -7,8 +7,8 @@ package converter;
 
 import java.util.ArrayList;
 import modele.Bus;
+import modele.BusStop;
 import modele.Line;
-import modele.Warehouse;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 
@@ -33,8 +33,8 @@ public class LineConverter {
     public static Line toLine(Document doc) {
 		Line l = new Line();
 		l.setName((String) doc.get("name"));
-		l.setDeparture((Warehouse) WarehouseConverter.toWarehouse((Document)doc.get("departure")));
-                l.setArrival((Warehouse) WarehouseConverter.toWarehouse((Document)doc.get("arrival")));
+		l.setDeparture((BusStop) BusStopConverter.toBusStop((Document)doc.get("departure")));
+                l.setArrival((BusStop) BusStopConverter.toBusStop((Document)doc.get("arrival")));
                 l.setBus((Bus) BusConverter.toBus((Document)doc.get("Bus")));
                 l.setBusStops((ArrayList<Line.BusStopLine>) doc.get("busStops"));
 
