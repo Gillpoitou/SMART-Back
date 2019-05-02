@@ -9,6 +9,7 @@ package converter;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.mongodb.client.MongoClient;
 import dao.BusStopDAO;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -46,7 +47,7 @@ public class PersonConverter {
 		return p;
 
 	}
-  public static Person jsonToPerson(String json) throws Exception{
+  public static Person jsonToPerson(MongoClient mongoClient, String json) throws Exception{
         
     JsonElement jelement = new JsonParser().parse(json);
     JsonObject  jsonPerson = jelement.getAsJsonObject();
@@ -54,7 +55,7 @@ public class PersonConverter {
     SimpleDateFormat sdf = new SimpleDateFormat("\"dd-MM-yyyy HH:mm:ss\"");
     Date date = sdf.parse(jsonPerson.get("departure_date").toString());
     
-    BusStopDAO bsdao = new BusStopDAO();
+    BusStopDAO bsdao = new BusStopDAO(mongoClient);
     BusStop departure = bsdao.getBusStopById(jsonPerson.get("departure").toString());
     BusStop arrival = bsdao.getBusStopById(jsonPerson.get("arrival").toString());
     

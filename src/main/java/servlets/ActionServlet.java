@@ -61,7 +61,7 @@ public class ActionServlet extends HttpServlet {
                 }
                 String data = buffer.toString();
                 try{
-                    Person person = PersonConverter.jsonToPerson(data);
+                    Person person = PersonConverter.jsonToPerson(mongoClient,data);
                     if(Services.postBusRequest(person)){
                         try (PrintWriter out = response.getWriter()){
                             out.println("Request Posted");
