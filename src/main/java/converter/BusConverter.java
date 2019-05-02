@@ -19,7 +19,9 @@ public class BusConverter{
     public static Document toDocument(Bus bus) {
 
         Document doc = new Document("name", bus.getName())
-                .append("nbPlaces", bus.getNbPlaces());
+                .append("nbPlaces", bus.getNbPlaces())
+                .append("position", BusStopConverter.toDocument(bus.getPosition()))
+                .append("nbPassengers", bus.getNbPassengers());
         if (bus.getId() != null) {
             doc.append("_id", new ObjectId(bus.getId()));
         }
@@ -27,12 +29,16 @@ public class BusConverter{
     }
     
     public static Bus toBus(Document doc) {
-		Bus bus = new Bus();
-		bus.setName((String) doc.get("name"));
-		bus.setNbPlaces((Integer) doc.get("nbPlaces"));
-		ObjectId id = (ObjectId) doc.get("_id");
-		bus.setId(id.toHexString());
-		return bus;
-	}
+        Bus bus = new Bus();
+        bus.setName((String) doc.get("name"));
+        bus.setNbPlaces((Integer) doc.get("nbPlaces"));
+        bus.setNbPassengers((Integer) doc.get("nbPassengers"));
+        bus.setPosition(BusStopConverter.toBusStop((Document) doc.get("position")));
+
+        ObjectId id = (ObjectId) doc.get("_id");
+        bus.setId(id.toHexString());
+
+        return bus;
+    }
     
 }

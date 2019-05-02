@@ -6,8 +6,12 @@
 package converter;
 
 import com.google.gson.JsonObject;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Vector;
 import modele.BusStop;
+import modele.BusStopPath;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 
@@ -20,8 +24,21 @@ public class BusStopConverter {
     public static Document toDocument(BusStop busStop) {
         Document doc = new Document("name", busStop.getName())
                 .append("BusStopId", busStop.getBusStopID())
-                .append("latitude", busStop.getLatitude())
-                .append("longitude", busStop.getLongitude());
+                .append("nbPersonsWaiting", busStop.getNbPersonsWaiting())
+                .append("nbPersonsComing", busStop.getNbPersonsComing());
+
+        //Coordinates
+        Document coord = new Document("type", "Point")
+                .append("coordinates", Arrays.asList(busStop.getLongitude(), busStop.getLatitude()));
+        doc.append("location", coord);
+
+        //Paths
+        ArrayList<Document> paths = new ArrayList<>();
+        for (BusStopPath p : busStop.getPaths()) {
+            paths.add(BusStopPathConverter.toDocument(p));
+        }
+        doc.append("paths", Arrays.asList(paths));
+
         if (busStop.getId() != null) {
             doc.append("_id", new ObjectId(busStop.getId()));
         }
@@ -30,20 +47,34 @@ public class BusStopConverter {
 
     public static BusStop toBusStop(Document doc) {
         BusStop busStop = new BusStop();
-        busStop.setBusStopID((int) doc.get("BusStopId"));
-        busStop.setLatitude((Double) doc.get("latitude"));
-        busStop.setLongitude((Double) doc.get("longitude"));
+        busStop.setBusStopID((Integer) doc.get("BusStopId"));
         busStop.setName((String) doc.get("name"));
+        busStop.setNbPersonsWaiting((Integer) doc.get("nbPersonsWaiting"));
+        busStop.setNbPersonsComing((Integer) doc.get("nbPersonsComing"));
+        
+        //Coordinates
+        List<Double> coord = (List<Double>) ((Document) doc.get("location")).get("coordinates");
+        busStop.setLongitude(coord.get(0));
+        busStop.setLatitude(coord.get(1));
+        
+        //Paths
+        List<Document> _paths = (List<Document>) doc.get("paths");
+        Vector<BusStopPath> paths = new Vector<BusStopPath>();
+        for(Document d : _paths){
+            paths.add(BusStopPathConverter.toBusStopPath(d));
+        }
+        busStop.setPaths(paths);
 
         ObjectId id = (ObjectId) doc.get("_id");
         busStop.setId(id.toHexString());
+        
         return busStop;
-
     }
 
+    //TODO modifier
     public static BusStop geoJsonToBusStop(Document doc) {
         BusStop busStop = new BusStop();
-        
+
         Document geometry = (Document) doc.get("geometry");
         List<Double> coordinates = null;
         coordinates = (List<Double>) geometry.get("coordinates");
@@ -51,22 +82,22 @@ public class BusStopConverter {
         busStop.setName((String) doc.get("name"));
         busStop.setLatitude(coordinates.get(0));
         busStop.setLongitude(coordinates.get(1));
-        
+
         return busStop;
     }
 
     public static BusStop jsonToBusStop(String json) {
         return null;
     }
-    
-    public static JsonObject BusStopToJson(BusStop busStop){
+
+    public static JsonObject BusStopToJson(BusStop busStop) {
         JsonObject result = new JsonObject();
-        
+
         result.addProperty("busStopId", busStop.getBusStopID());
         result.addProperty("name", busStop.getName());
         result.addProperty("latitude", busStop.getLatitude());
         result.addProperty("longitude", busStop.getLongitude());
-        
+
         return result;
     }
 }

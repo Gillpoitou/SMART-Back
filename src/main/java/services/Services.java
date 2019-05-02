@@ -11,6 +11,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.mongodb.client.MongoClient;
 import converter.BusStopConverter;
+import dao.BusDAO;
 import dao.BusStopDAO;
 import dao.PersonDAO;
 import java.io.BufferedReader;
@@ -20,7 +21,9 @@ import java.net.URL;
 import java.util.Vector;
 import javax.servlet.http.HttpServletResponse;
 import static javax.ws.rs.core.HttpHeaders.USER_AGENT;
+import modele.Bus;
 import modele.BusStop;
+import modele.BusStopPath;
 import modele.Person;
 
 /**
@@ -44,15 +47,15 @@ public class Services {
             return false;
         }
     }
-    
-    public static boolean initDataBase(MongoClient mongoClient){
+
+    public static boolean initDataBase(MongoClient mongoClient) {
         System.out.println("stating initialization");
-        try{
+        try {
             BusStopDAO busStopDAO = new BusStopDAO(mongoClient);
-            Vector<BusStop> busStops = busStopDAO.selectBusStopsGeoJson(4.863718173086466,45.7708809489496);
-            for(int i = 0; i < busStops.size();i++){
+            Vector<BusStop> busStops = busStopDAO.selectBusStopsGeoJson(4.863718173086466, 45.7708809489496);
+            for (int i = 0; i < busStops.size(); i++) {
                 busStopDAO.createBusStop(busStops.get(i));
-                for(int j =0; j < busStops.size();j++){
+                for (int j = 0; j < busStops.size(); j++) {
                     //float duration = getOSRMdistanceDuration(busStops.get(i).getLatitude(),busStops.get(i).getLongitude(),busStops.get(j).getLatitude(),busStops.get(j).getLongitude());
                     //System.out.println(duration);
                     System.out.println(busStops.get(i).getBusStopID() + " , " + busStops.get(j).getBusStopID());
@@ -60,69 +63,84 @@ public class Services {
             }
 
             return true;
-        }catch(Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             return false;
         }
     }
+
     // HTTP GET request
     private static float getOSRMdistanceDuration(double latA, double longA, double latB, double longB) throws Exception {
 
-                System.out.println("Sending HTTP request");
-		String url = "http://router.project-osrm.org/route/v1/driving/"+latA+","+longA+";" +latB+","+longB+"?overview=false";
-		
-		URL obj = new URL(url);
-		HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+        System.out.println("Sending HTTP request");
+        String url = "http://router.project-osrm.org/route/v1/driving/" + latA + "," + longA + ";" + latB + "," + longB + "?overview=false";
 
-		con.setRequestMethod("GET");
+        URL obj = new URL(url);
+        HttpURLConnection con = (HttpURLConnection) obj.openConnection();
 
-		//add request header
-		con.setRequestProperty("User-Agent", USER_AGENT);
+        con.setRequestMethod("GET");
 
-		int responseCode = con.getResponseCode();
-		System.out.println("\nSending 'GET' request to URL : " + url);
-		System.out.println("Response Code : " + responseCode);
+        //add request header
+        con.setRequestProperty("User-Agent", USER_AGENT);
 
-		BufferedReader in = new BufferedReader(
-		        new InputStreamReader(con.getInputStream()));
-		String inputLine;
-		StringBuffer response = new StringBuffer();
+        int responseCode = con.getResponseCode();
+        System.out.println("\nSending 'GET' request to URL : " + url);
+        System.out.println("Response Code : " + responseCode);
 
-		while ((inputLine = in.readLine()) != null) {
-			response.append(inputLine);
-		}
-		in.close();
+        BufferedReader in = new BufferedReader(
+                new InputStreamReader(con.getInputStream()));
+        String inputLine;
+        StringBuffer response = new StringBuffer();
 
-		//print result
-		System.out.println(response.toString());
-                
-                JsonElement jelement = new JsonParser().parse(response.toString());
-                JsonObject  racine = jelement.getAsJsonObject();
-                JsonArray route = racine.getAsJsonArray("routes");
-                
-                return route.get(0).getAsJsonObject().get("duration").getAsFloat();
-	}
-    
-    public static void test(MongoClient mongoClient) {
-        System.out.println("test service");
-        BusStopDAO busStopDAO = new BusStopDAO(mongoClient);
-        busStopDAO.selectBusStopsGeoJson(4.863718173086466, 45.7708809489496);
+        while ((inputLine = in.readLine()) != null) {
+            response.append(inputLine);
+        }
+        in.close();
+
+        //print result
+        System.out.println(response.toString());
+
+        JsonElement jelement = new JsonParser().parse(response.toString());
+        JsonObject racine = jelement.getAsJsonObject();
+        JsonArray route = racine.getAsJsonArray("routes");
+
+        return route.get(0).getAsJsonObject().get("duration").getAsFloat();
     }
-    
-    public static boolean getBusStops(MongoClient mongoClient,JsonObject result){
-        try{
+
+    public static void test(MongoClient mongoClient) {
+        BusDAO busDAO = new BusDAO(mongoClient);
+
+        BusStop busStop = new BusStop();
+        busStop.setBusStopID(999);
+        busStop.setLatitude(12);
+        busStop.setLongitude(12);
+        busStop.setName("arrêt");
+        busStop.setNbPersonsComing(2);
+        busStop.setNbPersonsWaiting(5);
+        busStop.setPaths(new Vector<BusStopPath>());
+        
+        Bus bus = new Bus();
+        bus.setName("test");
+        bus.setNbPassengers(10);
+        bus.setNbPlaces(20);
+        bus.setPosition(busStop);
+        
+        busDAO.createBus(bus);
+    }
+
+    public static boolean getBusStops(MongoClient mongoClient, JsonObject result) {
+        try {
             JsonArray busStopsArray = new JsonArray();
             BusStopDAO busStopDAO = new BusStopDAO(mongoClient);
             Vector<BusStop> busStops = busStopDAO.selectBusStops();
-            for(int i = 0; i < busStops.size();i++){
+            for (int i = 0; i < busStops.size(); i++) {
                 busStopsArray.add(BusStopConverter.BusStopToJson(busStops.get(i)));
             }
             result.add("bus_stops", busStopsArray);
             return true;
-        }catch(Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             return false;
         }
     }
 }
-

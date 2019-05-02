@@ -5,6 +5,8 @@
  */
 package modele;
 
+import java.util.Vector;
+
 /**
  *
  * @author etien
@@ -16,21 +18,24 @@ public class BusStop {
     private double latitude;
     private double longitude;
     private int busStopID;
-
-    
+    private int nbPersonsWaiting;
+    private int nbPersonsComing;
+    private Vector<BusStopPath> paths;
 
     public BusStop() {
     }
 
-    public BusStop(String id, String name, double latitude, double longitude) {
+    public BusStop(String id, String name, double latitude, double longitude, int busStopID, int nbPersonsWaiting, int nbPersonsComing, Vector<BusStopPath> paths) {
         this.id = id;
         this.name = name;
         this.latitude = latitude;
         this.longitude = longitude;
+        this.busStopID = busStopID;
+        this.nbPersonsWaiting = nbPersonsWaiting;
+        this.nbPersonsComing = nbPersonsComing;
+        this.paths = paths;
     }
     
-    
-
     public String getId() {
         return id;
     }
@@ -69,5 +74,28 @@ public class BusStop {
     public int getBusStopID() {
         return busStopID;
     }
-    
+
+    public int getNbPersonsWaiting() {
+        return nbPersonsWaiting;
+    }
+
+    public void setNbPersonsWaiting(int nbPersonsWaiting) {
+        this.nbPersonsWaiting = nbPersonsWaiting;
+    }
+
+    public int getNbPersonsComing() {
+        return nbPersonsComing;
+    }
+
+    public void setNbPersonsComing(int nbPersonsComing) {
+        this.nbPersonsComing = nbPersonsComing;
+    }
+
+    public Vector<BusStopPath> getPaths() {
+        return paths;
+    }
+
+    public void setPaths(Vector<BusStopPath> paths) {
+        this.paths = paths;
+    }
 }

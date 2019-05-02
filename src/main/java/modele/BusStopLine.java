@@ -18,43 +18,43 @@ public class BusStopLine {
 
     public BusStopLine() {
     }
-  
+
     public BusStopLine(BusStop busStop, int nbGetOn, int nbGetOff, float time) {
-            this.busStop = busStop;
-            this.nbGetOn = nbGetOn;
-            this.nbGetOff = nbGetOff;
-            this.time = time;
-        }
+        this.busStop = busStop;
+        this.nbGetOn = nbGetOn;
+        this.nbGetOff = nbGetOff;
+        this.time = time;
+    }
+ 
+    public float getTime() {
+        return time;
+    }
 
-        public float getTime() {
-            return time;
-        }
+    public void setTime(float time) {
+        this.time = time;
+    }
 
-        public void setTime(float time) {
-            this.time = time;
-        }
+    public BusStop getBusStop() {
+        return busStop;
+    }
 
-        public BusStop getBusStop() {
-            return busStop;
-        }
+    public void setBusStop(BusStop busStop) {
+        this.busStop = busStop;
+    }
 
-        public void setBusStop(BusStop busStop) {
-            this.busStop = busStop;
-        }
+    public int getNbGetOn() {
+        return nbGetOn;
+    }
 
-        public int getNbGetOn() {
-            return nbGetOn;
-        }
+    public void setNbGetOn(int nbGetOn) {
+        this.nbGetOn = nbGetOn;
+    }
 
-        public void setNbGetOn(int nbGetOn) {
-            this.nbGetOn = nbGetOn;
-        }
+    public int getNbGetOff() {
+        return nbGetOff;
+    }
 
-        public int getNbGetOff() {
-            return nbGetOff;
-        }
-        
-        public void setNbGetOff(int nbGetOff) {
-            this.nbGetOff = nbGetOff;
-        } 
+    public void setNbGetOff(int nbGetOff) {
+        this.nbGetOff = nbGetOff;
+    }
 }

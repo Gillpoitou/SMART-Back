@@ -8,18 +8,20 @@ package converter;
 import modele.BusStop;
 import modele.BusStopLine;
 import org.bson.Document;
+import org.bson.types.ObjectId;
 
 /**
  *
  * @author elise
  */
 public class BusStopLineConverter {
-        public static Document toDocument(BusStopLine b) {
+        public static Document toDocument(BusStopLine busStopLine) {
 
-        Document doc = new Document("busStop", b.getBusStop())
-                .append("nbGetOn", b.getNbGetOn())
-                .append("nbGetOff", b.getNbGetOff())
-                .append("time", b.getTime());
+        Document doc = new Document("busStop", busStopLine.getBusStop())
+                .append("nbGetOn", busStopLine.getNbGetOn())
+                .append("nbGetOff", busStopLine.getNbGetOff())
+                .append("time", busStopLine.getTime());
+        
         return doc;
     }
     
@@ -31,6 +33,5 @@ public class BusStopLineConverter {
         b.setTime((float) doc.get("time"));
 
         return b;
-
     }
 }

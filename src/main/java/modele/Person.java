@@ -17,17 +17,17 @@ public class Person {
     private BusStop departure;
     private BusStop arrival;
     private Date timeDeparture;
-    private Bus bus;
+    private Line line;
 
     public Person() {
     }
 
-    public Person(String id, BusStop departure, BusStop arrival, Date timeDeparture, Bus bus) {
+    public Person(String id, BusStop departure, BusStop arrival, Date timeDeparture, Line line) {
         this.id = id;
         this.departure = departure;
         this.arrival = arrival;
         this.timeDeparture = timeDeparture;
-        this.bus = bus;
+        this.line = line;
     }
 
     public String getId() {
@@ -62,12 +62,11 @@ public class Person {
         this.timeDeparture = time_departure;
     }
 
-    public Bus getBus() {
-        return bus;
+    public Line getLine() {
+        return line;
     }
 
-    public void setBus(Bus bus) {
-        this.bus = bus;
+    public void setLine(Line line) {
+        this.line = line;
     }
-
 }

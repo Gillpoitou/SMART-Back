@@ -101,6 +101,9 @@ public class ActionServlet extends HttpServlet {
                         } 
                 }
             break;
+            case "test":
+                Services.test(mongoClient);
+                break;
             default :
                 response.sendError(422, "Unprocessable entity, please specify a valid action type ");
             break;
