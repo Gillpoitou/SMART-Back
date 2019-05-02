@@ -7,6 +7,7 @@
 package services;
 
 import com.mongodb.client.MongoClient;
+import dao.BusStopDAO;
 import dao.PersonDAO;
 import modele.BusStop;
 import modele.Person;
@@ -28,6 +29,16 @@ public class Services {
         try{
             PersonDAO personDAO = new PersonDAO(mongoClient);
             personDAO.createPerson(person);
+            return true;
+        }catch(Exception e){
+            return false;
+        }
+    }
+    
+    public static boolean initDataBase(MongoClient mongoClient){
+        try{
+            BusStopDAO busStopDAO = new BusStopDAO(mongoClient);
+            busStopDAO.selectBusStops(4.863718173086466,45.7708809489496);
             return true;
         }catch(Exception e){
             return false;

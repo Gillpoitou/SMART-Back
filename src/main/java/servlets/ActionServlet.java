@@ -65,7 +65,7 @@ public class ActionServlet extends HttpServlet {
                 String data = buffer.toString();
                 try{
                     Person person = PersonConverter.jsonToPerson(mongoClient,data);
-                    if(Services.postBusRequest(person)){
+                    if(Services.postBusRequest(mongoClient,person)){
 
                         try (PrintWriter out = response.getWriter()){
                             out.println("Request Posted");
@@ -75,6 +75,9 @@ public class ActionServlet extends HttpServlet {
                     e.printStackTrace();
                     response.sendError(422, "Unprocessable entity");
                 }   
+            break;
+            case "initDataBase":
+                Services.initDataBase(mongoClient);
             break;
             default :
                 response.sendError(422, "Unprocessable entity, please specify a valid action type ");

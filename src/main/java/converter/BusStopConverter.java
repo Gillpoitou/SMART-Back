@@ -37,6 +37,9 @@ public class BusStopConverter {
 
 	}
   
+    public static BusStop geoJsonToBusStop(Document doc){
+        return null;
+    }
   public static BusStop jsonToBusStop(String json){
        return null;
   }
