@@ -15,6 +15,9 @@ public class BusStop {
     private String name;
     private double latitude;
     private double longitude;
+    private int busStopID;
+
+    
 
     public BusStop() {
     }
@@ -59,5 +62,12 @@ public class BusStop {
     public void setLongitude(double longitude) {
         this.longitude = longitude;
     }
+    public void setBusStopID(int busStopID) {
+        this.busStopID = busStopID;
+    }
 
+    public int getBusStopID() {
+        return busStopID;
+    }
+    
 }

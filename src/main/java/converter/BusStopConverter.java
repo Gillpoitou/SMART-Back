@@ -5,7 +5,8 @@
  */
 package converter;
 
-
+import com.google.gson.JsonObject;
+import java.util.List;
 import modele.BusStop;
 import org.bson.Document;
 import org.bson.types.ObjectId;
@@ -15,8 +16,10 @@ import org.bson.types.ObjectId;
  * @author elise
  */
 public class BusStopConverter {
+
     public static Document toDocument(BusStop busStop) {
         Document doc = new Document("name", busStop.getName())
+                .append("BusStopId", busStop.getBusStopID())
                 .append("latitude", busStop.getLatitude())
                 .append("longitude", busStop.getLongitude());
         if (busStop.getId() != null) {
@@ -24,21 +27,46 @@ public class BusStopConverter {
         }
         return doc;
     }
-    
+
     public static BusStop toBusStop(Document doc) {
-		BusStop busStop = new BusStop();
-		busStop.setLatitude((Double) doc.get("latitude"));
-		busStop.setLongitude((Double) doc.get("longitude"));
-                busStop.setName((String) doc.get("name"));
+        BusStop busStop = new BusStop();
+        busStop.setBusStopID((int) doc.get("BusStopId"));
+        busStop.setLatitude((Double) doc.get("latitude"));
+        busStop.setLongitude((Double) doc.get("longitude"));
+        busStop.setName((String) doc.get("name"));
 
-		ObjectId id = (ObjectId) doc.get("_id");
-		busStop.setId(id.toHexString());
-		return busStop;
+        ObjectId id = (ObjectId) doc.get("_id");
+        busStop.setId(id.toHexString());
+        return busStop;
 
-	}
-  
-  public static BusStop jsonToBusStop(String json){
-       return null;
-  }
+    }
+
+    public static BusStop geoJsonToBusStop(Document doc) {
+        BusStop busStop = new BusStop();
+        
+        Document geometry = (Document) doc.get("geometry");
+        List<Double> coordinates = null;
+        coordinates = (List<Double>) geometry.get("coordinates");
+
+        busStop.setName((String) doc.get("name"));
+        busStop.setLatitude(coordinates.get(0));
+        busStop.setLongitude(coordinates.get(1));
+        
+        return busStop;
+    }
+
+    public static BusStop jsonToBusStop(String json) {
+        return null;
+    }
     
+    public static JsonObject BusStopToJson(BusStop busStop){
+        JsonObject result = new JsonObject();
+        
+        result.addProperty("busStopId", busStop.getBusStopID());
+        result.addProperty("name", busStop.getName());
+        result.addProperty("latitude", busStop.getLatitude());
+        result.addProperty("longitude", busStop.getLongitude());
+        
+        return result;
+    }
 }
