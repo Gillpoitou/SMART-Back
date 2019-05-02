@@ -5,7 +5,9 @@
  */
 package dao;
 
+import com.mongodb.DBCursor;
 import com.mongodb.client.AggregateIterable;
+import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
@@ -23,7 +25,6 @@ import com.mongodb.client.model.Field;
 import com.mongodb.client.model.Field;
 import static com.mongodb.client.model.Filters.eq;
 import converter.BusStopConverter;
-import java.util.Arrays;
 import java.util.Vector;
 import modele.BusStop;
 import org.bson.Document;
@@ -56,26 +57,35 @@ public class BusStopDAO {
         return busStop;
     }
     
-    public Vector<BusStop> selectBusStops(double latitude, double longitude){
+    public Vector<BusStop> selectBusStops(){
+        Vector<BusStop> result = new Vector<BusStop>(50);
+         FindIterable<Document> busStopDocs = coll.find();
+	for(Document busStopDoc : busStopDocs) {
+	    BusStop busStop = BusStopConverter.toBusStop(busStopDoc);
+            result.add(busStop);
+            System.out.println(busStop.getName());
+	}
+        return result;
+    }
+    
+    public Vector<BusStop> selectBusStopsGeoJson(double latitude, double longitude){
       
         AggregateIterable<Document> aggregate = this.coll_geoJson.aggregate(Arrays.asList(eq("$geoNear", and(eq("near", and(eq("type", "Point"), eq("coordinates", Arrays.asList(latitude, longitude)))), eq("distanceField", "distance"))), sort(ascending("distance")), limit(50), addFields(new Field("name", "$properties.nom"), 
             new Field("id", "")), project(exclude("properties", "type")))
         );
         
-        Vector<BusStop> result = new Vector<BusStop>();
+        Vector<BusStop> result = new Vector<BusStop>(50);
         int currentID = 0;
         MongoCursor<Document> iterator = aggregate.iterator();
         while (iterator.hasNext()) {
         Document next = iterator.next();
             BusStop currentBusStop = BusStopConverter.geoJsonToBusStop(next);
-            
-            /*currentBusStop.setBusStopID(currentID);
-            currentBusStop.setLatitude(next.getDouble("latitude"));*/
-            //map.put(next.getString("_id"), next.getInteger("_count"));
+            currentBusStop.setBusStopID(currentID);
+            System.out.println(next.toString());
+            result.add(currentBusStop);
             currentID++;
         }
-        
-        
-        return null;
+
+        return result;
     }
 }

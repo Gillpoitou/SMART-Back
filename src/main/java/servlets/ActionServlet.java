@@ -5,6 +5,7 @@
  */
 package servlets;
 
+import com.google.gson.JsonObject;
 import com.mongodb.client.MongoClient;
 import converter.PersonConverter;
 import dao.BusDAO;
@@ -77,7 +78,27 @@ public class ActionServlet extends HttpServlet {
                 }   
             break;
             case "initDataBase":
-                Services.initDataBase(mongoClient);
+                if(Services.initDataBase(mongoClient)){
+                   try (PrintWriter out = response.getWriter()){
+                            out.println("DB initilized");
+                        } 
+                }else{
+                    try (PrintWriter out = response.getWriter()){
+                            out.println("Initialization Error");
+                        } 
+                }
+            break;
+            case "getBusStops":
+                JsonObject result = new JsonObject();
+                if(Services.getBusStops(mongoClient,result)){
+                   try (PrintWriter out = response.getWriter()){
+                            out.println(result);
+                        } 
+                }else{
+                    try (PrintWriter out = response.getWriter()){
+                            out.println("Error");
+                        } 
+                }
             break;
             default :
                 response.sendError(422, "Unprocessable entity, please specify a valid action type ");
