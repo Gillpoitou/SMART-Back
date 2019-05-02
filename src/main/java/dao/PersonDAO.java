@@ -5,7 +5,7 @@
  */
 package dao;
 
-import com.mongodb.MongoClient;
+import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoCollection;
 import converter.BusConverter;
 import converter.PersonConverter;
@@ -32,9 +32,4 @@ public class PersonDAO {
         p.setId(id.toHexString());
         return p;
     }
-
-    public void insertPerson(Person person) {
-
-    }
-
 }
