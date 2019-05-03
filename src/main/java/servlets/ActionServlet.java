@@ -102,21 +102,20 @@ public class ActionServlet extends HttpServlet {
                         out.println("Error");
                     }
                 }
-                break;
-            case "createBus":
-//                try {
-//                    data = parsePostBody(request.getReader());
-//                    //TODO:
-////                    Bus bus = BusConverter.toBus(jsonToBus);
-//                    Bus bus = new Bus();
-//                    BusStop initPos = 
-//                } catch (IOException e) {
-//                    e.printStackTrace();
-//                    response.sendError(422, "Unprocessable entity");
-//                }
-//
-//                Services.createBus(mongoClient);
-                break;
+            break;
+            case "getBusLines":
+               response.setContentType("application/json");
+                JsonObject resultLines = new JsonObject();
+                if(Services.getBusLines(mongoClient,resultLines)){
+                   try (PrintWriter out = response.getWriter()){
+                            out.println(resultLines);
+                        } 
+                }else{
+                    try (PrintWriter out = response.getWriter()){
+                            out.println("Error");
+                        } 
+                } 
+            break;
             case "test":
                 Services.test(mongoClient);
                 break;

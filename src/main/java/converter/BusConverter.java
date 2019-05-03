@@ -5,6 +5,7 @@
  */
 package converter;
 
+import com.google.gson.JsonObject;
 import modele.Bus;
 
 import org.bson.Document;
@@ -56,4 +57,16 @@ public class BusConverter {
         return bus;
     }
 
+    public static JsonObject BusToJson(Bus bus){
+        
+        JsonObject result = new JsonObject();
+        result.addProperty("id", bus.getId());
+        result.addProperty("name", bus.getName());
+        result.addProperty("nbPlaces", bus.getNbPlaces());
+        JsonObject position = BusStopConverter.BusStopToJson(bus.getPosition());
+        result.add("position", position);
+        result.addProperty("nbPassengers", bus.getNbPassengers());
+        
+        return result;
+    }
 }

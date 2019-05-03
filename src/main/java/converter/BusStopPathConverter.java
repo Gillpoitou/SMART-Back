@@ -5,6 +5,7 @@
  */
 package converter;
 
+import com.google.gson.JsonObject;
 import modele.BusStop;
 import modele.BusStopPath;
 import modele.Path;
@@ -33,5 +34,16 @@ public class BusStopPathConverter {
         busStopPath.setPath((Path) PathConverter.toPath((Document) doc.get("path")));
 
         return busStopPath;
+    }
+    
+    public static JsonObject BusStopPathToJson(BusStopPath busStopPath){
+        JsonObject result = new JsonObject();
+        JsonObject busStopDestination = BusStopConverter.BusStopToJson(busStopPath.getBusStop());
+        result.add("busStopDestination",busStopDestination);
+        result.addProperty("duration",busStopPath.getDuration());
+        result.addProperty("distance",busStopPath.getDistance());
+        JsonObject path = PathConverter.PathToJson(busStopPath.getPath());
+        result.add("path", path);
+        return result;
     }
 }

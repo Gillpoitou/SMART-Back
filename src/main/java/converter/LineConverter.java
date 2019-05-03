@@ -5,6 +5,8 @@
  */
 package converter;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -71,5 +73,25 @@ public class LineConverter {
         l.setId(id.toHexString());
 
         return l;
+    }
+    
+    public static JsonObject LineToJson(Line line){
+        
+        JsonObject result = new JsonObject();
+        result.addProperty("id", line.getId());
+        result.addProperty("name", line.getName());
+        JsonObject busStopDpt = BusStopConverter.BusStopToJson(line.getDeparture());
+        JsonObject busStopArr = BusStopConverter.BusStopToJson(line.getArrival());
+        result.add("departure", busStopDpt);
+        result.add("arrival",busStopArr);
+        JsonObject bus = BusConverter.BusToJson(line.getBus());
+        result.add("bus", bus);
+        JsonArray busStops = new JsonArray();
+        for(BusStopLine bsl : line.getBusStops()){
+            JsonObject busStopLine = BusStopLineConverter.BusStopLineToJson(bsl);
+            busStops.add(busStopLine);
+        }
+        result.add("busStopLines", busStops);
+        return result;
     }
 }

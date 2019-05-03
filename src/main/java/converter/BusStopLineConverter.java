@@ -5,6 +5,7 @@
  */
 package converter;
 
+import com.google.gson.JsonObject;
 import modele.BusStop;
 import modele.BusStopLine;
 import org.bson.Document;
@@ -33,5 +34,15 @@ public class BusStopLineConverter {
         b.setTime((float) doc.get("time"));
 
         return b;
+    }
+    
+    public static JsonObject BusStopLineToJson(BusStopLine busStopLine){
+        JsonObject result = new JsonObject();
+        JsonObject busStop = BusStopConverter.BusStopToJson(busStopLine.getBusStop());
+        result.add("busStop",busStop);
+        result.addProperty("nbGetOn", busStopLine.getNbGetOn());
+        result.addProperty("nbGetOff", busStopLine.getNbGetOff());
+        //TODO ADD DATE TO RESULT
+        return result;
     }
 }
