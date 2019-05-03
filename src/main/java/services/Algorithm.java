@@ -14,43 +14,68 @@ import modele.*;
  * @author
  */
 public class Algorithm {
-    private static float[][] journeyDurations;
+    private static float[][] durations;
     
-    public static double getCost(ArrayList<ArrayList<Person>> journeys){
+    public static double getCost(ArrayList<ArrayList<Person>> journeys, ArrayList<Line> lines){
         double cost = 0;
         for (int i = 0 ; i < journeys.size() ; i++){
-            for (int j = 0 ; j < journeys.get(i).size() ; j++){
-                String personId = journeys.get(i).get(j).getId();
-                //int departureId = journeys.get(i).get(j).getDeparture().getBusStopId();
-                //int arrivalId = journeys.get(i).get(j).getArrival().getBusStopId();
-                //float bestTime = journeyDurations[departureId][arrivalId];
+            ArrayList<Person> journey = journeys.get(i);
+            ArrayList<BusStopLine> stops = lines.get(i).getBusStops();
+            for (int j = 0 ; j < journey.size() ; j++){
+                double realDuration;
+                Date depDate = journey.get(j).getTimeDeparture();
+                String DepId = journey.get(j).getDeparture().getId();
+                String ArrId = journey.get(j).getArrival().getId();
                 
-                //calcul du tps réel (attente + temps de trajet)
-                /*
-                int index = j + 1;
-                int fromId = departureId;
-                int toId = 0;
+                //search for the first stop of the line after the departure time
+                //to avoid being confused by possibles loop of the line
+                int k = 0;
+                Date firstStopDate = stops.get(k).getTime();
+                while (depDate.after(firstStopDate)){
+                    k++;
+                    firstStopDate = stops.get(k).getTime();
+                }
                 
-                int time = 0;
-                while (!journeys.get(i).get(index).getId().equals(personId)){
-                    if (journeys.get(i).get(index).
-                    toId = journeys.get(i).get(index).get
-                    index++;
-                    time += 
-                }*/
+                //search for the waiting time at the bus stop
+                String CurStopId = stops.get(k).getBusStop().getId();
+                while(!DepId.equals(CurStopId)){
+                    k++;
+                    CurStopId = stops.get(k).getBusStop().getId();
+                }
+                
+                
+                //search for the time the bus reach the arrivalStop
+                while(!ArrId.equals(CurStopId)){
+                    k++;
+                    CurStopId = stops.get(k).getBusStop().getId();
+                }
+                
+                realDuration = (stops.get(k).getTime().getTime() - depDate.getTime())/1000;
+                int departureId = journey.get(j).getDeparture().getBusStopID();
+                int arrivalId = journey.get(j).getArrival().getBusStopID();
+                
+                double bestDuration = durations[departureId][arrivalId];
+                
+                double value = realDuration / bestDuration;
+                
+                //DEBUG
+                System.out.println("realD: "+realDuration+"   bestD: "+bestDuration+"   Val: "+value);
+                
+                cost += value;
             }
         }
-        return cost;
+        return cost/2;      //because we calculate twice for each person
     }
     
-    public static ArrayList<Line> calculateLines (float[][]durations, Bus[]buses, Person[]requests, Date currentDate){
+    public static ArrayList<Line> calculateLines (float[][]journeyDurations, Bus[]buses, Person[]requests, Date currentDate){
+        durations = journeyDurations;
         //Appeler greedy
         //Appeler taboueLine currentLine = new Line();
         //Créer les lignes avec BusStop
         return null;
     }
     
-    public static ArrayList<ArrayList<Person>> greedyAlgo(float[][]durations, Bus[]buses, ArrayList<Person> requests, Date currentDate){
+    public static ArrayList<ArrayList<Person>> greedyAlgo(Bus[]buses, ArrayList<Person> requests, Date currentDate){
         ArrayList <ArrayList<Person>> busLines = new ArrayList<>();
         ArrayList<Person> currentLine = new ArrayList<>();
         int lineNb = 0;
@@ -91,7 +116,7 @@ public class Algorithm {
                 }
             }
             
-            if(feasibleLine(currentLine, buses[lineNb], durations, currentDate)){
+            if(feasibleLine(currentLine, buses[lineNb], currentDate)){
                 requests.remove(request);
                 currentLine = busLines.get(0);
                 lineNb=0;
@@ -107,7 +132,7 @@ public class Algorithm {
         return busLines;
     }
     
-    public static boolean feasibleLine(ArrayList<Person> line, Bus bus, float[][] durations, Date currentDate){
+    public static boolean feasibleLine(ArrayList<Person> line, Bus bus, Date currentDate){
         boolean feasible = true;
         int personNb = 0;
         int duration = 0;
@@ -138,7 +163,7 @@ public class Algorithm {
         return feasible;
     }
     
-    public static ArrayList<Line> createLines (ArrayList<ArrayList<Person>> lines, Bus[] buses, float[][]durations, Date currentDate){
+    public static ArrayList<Line> createLines (ArrayList<ArrayList<Person>> lines, Bus[] buses, Date currentDate){
         ArrayList <Line> calculatedLines = new ArrayList<>();
         int duration = 0;
         
@@ -174,7 +199,7 @@ public class Algorithm {
         return calculatedLines;
     }
     
-    public static void TabuSearch (int[][]durations, Bus[]buses, Person[]requests){
+    public static void TabuSearch (Bus[]buses, Person[]requests){
         int timeSinceLastBestUpdate = 0;
         /*
         sol;
