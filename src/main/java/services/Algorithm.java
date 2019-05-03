@@ -8,7 +8,6 @@ package services;
 import java.util.ArrayList;
 import java.util.Date;
 import modele.*;
-import modele.Line.BusStopLine;
 
 /**
  *
@@ -85,11 +84,36 @@ public class Algorithm {
             currentLine.add(request);
             currentLine.add(request);
             
-            /*for(){
-                for(){
+            for(int i=0; i< requests.size(); i++){
+                for(int j=0; j< requests.size(); j++){
+                    int indexDepartureI = currentLine.indexOf(requests.get(i));
+                    int indexArrivalI = currentLine.lastIndexOf(requests.get(i));
+                    int indexDepartureJ = currentLine.indexOf(requests.get(j));
+                    int indexArrivalJ = currentLine.lastIndexOf(requests.get(j));
+                    int durationI = (int) durations[requests.get(i).getDeparture().getBusStopID()][requests.get(i).getArrival().getBusStopID()];
+                    int durationJ = (int) durations[requests.get(j).getDeparture().getBusStopID()][requests.get(j).getArrival().getBusStopID()];
+                    Date dateArrivalI = new Date(requests.get(i).getTimeDeparture().getTime() + durationI * 60000);
+                    Date dateArrivalJ = new Date(requests.get(j).getTimeDeparture().getTime() + durationJ * 60000);
                     
+                    if(requests.get(i).getTimeDeparture().compareTo(requests.get(j).getTimeDeparture()) < 0 && indexDepartureI > indexDepartureJ){
+                        Person temp = currentLine.get(indexDepartureI);
+                        currentLine.set(indexDepartureI, currentLine.get(indexDepartureJ));
+                        currentLine.set(indexDepartureJ, temp);
+                    }else if(requests.get(i).getTimeDeparture().compareTo(dateArrivalJ) < 0 && indexDepartureI > indexArrivalJ){
+                        Person temp = currentLine.get(indexDepartureI);
+                        currentLine.set(indexDepartureI, currentLine.get(indexArrivalJ));
+                        currentLine.set(indexArrivalJ, temp);
+                    }else if(dateArrivalI.compareTo(requests.get(j).getTimeDeparture()) < 0 && indexArrivalI > indexDepartureJ){
+                        Person temp = currentLine.get(indexArrivalI);
+                        currentLine.set(indexArrivalI, currentLine.get(indexDepartureJ));
+                        currentLine.set(indexDepartureJ, temp);
+                    }else if(dateArrivalI.compareTo(dateArrivalJ) < 0 && indexArrivalI > indexArrivalJ){
+                        Person temp = currentLine.get(indexArrivalI);
+                        currentLine.set(indexArrivalI, currentLine.get(indexArrivalJ));
+                        currentLine.set(indexArrivalJ, temp);
+                    }
                 }
-            }*/
+            }
             
             if(feasibleLine(currentLine, buses[lineNb], durations, currentDate)){
                 requests.remove(request);
@@ -112,11 +136,9 @@ public class Algorithm {
         int personNb = 0;
         int duration = 0;
         BusStop preced = bus.getPosition();
-        boolean[] gotOn = new boolean[line.size()];
         
         for(int i=0; i<line.size(); i++){
-            if(gotOn[i] == false){
-                gotOn[i] = true;
+            if(i == line.indexOf(line.get(i))){
                 personNb++;
                 duration += durations[preced.getBusStopID()][line.get(i).getDeparture().getBusStopID()];
             }else{
@@ -142,37 +164,34 @@ public class Algorithm {
     
     public static ArrayList<Line> createLines (ArrayList<ArrayList<Person>> lines, Bus[] buses, float[][]durations, Date currentDate){
         ArrayList <Line> calculatedLines = new ArrayList<>();
-        boolean[] gotOn = new boolean[lines.size()];
         int duration = 0;
         
         for(int i=0; i<lines.size(); i++){
-            ArrayList<Person> currentCalculatedLine = lines.get(i);
+            ArrayList <Person> currentCalculatedLine = lines.get(i);
             
             ArrayList<BusStopLine> currentLine = new ArrayList<>();
-            Line.BusStopLine currentBusStop = currentCalculatedLine.new BusStopLine(currentCalculatedLine.get(0).getDeparture(), 0, 0, new Date(currentDate.getTime() + duration * 60000));
+            BusStopLine currentBusStop = new BusStopLine(currentCalculatedLine.get(0).getDeparture(), 0, 0, new Date(currentDate.getTime() + duration * 60000));
             currentLine.add(currentBusStop);
-            gotOn[0]=true;
             duration += durations[buses[i].getPosition().getBusStopID()][currentBusStop.getBusStop().getBusStopID()];
             
             for(int j=1; j<currentCalculatedLine.size(); j++){
-                if(gotOn[j] == false){
+                if(j == lines.indexOf(lines.get(j))){
                     if(!currentBusStop.getBusStop().getName().equals(currentCalculatedLine.get(j).getDeparture().getName())){
                         duration += durations[currentBusStop.getBusStop().getBusStopID()][currentCalculatedLine.get(j).getDeparture().getBusStopID()];
-                        currentBusStop = currentCalculatedLine.new BusStopLine(currentCalculatedLine.get(j).getDeparture(), 0, 0, new Date(currentDate.getTime() + duration * 60000));
+                        currentBusStop = new BusStopLine(currentCalculatedLine.get(j).getDeparture(), 0, 0, new Date(currentDate.getTime() + duration * 60000));
                         currentLine.add(currentBusStop);
                     }
-                    gotOn[j] = true;
                     currentBusStop.setNbGetOn(currentBusStop.getNbGetOn()+1);
                 }else{
                     if(!currentBusStop.getBusStop().getName().equals(currentCalculatedLine.get(j).getArrival().getName())){
                         duration += durations[currentBusStop.getBusStop().getBusStopID()][currentCalculatedLine.get(j).getArrival().getBusStopID()];
-                        currentBusStop = currentCalculatedLine.new BusStopLine(currentCalculatedLine.get(j).getArrival(), 0, 0, new Date(currentDate.getTime() + duration * 60000));
+                        currentBusStop = new BusStopLine(currentCalculatedLine.get(j).getArrival(), 0, 0, new Date(currentDate.getTime() + duration * 60000));
                         currentLine.add(currentBusStop);
                     }
                     currentBusStop.setNbGetOff(currentBusStop.getNbGetOff()+1);
                 }
             }
-            Line newLine = new Line(null, null, currentLine, buses[i]); //A changer le premier attribut!
+            Line newLine = new Line("Line "+i, buses[i].getPosition(), null, currentLine, buses[i]);
             calculatedLines.add(newLine);
         }
         

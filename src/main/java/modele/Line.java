@@ -6,7 +6,6 @@
 package modele;
 
 import java.util.ArrayList;
-import java.util.Date;
 
 /**
  *
@@ -14,34 +13,54 @@ import java.util.Date;
  */
 public class Line {
 
-    private Warehouse departure;
-    private Warehouse arrival;
+    private String id;
+    private String name;
+    private BusStop departure;
+    private BusStop arrival;
     ArrayList<BusStopLine> busStops;
     private Bus bus;
 
     public Line() {
+        busStops = new ArrayList<BusStopLine>();
     }
 
-    public Line(Warehouse departure, Warehouse arrival, ArrayList<BusStopLine> busStops, Bus bus) {
+    public Line(String name, BusStop departure, BusStop arrival, ArrayList<BusStopLine> busStops, Bus bus) {
+        this.name = name;
         this.departure = departure;
         this.arrival = arrival;
         this.busStops = busStops;
         this.bus = bus;
     }
 
-    public Warehouse getDeparture() {
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+    
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public BusStop getDeparture() {
         return departure;
     }
 
-    public void setDeparture(Warehouse departure) {
+    public void setDeparture(BusStop departure) {
         this.departure = departure;
     }
 
-    public Warehouse getArrival() {
+    public BusStop getArrival() {
         return arrival;
     }
 
-    public void setArrival(Warehouse arrival) {
+    public void setArrival(BusStop arrival) {
         this.arrival = arrival;
     }
 
@@ -59,56 +78,5 @@ public class Line {
 
     public void setBus(Bus bus) {
         this.bus = bus;
-    }
-
-    public class BusStopLine {
-
-        private BusStop busStop;
-        private int nbGetOn;
-        private int nbGetOff;
-        private Date time;
-
-        public BusStopLine() {
-        }
-
-        public BusStopLine(BusStop busStop, int nbGetOn, int nbGetOff, Date time) {
-            this.busStop = busStop;
-            this.nbGetOn = nbGetOn;
-            this.nbGetOff = nbGetOff;
-            this.time = time;
-        }
-
-        public Date getTime() {
-            return time;
-        }
-
-        public void setTime(Date time) {
-            this.time = time;
-        }
-
-        public BusStop getBusStop() {
-            return busStop;
-        }
-
-        public void setBusStop(BusStop busStop) {
-            this.busStop = busStop;
-        }
-
-        public int getNbGetOn() {
-            return nbGetOn;
-        }
-
-        public void setNbGetOn(int nbGetOn) {
-            this.nbGetOn = nbGetOn;
-        }
-
-        public int getNbGetOff() {
-            return nbGetOff;
-        }
-
-        public void setNbGetOff(int nbGetOff) {
-            this.nbGetOff = nbGetOff;
-        }
-
     }
 }
