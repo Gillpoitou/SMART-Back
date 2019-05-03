@@ -14,10 +14,10 @@ import java.util.Vector;
 public class BusStop {
 
     private String id;
+    private int busStopID;
     private String name;
     private double latitude;
     private double longitude;
-    private int busStopID;
     private int nbPersonsWaiting;
     private int nbPersonsComing;
     private Vector<BusStopPath> paths;
