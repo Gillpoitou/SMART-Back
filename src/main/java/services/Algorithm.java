@@ -15,6 +15,7 @@ import modele.*;
  */
 public class Algorithm {
     private static float[][] durations;
+    private static Date currentDate;
     
     public static double getCost(ArrayList<ArrayList<Person>> journeys, ArrayList<Line> lines){
         double cost = 0;
@@ -67,15 +68,16 @@ public class Algorithm {
         return cost/2;      //because we calculate twice for each person
     }
     
-    public static ArrayList<Line> calculateLines (float[][]journeyDurations, Bus[]buses, Person[]requests, Date currentDate){
+    public static ArrayList<Line> calculateLines (float[][]journeyDurations, Bus[]buses, Person[]requests, Date theCurrentDate){
         durations = journeyDurations;
+        currentDate = theCurrentDate;
         //Appeler greedy
         //Appeler taboueLine currentLine = new Line();
         //Créer les lignes avec BusStop
         return null;
     }
     
-    public static ArrayList<ArrayList<Person>> greedyAlgo(Bus[]buses, ArrayList<Person> requests, Date currentDate){
+    public static ArrayList<ArrayList<Person>> greedyAlgo(Bus[]buses, ArrayList<Person> requests){
         ArrayList <ArrayList<Person>> busLines = new ArrayList<>();
         ArrayList<Person> currentLine = new ArrayList<>();
         int lineNb = 0;
@@ -116,7 +118,7 @@ public class Algorithm {
                 }
             }
             
-            if(feasibleLine(currentLine, buses[lineNb], currentDate)){
+            if(feasibleLine(currentLine, buses[lineNb])){
                 requests.remove(request);
                 currentLine = busLines.get(0);
                 lineNb=0;
@@ -132,7 +134,7 @@ public class Algorithm {
         return busLines;
     }
     
-    public static boolean feasibleLine(ArrayList<Person> line, Bus bus, Date currentDate){
+    public static boolean feasibleLine(ArrayList<Person> line, Bus bus){
         boolean feasible = true;
         int personNb = 0;
         int duration = 0;
@@ -163,7 +165,7 @@ public class Algorithm {
         return feasible;
     }
     
-    public static ArrayList<Line> createLines (ArrayList<ArrayList<Person>> lines, Bus[] buses, Date currentDate){
+    public static ArrayList<Line> createLines (ArrayList<ArrayList<Person>> lines, Bus[] buses){
         ArrayList <Line> calculatedLines = new ArrayList<>();
         int duration = 0;
         
@@ -199,16 +201,20 @@ public class Algorithm {
         return calculatedLines;
     }
     
-    public static void TabuSearch (Bus[]buses, Person[]requests){
+    
+    public static void TabuSearch (Bus[] buses, ArrayList<Person>requests){
         int timeSinceLastBestUpdate = 0;
-        /*
-        sol;
-        bestSol;
-        neighbour;
-        bestNeighbour;*/
+        
+        //Initialise sol with greedy
+        ArrayList<ArrayList<Person>> sol = greedyAlgo(buses,  requests);
+        //Careful: never change the person's attributes
+        ArrayList<ArrayList<Person>> bestSol = createCopy(sol);
+        ArrayList<ArrayList<Person>> neighbour = createCopy(sol);
+        ArrayList<ArrayList<Person>> bestneighbour = createCopy(sol);
+        
         
         //Generate tabu list as the last time a person was used in a move
-        int[] tabuList = new int[requests.length];
+        int[] tabuList = new int[requests.size()];
         for (int i = 0 ; i < tabuList.length ; i++){
             tabuList[i] = -100;     //to free every move
         }
@@ -230,5 +236,18 @@ public class Algorithm {
             
             //update bestSol if needed
         }
+    }
+
+    //TABU UTIL METHODS
+    public static ArrayList<ArrayList<Person>> createCopy(ArrayList<ArrayList<Person>> origin){
+        ArrayList<ArrayList<Person>> copy = new ArrayList<>();
+        for (int i = 0 ; i < origin.size() ; i++){
+            ArrayList<Person> part = new ArrayList<>();
+            for (int j = 0 ; j < origin.get(i).size() ; j++){
+                part.add(origin.get(i).get(j));
+            }
+            copy.add(part);
+        }
+        return copy;
     }
 }
