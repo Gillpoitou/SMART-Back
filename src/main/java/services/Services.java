@@ -11,19 +11,24 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.mongodb.client.MongoClient;
 import converter.BusStopConverter;
+import converter.LineConverter;
 import dao.BusDAO;
 import dao.BusStopDAO;
+import dao.LineDAO;
 import dao.PersonDAO;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Vector;
 import javax.servlet.http.HttpServletResponse;
 import static javax.ws.rs.core.HttpHeaders.USER_AGENT;
 import modele.Bus;
 import modele.BusStop;
 import modele.BusStopPath;
+import modele.Line;
 import modele.Person;
 
 /**
@@ -105,6 +110,25 @@ public class Services {
         JsonArray route = racine.getAsJsonArray("routes");
 
         return route.get(0).getAsJsonObject().get("duration").getAsFloat();
+    }
+    
+    public static boolean getBusLines(MongoClient mongoClient, JsonObject result){
+        
+        try {
+            LineDAO lineDAO = new LineDAO(mongoClient);
+            //TODO match with BD DAO
+            List<Line> lines = new ArrayList();
+            JsonArray linesJson = new JsonArray();
+            for (Line l : lines) {
+                JsonObject line = LineConverter.LineToJson(l);
+                linesJson.add(line);
+            }
+            result.add("lines", linesJson);
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 
     public static void test(MongoClient mongoClient) {

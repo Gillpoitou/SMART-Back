@@ -5,6 +5,9 @@
  */
 package converter;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import modele.Coordinates;
 import modele.Path;
 import org.bson.Document;
 
@@ -20,6 +23,19 @@ public class PathConverter {
     
     public static Path toPath(Document doc) {
         return null;
+    }
+    
+    public static JsonObject PathToJson(Path path){
+        JsonObject result = new JsonObject();
+        JsonArray coordinates = new JsonArray();
+        for(Coordinates coord : path.getCoordinates()){
+            JsonObject jsonCoord = new JsonObject();
+            jsonCoord.addProperty("latitude", coord.latitude);
+            jsonCoord.addProperty("longitude", coord.longitude);
+            coordinates.add(jsonCoord);
+        }
+        result.add("coordinates", coordinates);
+        return result;
     }
     
 }

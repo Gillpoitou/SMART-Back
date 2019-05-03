@@ -5,6 +5,7 @@
  */
 package converter;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -95,14 +96,23 @@ public class BusStopConverter {
 
     public static JsonObject BusStopToJson(BusStop busStop) {
         JsonObject result = new JsonObject();
-
+        
+        result.addProperty("id", busStop.getId());
         result.addProperty("busStopId", busStop.getBusStopID());
         result.addProperty("name", busStop.getName());
         result.addProperty("latitude", busStop.getLatitude());
         result.addProperty("longitude", busStop.getLongitude());
-        result.addProperty("nbPersonsWaiting", busStop.getNbPersonsWaiting());
-        result.addProperty("nbPersonsComing", busStop.getNbPersonsComing());
-
+        result.addProperty("nbPersonsWaiting",busStop.getNbPersonsWaiting());
+        result.addProperty("nbPersonsComing",busStop.getNbPersonsComing());
+        if(busStop.getPaths() != null){
+            JsonArray busStopPaths = new JsonArray();
+            for(BusStopPath bsPath : busStop.getPaths()){
+                JsonObject busStopPathJson = BusStopPathConverter.BusStopPathToJson(bsPath);
+                busStopPaths.add(busStopPathJson);
+            }       
+            result.add("paths", busStopPaths);
+        }
         return result;
     }
+    
 }
