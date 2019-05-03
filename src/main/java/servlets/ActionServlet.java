@@ -5,6 +5,7 @@
  */
 package servlets;
 
+import com.google.gson.JsonObject;
 import com.mongodb.client.MongoClient;
 import converter.PersonConverter;
 import dao.BusDAO;
@@ -43,7 +44,10 @@ public class ActionServlet extends HttpServlet {
         
         MongoClient mongoClient = (MongoClient) request.getServletContext()
 				.getAttribute("MONGO_CLIENT");
-
+        if(request.getParameter("action")==null){
+            response.sendError(400, "Bad Request, the current request has no action parameter");
+            return;
+        }
         switch(request.getParameter("action")){
             case  "getBusMapDisplay" :
                 response.setContentType("application/json");
@@ -61,8 +65,9 @@ public class ActionServlet extends HttpServlet {
                 }
                 String data = buffer.toString();
                 try{
-                    Person person = PersonConverter.jsonToPerson(data);
-                    if(Services.postBusRequest(person)){
+                    Person person = PersonConverter.jsonToPerson(mongoClient,data);
+                    if(Services.postBusRequest(mongoClient,person)){
+
                         try (PrintWriter out = response.getWriter()){
                             out.println("Request Posted");
                         }
@@ -72,8 +77,35 @@ public class ActionServlet extends HttpServlet {
                     response.sendError(422, "Unprocessable entity");
                 }   
             break;
+            case "initDataBase":
+                if(Services.initDataBase(mongoClient)){
+                   try (PrintWriter out = response.getWriter()){
+                            out.println("DB initilized");
+                        } 
+                }else{
+                    try (PrintWriter out = response.getWriter()){
+                            out.println("Initialization Error");
+                        } 
+                }
+            break;
+            case "getBusStops":
+                response.setContentType("application/json");
+                JsonObject result = new JsonObject();
+                if(Services.getBusStops(mongoClient,result)){
+                   try (PrintWriter out = response.getWriter()){
+                            out.println(result);
+                        } 
+                }else{
+                    try (PrintWriter out = response.getWriter()){
+                            out.println("Error");
+                        } 
+                }
+            break;
+            case "test":
+                Services.test(mongoClient);
+                break;
             default :
-                response.sendError(422, "Unprocessable entity, please ");
+                response.sendError(422, "Unprocessable entity, please specify a valid action type ");
             break;
         }
     }
