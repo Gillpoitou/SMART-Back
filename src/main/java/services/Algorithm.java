@@ -51,8 +51,8 @@ public class Algorithm {
                 }
                 
                 realDuration = (stops.get(k).getTime().getTime() - depDate.getTime())/1000;
-                int departureId = journey.get(j).getDeparture().getBusStopId();
-                int arrivalId = journey.get(j).getArrival().getBusStopId();
+                int departureId = journey.get(j).getDeparture().getBusStopID();
+                int arrivalId = journey.get(j).getArrival().getBusStopID();
                 
                 double bestDuration = journeyDurations[departureId][arrivalId];
                 
