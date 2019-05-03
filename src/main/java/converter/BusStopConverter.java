@@ -100,6 +100,8 @@ public class BusStopConverter {
         result.addProperty("name", busStop.getName());
         result.addProperty("latitude", busStop.getLatitude());
         result.addProperty("longitude", busStop.getLongitude());
+        result.addProperty("nbPersonsWaiting", busStop.getNbPersonsWaiting());
+        result.addProperty("nbPersonsComing", busStop.getNbPersonsComing());
 
         return result;
     }
