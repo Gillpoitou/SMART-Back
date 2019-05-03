@@ -21,7 +21,7 @@ public class BusStopPathConverter {
     public static Document toDocument(BusStopPath busStopPath) {
         Document doc = new Document("duration", busStopPath.getDuration())
                 .append("distance", busStopPath.getDistance())
-                .append("busStop", BusStopConverter.toDocument(busStopPath.getBusStop()))
+                .append("busStop", BusStopConverter.toConstantDocument(busStopPath.getBusStop()))
                 .append("path", PathConverter.toDocument(busStopPath.getPath()));
         return doc;
     }
