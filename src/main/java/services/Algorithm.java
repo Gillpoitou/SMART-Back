@@ -14,7 +14,7 @@ import modele.*;
  * @author
  */
 public class Algorithm {
-    private static float[][] journeyDurations;
+    private static float[][] durations;
     
     public static double getCost(ArrayList<ArrayList<Person>> journeys, ArrayList<Line> lines){
         double cost = 0;
@@ -54,7 +54,7 @@ public class Algorithm {
                 int departureId = journey.get(j).getDeparture().getBusStopID();
                 int arrivalId = journey.get(j).getArrival().getBusStopID();
                 
-                double bestDuration = journeyDurations[departureId][arrivalId];
+                double bestDuration = durations[departureId][arrivalId];
                 
                 double value = realDuration / bestDuration;
                 
@@ -67,14 +67,15 @@ public class Algorithm {
         return cost/2;      //because we calculate twice for each person
     }
     
-    public static ArrayList<Line> calculateLines (float[][]durations, Bus[]buses, Person[]requests, Date currentDate){
+    public static ArrayList<Line> calculateLines (float[][]journeyDurations, Bus[]buses, Person[]requests, Date currentDate){
+        durations = journeyDurations;
         //Appeler greedy
         //Appeler taboueLine currentLine = new Line();
         //Créer les lignes avec BusStop
         return null;
     }
     
-    public static ArrayList<ArrayList<Person>> greedyAlgo(float[][]durations, Bus[]buses, ArrayList<Person> requests, Date currentDate){
+    public static ArrayList<ArrayList<Person>> greedyAlgo(Bus[]buses, ArrayList<Person> requests, Date currentDate){
         ArrayList <ArrayList<Person>> busLines = new ArrayList<>();
         ArrayList<Person> currentLine = new ArrayList<>();
         int lineNb = 0;
@@ -115,7 +116,7 @@ public class Algorithm {
                 }
             }
             
-            if(feasibleLine(currentLine, buses[lineNb], durations, currentDate)){
+            if(feasibleLine(currentLine, buses[lineNb], currentDate)){
                 requests.remove(request);
                 currentLine = busLines.get(0);
                 lineNb=0;
@@ -131,7 +132,7 @@ public class Algorithm {
         return busLines;
     }
     
-    public static boolean feasibleLine(ArrayList<Person> line, Bus bus, float[][] durations, Date currentDate){
+    public static boolean feasibleLine(ArrayList<Person> line, Bus bus, Date currentDate){
         boolean feasible = true;
         int personNb = 0;
         int duration = 0;
@@ -162,7 +163,7 @@ public class Algorithm {
         return feasible;
     }
     
-    public static ArrayList<Line> createLines (ArrayList<ArrayList<Person>> lines, Bus[] buses, float[][]durations, Date currentDate){
+    public static ArrayList<Line> createLines (ArrayList<ArrayList<Person>> lines, Bus[] buses, Date currentDate){
         ArrayList <Line> calculatedLines = new ArrayList<>();
         int duration = 0;
         
@@ -198,7 +199,7 @@ public class Algorithm {
         return calculatedLines;
     }
     
-    public static void TabuSearch (int[][]durations, Bus[]buses, Person[]requests){
+    public static void TabuSearch (Bus[]buses, Person[]requests){
         int timeSinceLastBestUpdate = 0;
         /*
         sol;
