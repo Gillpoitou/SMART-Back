@@ -17,31 +17,55 @@ import modele.Line.BusStopLine;
 public class Algorithm {
     private static float[][] journeyDurations;
     
-    public static double getCost(ArrayList<ArrayList<Person>> journeys){
+    public static double getCost(ArrayList<ArrayList<Person>> journeys, ArrayList<Line> lines){
         double cost = 0;
         for (int i = 0 ; i < journeys.size() ; i++){
-            for (int j = 0 ; j < journeys.get(i).size() ; j++){
-                String personId = journeys.get(i).get(j).getId();
-                //int departureId = journeys.get(i).get(j).getDeparture().getBusStopId();
-                //int arrivalId = journeys.get(i).get(j).getArrival().getBusStopId();
-                //float bestTime = journeyDurations[departureId][arrivalId];
+            ArrayList<Person> journey = journeys.get(i);
+            ArrayList<BusStopLine> stops = lines.get(i).getBusStops();
+            for (int j = 0 ; j < journey.size() ; j++){
+                double realDuration;
+                Date depDate = journey.get(j).getTimeDeparture();
+                String DepId = journey.get(j).getDeparture().getId();
+                String ArrId = journey.get(j).getArrival().getId();
                 
-                //calcul du tps réel (attente + temps de trajet)
-                /*
-                int index = j + 1;
-                int fromId = departureId;
-                int toId = 0;
+                //search for the first stop of the line after the departure time
+                //to avoid being confused by possibles loop of the line
+                int k = 0;
+                Date firstStopDate = stops.get(k).getTime();
+                while (depDate.after(firstStopDate)){
+                    k++;
+                    firstStopDate = stops.get(k).getTime();
+                }
                 
-                int time = 0;
-                while (!journeys.get(i).get(index).getId().equals(personId)){
-                    if (journeys.get(i).get(index).
-                    toId = journeys.get(i).get(index).get
-                    index++;
-                    time += 
-                }*/
+                //search for the waiting time at the bus stop
+                String CurStopId = stops.get(k).getBusStop().getId();
+                while(!DepId.equals(CurStopId)){
+                    k++;
+                    CurStopId = stops.get(k).getBusStop().getId();
+                }
+                
+                
+                //search for the time the bus reach the arrivalStop
+                while(!ArrId.equals(CurStopId)){
+                    k++;
+                    CurStopId = stops.get(k).getBusStop().getId();
+                }
+                
+                realDuration = (stops.get(k).getTime().getTime() - depDate.getTime())/1000;
+                int departureId = journey.get(j).getDeparture().getBusStopId();
+                int arrivalId = journey.get(j).getArrival().getBusStopId();
+                
+                double bestDuration = journeyDurations[departureId][arrivalId];
+                
+                double value = realDuration / bestDuration;
+                
+                //DEBUG
+                System.out.println("realD: "+realDuration+"   bestD: "+bestDuration+"   Val: "+value);
+                
+                cost += value;
             }
         }
-        return cost;
+        return cost/2;      //because we calculate twice for each person
     }
     
     public static ArrayList<Line> calculateLines (float[][]durations, Bus[]buses, Person[]requests, Date currentDate){
