@@ -108,24 +108,29 @@ public class Services {
     }
 
     public static void test(MongoClient mongoClient) {
+        
+        
         BusDAO busDAO = new BusDAO(mongoClient);
+        BusStopDAO busStopDAO = new BusStopDAO(mongoClient);
 
-        BusStop busStop = new BusStop();
-        busStop.setBusStopID(999);
-        busStop.setLatitude(12);
-        busStop.setLongitude(12);
-        busStop.setName("arrêt");
-        busStop.setNbPersonsComing(2);
-        busStop.setNbPersonsWaiting(5);
-        busStop.setPaths(new Vector<BusStopPath>());
+        Bus bus = busDAO.getBusById("5ccbf7bcd67d4439b2320b45");
+        System.out.println(bus);
+//        BusStop busStop = busStopDAO.getBusStopById("5ccb9085b5238e28b882a129");
+//        busStop.setBusStopID(999);
+//        busStop.setLatitude(12);
+//        busStop.setLongitude(12);
+//        busStop.setName("arrêt");
+//        busStop.setNbPersonsComing(2);
+//        busStop.setNbPersonsWaiting(5);
+//        busStop.setPaths(new Vector<BusStopPath>());
         
-        Bus bus = new Bus();
-        bus.setName("test");
-        bus.setNbPassengers(10);
-        bus.setNbPlaces(20);
-        bus.setPosition(busStop);
-        
-        busDAO.createBus(bus);
+//        Bus bus = new Bus();
+//        bus.setName("test");
+//        bus.setNbPassengers(10);
+//        bus.setNbPlaces(20);
+//        bus.setPosition(busStop);
+//        
+//        busDAO.createBus(bus);
     }
 
     public static boolean getBusStops(MongoClient mongoClient, JsonObject result) {

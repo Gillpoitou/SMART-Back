@@ -35,7 +35,7 @@ public class BusDAO {
     }
     
     public Bus getBusById(String id){
-        Bus b =  (Bus) BusConverter.toBus((Document)coll.find(eq("_id", id)));
+        Bus b =  (Bus) BusConverter.toBus((Document)coll.find(eq("_id", new ObjectId(id))).first());
         return b;
     }
 

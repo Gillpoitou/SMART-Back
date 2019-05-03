@@ -20,6 +20,8 @@ public class Bus {
     private int nbPassengers;
 
     public Bus() {
+        this.nbPassengers = 0;
+        position = null;
     }
 
     public Bus(String id, String name, int nbPlaces, BusStop position, int nbPassengers) {

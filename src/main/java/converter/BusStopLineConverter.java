@@ -17,7 +17,7 @@ import org.bson.types.ObjectId;
 public class BusStopLineConverter {
         public static Document toDocument(BusStopLine busStopLine) {
 
-        Document doc = new Document("busStop", busStopLine.getBusStop())
+        Document doc = new Document("busStop", BusStopConverter.toConstantDocument(busStopLine.getBusStop()))
                 .append("nbGetOn", busStopLine.getNbGetOn())
                 .append("nbGetOff", busStopLine.getNbGetOff())
                 .append("time", busStopLine.getTime());

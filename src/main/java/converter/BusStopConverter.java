@@ -45,13 +45,34 @@ public class BusStopConverter {
         return doc;
     }
 
+    public static Document toConstantDocument(BusStop busStop) {
+        Document doc = new Document("name", busStop.getName())
+                .append("BusStopId", busStop.getBusStopID());
+
+        //Coordinates
+        Document coord = new Document("type", "Point")
+                .append("coordinates", Arrays.asList(busStop.getLongitude(), busStop.getLatitude()));
+        doc.append("location", coord);
+
+        if (busStop.getId() != null) {
+            doc.append("_id", new ObjectId(busStop.getId()));
+        }
+
+        return doc;
+    }
+
     public static BusStop toBusStop(Document doc) {
         BusStop busStop = new BusStop();
         busStop.setBusStopID((Integer) doc.get("BusStopId"));
         busStop.setName((String) doc.get("name"));
-        busStop.setNbPersonsWaiting((Integer) doc.get("nbPersonsWaiting"));
-        busStop.setNbPersonsComing((Integer) doc.get("nbPersonsComing"));
+        if (doc.get("nbPersonsWaiting") != null) {
+            busStop.setNbPersonsWaiting((Integer) doc.get("nbPersonsWaiting"));
+        }
 
+        if (doc.get("nbPersonsComing") != null) {
+            busStop.setNbPersonsComing((Integer) doc.get("nbPersonsComing"));
+        }
+        
         //Coordinates
         List<Double> coord = (List<Double>) ((Document) doc.get("location")).get("coordinates");
         busStop.setLongitude(coord.get(0));

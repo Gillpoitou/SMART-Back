@@ -24,9 +24,9 @@ public class LineConverter {
     public static Document toDocument(Line l) {
 
         Document doc = new Document("name", l.getName())
-                .append("departure", BusStopConverter.toDocument(l.getDeparture()))
-                .append("arrival", BusStopConverter.toDocument(l.getArrival()))
-                .append("bus", BusConverter.toDocument(l.getBus()));
+                .append("departure", BusStopConverter.toConstantDocument(l.getDeparture()))
+                .append("arrival", BusStopConverter.toConstantDocument(l.getArrival()))
+                .append("bus", BusConverter.toConstantDocument(l.getBus()));
 
         //BusStops
         ArrayList<Document> busStops = new ArrayList<>();
@@ -34,6 +34,16 @@ public class LineConverter {
             busStops.add(BusStopLineConverter.toDocument(bs));
         }
         doc.append("busStops", Arrays.asList(busStops));
+
+        if (l.getId() != null) {
+            doc.append("_id", l.getId());
+        }
+
+        return doc;
+    }
+
+    public static Document toConstantDocument(Line l) {
+        Document doc = new Document("name", l.getName());
 
         if (l.getId() != null) {
             doc.append("_id", l.getId());
