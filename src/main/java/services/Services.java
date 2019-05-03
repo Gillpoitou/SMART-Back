@@ -60,11 +60,7 @@ public class Services {
             Vector<BusStop> busStops = busStopDAO.selectBusStopsGeoJson(4.863718173086466, 45.7708809489496);
             for (int i = 0; i < busStops.size(); i++) {
                 busStopDAO.createBusStop(busStops.get(i));
-                for (int j = 0; j < busStops.size(); j++) {
-                    //float duration = getOSRMdistanceDuration(busStops.get(i).getLatitude(),busStops.get(i).getLongitude(),busStops.get(j).getLatitude(),busStops.get(j).getLongitude());
-                    //System.out.println(duration);
-                    System.out.println(busStops.get(i).getBusStopID() + " , " + busStops.get(j).getBusStopID());
-                }
+                
             }
 
             return true;
@@ -73,12 +69,35 @@ public class Services {
             return false;
         }
     }
+    
+    public static boolean initDBTravel(MongoClient mongoClient){
+        try {
+            BusStopDAO busStopDAO = new BusStopDAO(mongoClient);
+            Vector<BusStop> busStops = busStopDAO.selectBusStops();
+            for (int j = 0; j < busStops.size(); j++) {
+                //Don't make travels between same point i== J TODOOOO
+                if(j == 0){
+                    continue;
+                }
+                JsonObject APIresult = getAPITravel(busStops.get(0).getLatitude(),busStops.get(0).getLongitude(),busStops.get(j).getLatitude(),busStops.get(j).getLongitude());
+                BusStop updatedBusStop = BusStopConverter.UpdateBusStopFromJson(busStops.get(0), busStops.get(j), APIresult);
+                JsonObject test = BusStopConverter.BusStopToJson(updatedBusStop);
+                System.out.println(test.toString());
+                //busStopDAO.UUUUUUUUPPPPPDAAAAAAAATTEEEE
+            }
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
 
     // HTTP GET request
-    private static float getOSRMdistanceDuration(double latA, double longA, double latB, double longB) throws Exception {
+    private static JsonObject getAPITravel(double latA, double longA, double latB, double longB) throws Exception {
 
         System.out.println("Sending HTTP request");
-        String url = "http://router.project-osrm.org/route/v1/driving/" + latA + "," + longA + ";" + latB + "," + longB + "?overview=false";
+        String url = "https://api.openrouteservice.org/v2/directions/driving-car?api_key=5b3ce3597851110001cf624864a3b89e21f0449997311221d1d13780"
+                + "&start="+ latA + "," + longA +"&end="+ latB + "," + longB;
 
         URL obj = new URL(url);
         HttpURLConnection con = (HttpURLConnection) obj.openConnection();
@@ -107,9 +126,8 @@ public class Services {
 
         JsonElement jelement = new JsonParser().parse(response.toString());
         JsonObject racine = jelement.getAsJsonObject();
-        JsonArray route = racine.getAsJsonArray("routes");
 
-        return route.get(0).getAsJsonObject().get("duration").getAsFloat();
+        return racine;
     }
     
     public static boolean getBusLines(MongoClient mongoClient, JsonObject result){

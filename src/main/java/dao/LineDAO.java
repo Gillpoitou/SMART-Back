@@ -8,7 +8,6 @@ package dao;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoCollection;
 import static com.mongodb.client.model.Filters.eq;
-import static com.mongodb.client.model.Updates.set;
 import converter.LineConverter;
 import modele.Line;
 import org.bson.Document;

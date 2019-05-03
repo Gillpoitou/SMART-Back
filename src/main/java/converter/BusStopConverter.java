@@ -6,13 +6,17 @@
 package converter;
 
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Vector;
 import modele.BusStop;
 import modele.BusStopPath;
+import modele.Coordinates;
+import modele.Path;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 
@@ -55,13 +59,13 @@ public class BusStopConverter {
 
         //Coordinates
         List<Double> coord = (List<Double>) ((Document) doc.get("location")).get("coordinates");
-        busStop.setLongitude(coord.get(0));
-        busStop.setLatitude(coord.get(1));
+        busStop.setLatitude(coord.get(0));
+        busStop.setLongitude(coord.get(1));
 
         //Paths
         List<Document> _paths = (List<Document>) doc.get("paths");
-        System.out.println(doc);
-        System.out.println(_paths);
+        //System.out.println(doc);
+        //System.out.println(_paths);
         Vector<BusStopPath> paths = new Vector<BusStopPath>();
 //        if (!_paths.isEmpty()) {
 //            for (Document d : _paths) {
@@ -113,6 +117,37 @@ public class BusStopConverter {
             result.add("paths", busStopPaths);
         }
         return result;
+    }
+    
+    public static BusStop UpdateBusStopFromJson(BusStop currentBusStop,BusStop destinationBusStop,JsonObject json){
+        JsonArray features = json.getAsJsonArray("features");
+        JsonElement travel = features.get(0);
+        JsonObject properties = travel.getAsJsonObject();
+        properties = properties.getAsJsonObject("properties");
+        JsonObject summary = properties.getAsJsonObject("summary");
+        
+        BusStopPath bsPath = new BusStopPath();
+        bsPath.setBusStop(destinationBusStop);
+        bsPath.setDistance(summary.get("distance").getAsDouble());
+        bsPath.setDuration(summary.get("duration").getAsFloat());
+        
+        JsonObject geometry = travel.getAsJsonObject();
+        geometry = geometry.getAsJsonObject("geometry");
+        JsonArray coordinates = geometry.getAsJsonArray("coordinates");
+        Path javaPath = new Path();
+        List<Coordinates> coords = new LinkedList();
+        for(JsonElement elem : coordinates){
+            JsonArray currentjsonCoord = elem.getAsJsonArray();
+            double latitude = currentjsonCoord.get(0).getAsDouble();
+            double longitude = currentjsonCoord.get(1).getAsDouble();
+            Coordinates currentCoord = new Coordinates(latitude,longitude);
+            coords.add(currentCoord);
+        }
+        javaPath.setCoordinates(coords);
+        
+        bsPath.setPath(javaPath);
+        currentBusStop.addBusStopPath(bsPath);
+        return currentBusStop;
     }
     
 }

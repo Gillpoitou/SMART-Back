@@ -88,6 +88,17 @@ public class ActionServlet extends HttpServlet {
                         } 
                 }
             break;
+            case "initDBTravel":
+                if(Services.initDBTravel(mongoClient)){
+                   try (PrintWriter out = response.getWriter()){
+                            out.println("DB initilized");
+                        } 
+                }else{
+                    try (PrintWriter out = response.getWriter()){
+                            out.println("Initialization Error");
+                        } 
+                }
+            break;
             case "getBusStops":
                 response.setContentType("application/json");
                 JsonObject result = new JsonObject();

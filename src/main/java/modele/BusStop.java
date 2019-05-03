@@ -101,4 +101,8 @@ public class BusStop {
     public void setPaths(Vector<BusStopPath> paths) {
         this.paths = paths;
     }
+    
+    public void addBusStopPath(BusStopPath bsPath){
+        this.paths.add(bsPath);
+    }
 }
