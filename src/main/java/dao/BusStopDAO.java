@@ -16,9 +16,11 @@ import java.util.Arrays;
 import static com.mongodb.client.model.Filters.and;
 import static com.mongodb.client.model.Filters.eq;
 import static com.mongodb.client.model.Aggregates.addFields;
+import static com.mongodb.client.model.Aggregates.group;
 import static com.mongodb.client.model.Aggregates.limit;
 import static com.mongodb.client.model.Aggregates.project;
 import static com.mongodb.client.model.Aggregates.sort;
+import static com.mongodb.client.model.Accumulators.first;
 import static com.mongodb.client.model.Projections.exclude;
 import static com.mongodb.client.model.Sorts.ascending;
 import com.mongodb.client.model.Field;
@@ -70,16 +72,30 @@ public class BusStopDAO {
     
     public Vector<BusStop> selectBusStopsGeoJson(double latitude, double longitude){
       
-        AggregateIterable<Document> aggregate = this.coll_geoJson.aggregate(Arrays.asList(eq("$geoNear", and(eq("near", and(eq("type", "Point"), eq("coordinates", Arrays.asList(latitude, longitude)))), eq("distanceField", "distance"))), sort(ascending("distance")), limit(50), addFields(new Field("name", "$properties.nom"), 
-            new Field("id", "")), project(exclude("properties", "type")))
-        );
-        
+        AggregateIterable<Document> aggregate = this.coll_geoJson.aggregate(
+                Arrays.asList(
+                        eq("$geoNear", and(
+                                eq("near", and(
+                                        eq("type", "Point"),
+                                        eq("coordinates", Arrays.asList(latitude, longitude)))
+                                ),
+                                eq("num", "100000000"),
+                                eq("maxDistance", "1000000000"),
+                                eq("distanceField", "distance"))
+                        ),
+                        addFields(new Field("name", "$properties.nom") 
+        ), project(
+                exclude("properties", "type")
+        ), group("$name", first("busStop", "$$CURRENT")), 
+        sort(ascending("busStop.distance")),
+        limit(50)));
+                
         Vector<BusStop> result = new Vector<BusStop>(50);
         int currentID = 0;
         MongoCursor<Document> iterator = aggregate.iterator();
         while (iterator.hasNext()) {
         Document next = iterator.next();
-            BusStop currentBusStop = BusStopConverter.geoJsonToBusStop(next);
+            BusStop currentBusStop = BusStopConverter.geoJsonToBusStop((Document)next.get("busStop"));
             currentBusStop.setBusStopID(currentID);
             System.out.println(next.toString());
             result.add(currentBusStop);

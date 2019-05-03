@@ -21,6 +21,7 @@ public class Line {
     private Bus bus;
 
     public Line() {
+        busStops = new ArrayList<BusStopLine>();
     }
 
     public Line(String name, Warehouse departure, Warehouse arrival, ArrayList<BusStopLine> busStops, Bus bus) {
