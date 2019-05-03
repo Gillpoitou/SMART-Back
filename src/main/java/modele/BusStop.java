@@ -23,6 +23,9 @@ public class BusStop {
     private Vector<BusStopPath> paths;
 
     public BusStop() {
+        this.nbPersonsWaiting = 0;
+        this.nbPersonsComing = 0;
+        this.paths = new Vector<BusStopPath>();
     }
 
     public BusStop(String id, String name, double latitude, double longitude, int busStopID, int nbPersonsWaiting, int nbPersonsComing, Vector<BusStopPath> paths) {
