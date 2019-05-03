@@ -8,7 +8,6 @@ package services;
 import java.util.ArrayList;
 import java.util.Date;
 import modele.*;
-import modele.Line.BusStopLine;
 
 /**
  *
@@ -147,7 +146,7 @@ public class Algorithm {
             ArrayList <Person> currentCalculatedLine = lines.get(i);
             
             ArrayList<BusStopLine> currentLine = new ArrayList<>();
-            Line.BusStopLine currentBusStop = currentCalculatedLine.new BusStopLine(currentCalculatedLine.get(0).getDeparture(), 0, 0, new Date(currentDate.getTime() + duration * 60000));
+            BusStopLine currentBusStop = new BusStopLine(currentCalculatedLine.get(0).getDeparture(), 0, 0, new Date(currentDate.getTime() + duration * 60000));
             currentLine.add(currentBusStop);
             duration += durations[buses[i].getPosition().getBusStopID()][currentBusStop.getBusStop().getBusStopID()];
             
@@ -155,20 +154,20 @@ public class Algorithm {
                 if(j == lines.indexOf(lines.get(j))){
                     if(!currentBusStop.getBusStop().getName().equals(currentCalculatedLine.get(j).getDeparture().getName())){
                         duration += durations[currentBusStop.getBusStop().getBusStopID()][currentCalculatedLine.get(j).getDeparture().getBusStopID()];
-                        currentBusStop = currentCalculatedLine.new BusStopLine(currentCalculatedLine.get(j).getDeparture(), 0, 0, new Date(currentDate.getTime() + duration * 60000));
+                        currentBusStop = new BusStopLine(currentCalculatedLine.get(j).getDeparture(), 0, 0, new Date(currentDate.getTime() + duration * 60000));
                         currentLine.add(currentBusStop);
                     }
                     currentBusStop.setNbGetOn(currentBusStop.getNbGetOn()+1);
                 }else{
                     if(!currentBusStop.getBusStop().getName().equals(currentCalculatedLine.get(j).getArrival().getName())){
                         duration += durations[currentBusStop.getBusStop().getBusStopID()][currentCalculatedLine.get(j).getArrival().getBusStopID()];
-                        currentBusStop = currentCalculatedLine.new BusStopLine(currentCalculatedLine.get(j).getArrival(), 0, 0, new Date(currentDate.getTime() + duration * 60000));
+                        currentBusStop = new BusStopLine(currentCalculatedLine.get(j).getArrival(), 0, 0, new Date(currentDate.getTime() + duration * 60000));
                         currentLine.add(currentBusStop);
                     }
                     currentBusStop.setNbGetOff(currentBusStop.getNbGetOff()+1);
                 }
             }
-            Line newLine = new Line(null, null, currentLine, buses[i]); //A changer le premier attribut!
+            Line newLine = new Line("Line "+i, buses[i].getPosition(), null, currentLine, buses[i]);
             calculatedLines.add(newLine);
         }
         

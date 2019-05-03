@@ -5,6 +5,8 @@
  */
 package modele;
 
+import java.util.Date;
+
 /**
  *
  * @author elise
@@ -14,23 +16,23 @@ public class BusStopLine {
     private BusStop busStop;
     private int nbGetOn;
     private int nbGetOff;
-    private float time;
+    private Date time;
 
     public BusStopLine() {
     }
 
-    public BusStopLine(BusStop busStop, int nbGetOn, int nbGetOff, float time) {
+    public BusStopLine(BusStop busStop, int nbGetOn, int nbGetOff, Date time) {
         this.busStop = busStop;
         this.nbGetOn = nbGetOn;
         this.nbGetOff = nbGetOff;
         this.time = time;
     }
  
-    public float getTime() {
+    public Date getTime() {
         return time;
     }
 
-    public void setTime(float time) {
+    public void setTime(Date time) {
         this.time = time;
     }
 

@@ -24,7 +24,7 @@ public class Line {
         busStops = new ArrayList<BusStopLine>();
     }
 
-    public Line(String name, Warehouse departure, Warehouse arrival, ArrayList<BusStopLine> busStops, Bus bus) {
+    public Line(String name, BusStop departure, BusStop arrival, ArrayList<BusStopLine> busStops, Bus bus) {
         this.name = name;
         this.departure = departure;
         this.arrival = arrival;

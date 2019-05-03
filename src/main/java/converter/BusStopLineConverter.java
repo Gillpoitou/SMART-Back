@@ -5,6 +5,7 @@
  */
 package converter;
 
+import java.util.Date;
 import modele.BusStop;
 import modele.BusStopLine;
 import org.bson.Document;
@@ -30,7 +31,7 @@ public class BusStopLineConverter {
         b.setBusStop((BusStop) BusStopConverter.toBusStop((Document)doc.get("busStop")));
         b.setNbGetOn((int) doc.get("nbGetOn"));
         b.setNbGetOff((int) doc.get("nbGetOff"));
-        b.setTime((float) doc.get("time"));
+        b.setTime((Date) doc.get("time"));
 
         return b;
     }
