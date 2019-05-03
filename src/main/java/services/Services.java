@@ -74,7 +74,7 @@ public class Services {
         try {
             BusStopDAO busStopDAO = new BusStopDAO(mongoClient);
             Vector<BusStop> busStops = busStopDAO.selectBusStops();
-            for (int j = 0; j < busStops.size(); j++) {
+            for (int j = 0; j < 2; j++) {
                 //Don't make travels between same point i== J TODOOOO
                 if(j == 0){
                     continue;
@@ -83,7 +83,7 @@ public class Services {
                 BusStop updatedBusStop = BusStopConverter.UpdateBusStopFromJson(busStops.get(0), busStops.get(j), APIresult);
                 JsonObject test = BusStopConverter.BusStopToJson(updatedBusStop);
                 System.out.println(test.toString());
-                //busStopDAO.UUUUUUUUPPPPPDAAAAAAAATTEEEE
+                busStopDAO.updateBusStop(updatedBusStop);
             }
             return true;
         } catch (Exception e) {

@@ -104,5 +104,12 @@ public class BusStopDAO {
 
         return result;
     }
-
+    
+    public BusStop updateBusStop(BusStop busStop){
+        this.coll.replaceOne(eq("_id", new ObjectId(busStop.getId())),
+                BusStopConverter.toDocument(busStop)
+                );
+        
+        return busStop;
+    }
 }
