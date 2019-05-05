@@ -23,6 +23,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
+import java.util.concurrent.TimeUnit;
 import javax.servlet.http.HttpServletResponse;
 import static javax.ws.rs.core.HttpHeaders.USER_AGENT;
 import modele.Bus;
@@ -74,16 +75,19 @@ public class Services {
         try {
             BusStopDAO busStopDAO = new BusStopDAO(mongoClient);
             Vector<BusStop> busStops = busStopDAO.selectBusStops();
-            for (int j = 0; j < 2; j++) {
-                //Don't make travels between same point i== J TODOOOO
-                if(j == 0){
-                    continue;
+            for (int i = 0; i < busStops.size(); i++) {
+                TimeUnit.SECONDS.sleep(68);
+                for (int j = 0; j < busStops.size(); j++) {
+                    //Don't make travels between same point i== J TODOOOO
+                    if (j == i) {
+                        continue;
+                    }
+                    JsonObject APIresult = getAPITravel(busStops.get(i).getLongitude(), busStops.get(i).getLatitude(), busStops.get(j).getLongitude(), busStops.get(j).getLatitude());
+                    BusStop updatedBusStop = BusStopConverter.UpdateBusStopFromJson(busStops.get(i), busStops.get(j), APIresult);
+                    //JsonObject test = BusStopConverter.BusStopToJson(updatedBusStop);
+                    //System.out.println(test.toString());
+                    busStopDAO.updateBusStop(updatedBusStop);
                 }
-                JsonObject APIresult = getAPITravel(busStops.get(0).getLatitude(),busStops.get(0).getLongitude(),busStops.get(j).getLatitude(),busStops.get(j).getLongitude());
-                BusStop updatedBusStop = BusStopConverter.UpdateBusStopFromJson(busStops.get(0), busStops.get(j), APIresult);
-                JsonObject test = BusStopConverter.BusStopToJson(updatedBusStop);
-                System.out.println(test.toString());
-                busStopDAO.updateBusStop(updatedBusStop);
             }
             return true;
         } catch (Exception e) {
@@ -96,7 +100,7 @@ public class Services {
     private static JsonObject getAPITravel(double latA, double longA, double latB, double longB) throws Exception {
 
         System.out.println("Sending HTTP request");
-        String url = "https://api.openrouteservice.org/v2/directions/driving-car?api_key=5b3ce3597851110001cf624864a3b89e21f0449997311221d1d13780"
+        String url = "https://api.openrouteservice.org/v2/directions/driving-car?api_key=5b3ce3597851110001cf6248f04cc86b213d468795dd64628a835cab"
                 + "&start="+ latA + "," + longA +"&end="+ latB + "," + longB;
 
         URL obj = new URL(url);

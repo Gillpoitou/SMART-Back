@@ -80,8 +80,8 @@ public class BusStopConverter {
 
         //Coordinates
         List<Double> coord = (List<Double>) ((Document) doc.get("location")).get("coordinates");
-        busStop.setLatitude(coord.get(0));
-        busStop.setLongitude(coord.get(1));
+        busStop.setLatitude(coord.get(1));
+        busStop.setLongitude(coord.get(0));
 
         //Paths
         if (doc.get("paths") != null) {
@@ -159,8 +159,8 @@ public class BusStopConverter {
         List<Coordinates> coords = new LinkedList();
         for (JsonElement elem : coordinates) {
             JsonArray currentjsonCoord = elem.getAsJsonArray();
-            double latitude = currentjsonCoord.get(0).getAsDouble();
-            double longitude = currentjsonCoord.get(1).getAsDouble();
+            double latitude = currentjsonCoord.get(1).getAsDouble();
+            double longitude = currentjsonCoord.get(0).getAsDouble();
             Coordinates currentCoord = new Coordinates(latitude, longitude);
             coords.add(currentCoord);
         }
