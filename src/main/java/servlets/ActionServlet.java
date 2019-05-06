@@ -80,6 +80,13 @@ public class ActionServlet extends HttpServlet {
                 }
                 break;
             case "initDataBase":
+                if(request.getParameter("key")== null || !request.getParameter("key").equals("iamanadministrator")){
+                    try (PrintWriter out = response.getWriter()) {
+                        out.println("Access denied !");
+                        response.setStatus(401);
+                    }
+                    return;
+                }
                 if (Services.initDataBase(mongoClient)) {
                     try (PrintWriter out = response.getWriter()) {
                         out.println("DB initilized");
@@ -91,6 +98,13 @@ public class ActionServlet extends HttpServlet {
                 }
                 break;
             case "initDBTravel":
+                if(request.getParameter("key")== null || !request.getParameter("key").equals("iamanadministrator")){
+                    try (PrintWriter out = response.getWriter()) {
+                        out.println("Access denied !");
+                        response.setStatus(401);
+                    }
+                    return;
+                }
                 if (Services.initDBTravel(mongoClient)) {
                     try (PrintWriter out = response.getWriter()) {
                         out.println("DB initilized");
