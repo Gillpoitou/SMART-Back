@@ -49,6 +49,17 @@ public class Services {
         try {
             PersonDAO personDAO = new PersonDAO(mongoClient);
             personDAO.createPerson(person);
+            
+            BusStopDAO busStopDAO = new BusStopDAO(mongoClient);
+            
+            BusStop departure = busStopDAO.getBusStopById(person.getDeparture().getId());
+            departure.setNbPersonsWaiting(departure.getNbPersonsWaiting()+1);
+            busStopDAO.updateBusStop(departure);
+            
+            BusStop arrival = busStopDAO.getBusStopById(person.getArrival().getId());
+            arrival.setNbPersonsComing(arrival.getNbPersonsComing() +1);
+            busStopDAO.updateBusStop(arrival);
+            
             Date currentDate = new Date();
             if (personCounter + 1 >= maxRequestNb || currentDate.getTime() >= lastRequestDate.getTime() + maxTimeInterval) {
                 if (!callAlgoCalculation(mongoClient)) {

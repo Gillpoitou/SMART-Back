@@ -45,7 +45,8 @@ public class LineConverter {
     }
 
     public static Document toConstantDocument(Line l) {
-        Document doc = new Document("name", l.getName());
+        Document doc = new Document("name", l.getName())
+                .append("bus", BusConverter.toConstantDocument(l.getBus()));;
 
         if (l.getId() != null) {
             doc.append("_id", l.getId());
