@@ -21,6 +21,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Vector;
 import java.util.concurrent.TimeUnit;
@@ -43,18 +44,59 @@ public class Services {
         return "GET_BUS_MAP_DISPLAY";
     }
 
-    public static boolean postBusRequest(MongoClient mongoClient, Person person) {
+    public static boolean postBusRequest(MongoClient mongoClient, Person person, int personCounter, Date lastRequestDate, int maxRequestNb, long maxTimeInterval) {
 
         try {
             PersonDAO personDAO = new PersonDAO(mongoClient);
             personDAO.createPerson(person);
+            
             BusStopDAO busStopDAO = new BusStopDAO(mongoClient);
+            
             BusStop departure = busStopDAO.getBusStopById(person.getDeparture().getId());
             departure.setNbPersonsWaiting(departure.getNbPersonsWaiting()+1);
             busStopDAO.updateBusStop(departure);
+            
             BusStop arrival = busStopDAO.getBusStopById(person.getArrival().getId());
             arrival.setNbPersonsComing(arrival.getNbPersonsComing() +1);
             busStopDAO.updateBusStop(arrival);
+            
+            Date currentDate = new Date();
+            if(personCounter + 1 >= maxRequestNb || currentDate.getTime() >= lastRequestDate.getTime() + maxTimeInterval){
+                if(!callAlgoCalculation(mongoClient)){
+                    return false;
+                }
+            }
+            
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+    
+    private static boolean callAlgoCalculation(MongoClient mongoClient){
+ 
+        try {
+            BusStopDAO bsDAO = new BusStopDAO(mongoClient);
+            Vector<BusStop> busStops = bsDAO.selectBusStops();
+            float[][] durations = new float[busStops.size()][busStops.size()];
+            for (int i = 0; i < busStops.size(); i++) {
+                for (int j = 0; j < busStops.size(); j++) {
+                    if (i == j) {
+                        durations[i][j] = 0;
+                    } else {
+
+                        float result = busStops.get(i).getDurationToTarget(j);
+                        if (result == -1) {
+                            //DB error, target bus not found
+                            return false;
+                        }
+                        durations[i][j] = result;
+                    }
+                }
+            }
+            BusDAO busDAO = new BusDAO(mongoClient);
+            PersonDAO personDAO = new PersonDAO(mongoClient);
+            Date currentDate = new Date(); //create current date time
             return true;
         } catch (Exception e) {
             return false;
@@ -68,7 +110,7 @@ public class Services {
             Vector<BusStop> busStops = busStopDAO.selectBusStopsGeoJson(4.863718173086466, 45.7708809489496);
             for (int i = 0; i < busStops.size(); i++) {
                 busStopDAO.createBusStop(busStops.get(i));
-                
+
             }
 
             return true;
