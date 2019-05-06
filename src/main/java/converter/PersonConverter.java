@@ -5,7 +5,6 @@
  */
 package converter;
 
-
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -25,39 +24,38 @@ import org.bson.types.ObjectId;
  * @author elise
  */
 public class PersonConverter {
-    
-     public static Document toDocument(Person person) {
+
+    public static Document toDocument(Person person) {
         Document doc = new Document("arrival", BusStopConverter.toConstantDocument(person.getArrival()))
                 .append("departure", BusStopConverter.toConstantDocument(person.getDeparture()))
                 .append("line", LineConverter.toConstantDocument(person.getLine()))
                 .append("timeDeparture", person.getTimeDeparture());
-        
-        
+
         if (person.getId() != null) {
             doc.append("_id", new ObjectId(person.getId()));
         }
-        
+
         return doc;
     }
-     
-     public static Document toConstantDocument(Person person) {
+
+    public static Document toConstantDocument(Person person) {
         Document doc = new Document("arrival", BusStopConverter.toConstantDocument(person.getArrival()))
                 .append("departure", BusStopConverter.toConstantDocument(person.getDeparture()));
-        
+
         if (person.getId() != null) {
             doc.append("_id", new ObjectId(person.getId()));
         }
-        
+
         return doc;
     }
-    
+
     public static Person toPerson(Document doc) {
         Person p = new Person();
-        p.setArrival((BusStop) BusStopConverter.toBusStop((Document)doc.get("arrival")));
-        p.setDeparture((BusStop) BusStopConverter.toBusStop((Document)doc.get("departure")));
+        p.setArrival((BusStop) BusStopConverter.toBusStop((Document) doc.get("arrival")));
+        p.setDeparture((BusStop) BusStopConverter.toBusStop((Document) doc.get("departure")));
 
         if (doc.get("line") != null) {
-            p.setLine((Line) LineConverter.toLine((Document)doc.get("line")));
+            p.setLine((Line) LineConverter.toLine((Document) doc.get("line")));
         }
         if (doc.get("timeDeparture") != null) {
             p.setTimeDeparture((Date) doc.get("timeDeparture"));
@@ -67,16 +65,20 @@ public class PersonConverter {
         return p;
 
     }
-    
-    public static Person jsonToPerson(MongoClient mongoClient, String json) throws Exception{
-        
+
+    public static Person jsonToPerson(MongoClient mongoClient, String json) throws Exception {
+
         JsonElement jelement = new JsonParser().parse(json);
-        JsonObject  jsonPerson = jelement.getAsJsonObject();
+        JsonObject jsonPerson = jelement.getAsJsonObject();
         jsonPerson = jsonPerson.getAsJsonObject("person");
         SimpleDateFormat sdf = new SimpleDateFormat("\"dd-MM-yyyy HH:mm:ss\"");
         Date date = sdf.parse(jsonPerson.get("departure_date").toString());
-    
+
         BusStopDAO bsdao = new BusStopDAO(mongoClient);
+        System.out.println("suuuu");
+
+        System.out.println(jsonPerson.get("departure").toString());
+
         BusStop departure = bsdao.getBusStopById(jsonPerson.get("departure").toString());
         BusStop arrival = bsdao.getBusStopById(jsonPerson.get("arrival").toString());
 
