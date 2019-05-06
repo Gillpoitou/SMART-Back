@@ -5,9 +5,11 @@
  */
 package converter;
 
+import java.util.ArrayList;
 import java.util.Date;
 import modele.BusStop;
 import modele.BusStopLine;
+import modele.Person;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 
@@ -21,7 +23,8 @@ public class BusStopLineConverter {
         Document doc = new Document("busStop", busStopLine.getBusStop())
                 .append("nbGetOn", busStopLine.getNbGetOn())
                 .append("nbGetOff", busStopLine.getNbGetOff())
-                .append("time", busStopLine.getTime());
+                .append("time", busStopLine.getTime())
+                .append("getOnPersons", busStopLine.getGetOnPersons());
         
         return doc;
     }
@@ -32,6 +35,7 @@ public class BusStopLineConverter {
         b.setNbGetOn((int) doc.get("nbGetOn"));
         b.setNbGetOff((int) doc.get("nbGetOff"));
         b.setTime((Date) doc.get("time"));
+        b.setGetOnPersons((ArrayList<Person>) doc.get("getOnPersons"));
 
         return b;
     }

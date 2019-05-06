@@ -5,6 +5,7 @@
  */
 package modele;
 
+import java.util.ArrayList;
 import java.util.Date;
 
 /**
@@ -17,6 +18,7 @@ public class BusStopLine {
     private int nbGetOn;
     private int nbGetOff;
     private Date time;
+    private ArrayList <Person> getOnPersons;
 
     public BusStopLine() {
     }
@@ -26,6 +28,7 @@ public class BusStopLine {
         this.nbGetOn = nbGetOn;
         this.nbGetOff = nbGetOff;
         this.time = time;
+        this.getOnPersons = new ArrayList<>();
     }
  
     public Date getTime() {
@@ -58,6 +61,18 @@ public class BusStopLine {
 
     public void setNbGetOff(int nbGetOff) {
         this.nbGetOff = nbGetOff;
+    }
+    
+    public ArrayList<Person> getGetOnPersons (){
+        return this.getOnPersons;
+    }
+    
+    public void setGetOnPersons (ArrayList <Person> persons){
+        this.getOnPersons = persons;
+    }
+    
+    public void addGetOnPerson (Person person){
+        getOnPersons.add(person);
     }
     
     public String toString(){

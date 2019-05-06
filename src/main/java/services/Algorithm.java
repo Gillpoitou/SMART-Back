@@ -251,6 +251,7 @@ public class Algorithm {
                         theCurrentDate = arrivalDate;
                     }
                     currentBusStop.setNbGetOn(currentBusStop.getNbGetOn()+1);
+                    currentBusStop.addGetOnPerson(currentCalculatedLine.get(j));
                 // Si c'est une arrivée
                 }else{
                     if(!currentBusStop.getBusStop().getName().equals(currentCalculatedLine.get(j).getArrival().getName())){
