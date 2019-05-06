@@ -78,9 +78,6 @@ public class Services {
         try {
             BusStopDAO bsDAO = new BusStopDAO(mongoClient);
             Vector<BusStop> busStops = bsDAO.selectBusStops();
-
-            System.out.println(busStops.size());
-
             double[][] durations = new double[busStops.size()][busStops.size()];
             for (int i = 0; i < busStops.size(); i++) {
                 for (int j = 0; j < busStops.size(); j++) {
@@ -104,8 +101,6 @@ public class Services {
             PersonDAO personDAO = new PersonDAO(mongoClient);
             ArrayList<Person> persons = personDAO.selectAllPersons();
 
-            System.out.println(persons.size());
-
             Date currentDate = new Date(); //create current date time
 
             Bus[] busesArray= new Bus[buses.size()];
@@ -115,9 +110,12 @@ public class Services {
 
             //call algo
             ArrayList<Line> lines = Algorithm.calculateLines(durations, busesArray, persons, currentDate);
-
-            for (Line l : lines) {
+            
+            LineDAO lineDAO = new LineDAO(mongoClient);
+            lineDAO.deleteAll();
+            for (Line l : lines){
                 System.out.println(l.toString());
+                lineDAO.createLine(l);
             }
 
             return true;

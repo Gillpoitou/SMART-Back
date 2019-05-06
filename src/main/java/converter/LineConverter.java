@@ -24,18 +24,20 @@ import org.bson.types.ObjectId;
 public class LineConverter {
 
     public static Document toDocument(Line l) {
-
         Document doc = new Document("name", l.getName())
                 .append("departure", BusStopConverter.toConstantDocument(l.getDeparture()))
-                .append("arrival", BusStopConverter.toConstantDocument(l.getArrival()))
                 .append("bus", BusConverter.toConstantDocument(l.getBus()));
 
+        if (l.getArrival() != null) {
+            doc.append("arrival", BusStopConverter.toConstantDocument(l.getArrival()));
+        }
+        
         //BusStops
         ArrayList<Document> busStops = new ArrayList<>();
         for (BusStopLine bs : l.getBusStops()) {
             busStops.add(BusStopLineConverter.toDocument(bs));
         }
-        doc.append("busStops", Arrays.asList(busStops));
+        doc.append("busStops", busStops);
 
         if (l.getId() != null) {
             doc.append("_id", l.getId());
@@ -75,20 +77,20 @@ public class LineConverter {
 
         return l;
     }
-    
-    public static JsonObject LineToJson(Line line){
-        
+
+    public static JsonObject LineToJson(Line line) {
+
         JsonObject result = new JsonObject();
         result.addProperty("id", line.getId());
         result.addProperty("name", line.getName());
         JsonObject busStopDpt = BusStopConverter.BusStopToJson(line.getDeparture());
         JsonObject busStopArr = BusStopConverter.BusStopToJson(line.getArrival());
         result.add("departure", busStopDpt);
-        result.add("arrival",busStopArr);
+        result.add("arrival", busStopArr);
         JsonObject bus = BusConverter.BusToJson(line.getBus());
         result.add("bus", bus);
         JsonArray busStops = new JsonArray();
-        for(BusStopLine bsl : line.getBusStops()){
+        for (BusStopLine bsl : line.getBusStops()) {
             JsonObject busStopLine = BusStopLineConverter.BusStopLineToJson(bsl);
             busStops.add(busStopLine);
         }

@@ -58,4 +58,8 @@ public class LineDAO {
         this.coll.deleteOne(
                 eq("_id", new ObjectId(l.getId())));
     }
+    
+    public void deleteAll(){
+        this.coll.drop();
+    }
 }
