@@ -16,6 +16,7 @@ import modele.*;
 public class Algorithm {
     private static float[][] durations;
     private static float pourcentage;
+    private static Date currentDate;
     
     public static double getCost(ArrayList<ArrayList<Person>> journeys, ArrayList<Line> lines){
         double cost = 0;
@@ -68,10 +69,11 @@ public class Algorithm {
         return cost/2;      //because we calculate twice for each person
     }
     
-    public static ArrayList<Line> calculateLines (float[][]journeyDurations, Bus[]buses, ArrayList <Person> requests, Date currentDate){
+    public static ArrayList<Line> calculateLines (float[][]journeyDurations, Bus[]buses, ArrayList <Person> requests, Date theCurrentDate){
         durations = journeyDurations;
+        currentDate = theCurrentDate;
         pourcentage = 3;
-        ArrayList<ArrayList<Person>> lines = greedyAlgo(buses, requests, currentDate);
+        ArrayList<ArrayList<Person>> lines = greedyAlgo(buses, requests);
         if(lines != null){
             ArrayList<Line> result = createLines(lines, buses, currentDate);
             return result;
@@ -80,7 +82,7 @@ public class Algorithm {
         //Créer les lignes avec BusStop
     }
     
-    public static ArrayList<ArrayList<Person>> greedyAlgo(Bus[]buses, ArrayList<Person> requests, Date currentDate){
+    public static ArrayList<ArrayList<Person>> greedyAlgo(Bus[]buses, ArrayList<Person> requests){
         ArrayList <ArrayList<Person>> busLines = new ArrayList<>();
         ArrayList<Person> currentLine = new ArrayList<>();
         int lineNb = 0;
@@ -131,7 +133,7 @@ public class Algorithm {
                     System.out.println(person.getId());
                 }*/
 
-                if(feasibleLine(currentLine, buses[busLines.indexOf(currentLine)], currentDate)){
+                if(feasibleLine(currentLine, buses[busLines.indexOf(currentLine)])){
                     feasible = true;
                     currentLine = busLines.get(0);
                 }else{
@@ -165,7 +167,7 @@ public class Algorithm {
         return busLines;
     }
     
-    public static boolean feasibleLine(ArrayList<Person> line, Bus bus, Date currentDate){
+    public static boolean feasibleLine(ArrayList<Person> line, Bus bus){
         boolean feasible = true;
         int personNb = 0;
         int duration;
@@ -206,45 +208,45 @@ public class Algorithm {
     public static ArrayList<Line> createLines (ArrayList<ArrayList<Person>> lines, Bus[] buses, Date currentDateConst){
         ArrayList <Line> result = new ArrayList<>();
         int duration;
-        Date currentDate;
+        Date theCurrentDate;
 
         for(int i=0; i<lines.size(); i++){
             ArrayList <Person> currentCalculatedLine = lines.get(i);
-            currentDate = currentDateConst;
+            theCurrentDate = currentDateConst;
             
             ArrayList<BusStopLine> currentLine = new ArrayList<>();
             duration = (int) durations[buses[i].getPosition().getBusStopID()][currentCalculatedLine.get(0).getDeparture().getBusStopID()];
-            BusStopLine currentBusStop = new BusStopLine(currentCalculatedLine.get(0).getDeparture(), 0, 0, new Date(currentDate.getTime() + duration * 60000));
+            BusStopLine currentBusStop = new BusStopLine(currentCalculatedLine.get(0).getDeparture(), 0, 0, new Date(theCurrentDate.getTime() + duration * 60000));
             currentBusStop.setNbGetOn(currentBusStop.getNbGetOn()+1);
-            Date arrivalDate = new Date(currentDate.getTime() + duration * 60000);
+            Date arrivalDate = new Date(theCurrentDate.getTime() + duration * 60000);
             currentLine.add(currentBusStop);
-            currentDate = currentCalculatedLine.get(0).getTimeDeparture();
+            theCurrentDate = currentCalculatedLine.get(0).getTimeDeparture();
             
             for(int j=1; j<currentCalculatedLine.size(); j++){
                 // Si c'est un départ
                 if(j == currentCalculatedLine.indexOf(currentCalculatedLine.get(j))){
                     if(!currentBusStop.getBusStop().getName().equals(currentCalculatedLine.get(j).getDeparture().getName())){
                         duration = (int) durations[currentBusStop.getBusStop().getBusStopID()][currentCalculatedLine.get(j).getDeparture().getBusStopID()];
-                        currentBusStop = new BusStopLine(currentCalculatedLine.get(j).getDeparture(), 0, 0, new Date(currentDate.getTime() + duration * 60000));
+                        currentBusStop = new BusStopLine(currentCalculatedLine.get(j).getDeparture(), 0, 0, new Date(theCurrentDate.getTime() + duration * 60000));
                         currentLine.add(currentBusStop);
-                        arrivalDate = new Date(currentDate.getTime() + duration * 60000);
+                        arrivalDate = new Date(theCurrentDate.getTime() + duration * 60000);
                     }
                     
                     if(arrivalDate.compareTo(currentCalculatedLine.get(j).getTimeDeparture()) <= 0){
-                        currentDate = currentCalculatedLine.get(j).getTimeDeparture();
+                        theCurrentDate = currentCalculatedLine.get(j).getTimeDeparture();
                     }else{
-                        currentDate = new Date(currentDate.getTime() + duration * 60000);
+                        theCurrentDate = new Date(theCurrentDate.getTime() + duration * 60000);
                     }
                     currentBusStop.setNbGetOn(currentBusStop.getNbGetOn()+1);
                 // Si c'est une arrivée
                 }else{
                     if(!currentBusStop.getBusStop().getName().equals(currentCalculatedLine.get(j).getArrival().getName())){
                         duration = (int) durations[currentBusStop.getBusStop().getBusStopID()][currentCalculatedLine.get(j).getArrival().getBusStopID()];
-                        currentBusStop = new BusStopLine(currentCalculatedLine.get(j).getArrival(), 0, 0, new Date(currentDate.getTime() + duration * 60000));
+                        currentBusStop = new BusStopLine(currentCalculatedLine.get(j).getArrival(), 0, 0, new Date(theCurrentDate.getTime() + duration * 60000));
                         currentLine.add(currentBusStop);
-                        arrivalDate = new Date(currentDate.getTime() + duration * 60000);
+                        arrivalDate = new Date(theCurrentDate.getTime() + duration * 60000);
                     }
-                    currentDate = new Date(currentDate.getTime() + duration * 60000);
+                    theCurrentDate = new Date(theCurrentDate.getTime() + duration * 60000);
                     currentBusStop.setNbGetOff(currentBusStop.getNbGetOff()+1);
                 }
             }
@@ -255,16 +257,20 @@ public class Algorithm {
         return result;
     }
     
-    public static void TabuSearch (Bus[]buses, Person[]requests){
+    
+    public static void TabuSearch (Bus[] buses, ArrayList<Person>requests){
         int timeSinceLastBestUpdate = 0;
-        /*
-        sol;
-        bestSol;
-        neighbour;
-        bestNeighbour;*/
+        
+        //Initialise sol with greedy
+        ArrayList<ArrayList<Person>> sol = greedyAlgo(buses,  requests);
+        //Careful: never change the person's attributes
+        ArrayList<ArrayList<Person>> bestSol = createCopy(sol);
+        ArrayList<ArrayList<Person>> neighbour = createCopy(sol);
+        ArrayList<ArrayList<Person>> bestneighbour = createCopy(sol);
+        
         
         //Generate tabu list as the last time a person was used in a move
-        int[] tabuList = new int[requests.length];
+        int[] tabuList = new int[requests.size()];
         for (int i = 0 ; i < tabuList.length ; i++){
             tabuList[i] = -100;     //to free every move
         }
@@ -286,5 +292,18 @@ public class Algorithm {
             
             //update bestSol if needed
         }
+    }
+
+    //TABU UTIL METHODS
+    public static ArrayList<ArrayList<Person>> createCopy(ArrayList<ArrayList<Person>> origin){
+        ArrayList<ArrayList<Person>> copy = new ArrayList<>();
+        for (int i = 0 ; i < origin.size() ; i++){
+            ArrayList<Person> part = new ArrayList<>();
+            for (int j = 0 ; j < origin.get(i).size() ; j++){
+                part.add(origin.get(i).get(j));
+            }
+            copy.add(part);
+        }
+        return copy;
     }
 }
