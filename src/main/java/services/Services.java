@@ -60,9 +60,6 @@ public class Services {
             busStopDAO.updateBusStop(arrival);
            
            Person pers = personDAO.createPerson(person);
-           
-            System.out.println(pers);
-            System.out.println(pers.getId());
             Date currentDate = new Date();
            /* if (personCounter + 1 >= maxRequestNb || currentDate.getTime() >= lastRequestDate.getTime() + maxTimeInterval) {
                 if (!callAlgoCalculation(mongoClient)) {
