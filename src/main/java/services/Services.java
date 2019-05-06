@@ -45,27 +45,27 @@ public class Services {
     }
 
     public static boolean postBusRequest(MongoClient mongoClient, Person person, int personCounter, Date lastRequestDate, int maxRequestNb, long maxTimeInterval) {
-        
+
         try {
             PersonDAO personDAO = new PersonDAO(mongoClient);
             BusStopDAO busStopDAO = new BusStopDAO(mongoClient);
-            
+
             BusStop departure = person.getDeparture();
             BusStop arrival = person.getArrival();
-            
-            departure.setNbPersonsWaiting(departure.getNbPersonsWaiting()+1);
-            arrival.setNbPersonsComing(arrival.getNbPersonsComing()+1);
-            
+
+            departure.setNbPersonsWaiting(departure.getNbPersonsWaiting() + 1);
+            arrival.setNbPersonsComing(arrival.getNbPersonsComing() + 1);
+
             busStopDAO.updateBusStop(departure);
             busStopDAO.updateBusStop(arrival);
-           
-           Person pers = personDAO.createPerson(person);
+
+            Person pers = personDAO.createPerson(person);
             Date currentDate = new Date();
-           /* if (personCounter + 1 >= maxRequestNb || currentDate.getTime() >= lastRequestDate.getTime() + maxTimeInterval) {
+            if (personCounter + 1 >= maxRequestNb || currentDate.getTime() >= lastRequestDate.getTime() + maxTimeInterval) {
                 if (!callAlgoCalculation(mongoClient)) {
                     return false;
                 }
-            }*/
+            }
 
             return true;
         } catch (Exception e) {
@@ -78,14 +78,17 @@ public class Services {
         try {
             BusStopDAO bsDAO = new BusStopDAO(mongoClient);
             Vector<BusStop> busStops = bsDAO.selectBusStops();
+
+            System.out.println(busStops.size());
+
             double[][] durations = new double[busStops.size()][busStops.size()];
             for (int i = 0; i < busStops.size(); i++) {
                 for (int j = 0; j < busStops.size(); j++) {
                     if (i == j) {
                         durations[i][j] = 0;
                     } else {
-
-                        double result = busStops.get(i).getDurationToTarget(j);
+                        double result;
+                        result = busStops.get(i).getDurationToTarget(j);
                         if (result == -1) {
                             //DB error, target bus not found
                             return false;
@@ -94,13 +97,29 @@ public class Services {
                     }
                 }
             }
+
             BusDAO busDAO = new BusDAO(mongoClient);
             ArrayList<Bus> buses = busDAO.selectAllBus();
+
             PersonDAO personDAO = new PersonDAO(mongoClient);
             ArrayList<Person> persons = personDAO.selectAllPersons();
+
+            System.out.println(persons.size());
+
             Date currentDate = new Date(); //create current date time
-            
+
+            Bus[] busesArray= new Bus[buses.size()];
+            for(int k = 0; k< buses.size(); k++){
+                busesArray[k] = buses.get(k);
+            }
+
             //call algo
+            ArrayList<Line> lines = Algorithm.calculateLines(durations, busesArray, persons, currentDate);
+
+            for (Line l : lines) {
+                System.out.println(l.toString());
+            }
+
             return true;
         } catch (Exception e) {
             return false;
@@ -207,9 +226,9 @@ public class Services {
     }
 
     public static void test(MongoClient mongoClient) {
-        
-        
-        
+
+        callAlgoCalculation(mongoClient);
+
 //        BusDAO busDAO = new BusDAO(mongoClient);
 //        BusStopDAO busStopDAO = new BusStopDAO(mongoClient);
 //
@@ -230,6 +249,10 @@ public class Services {
 //        bus.setPosition(busStop);
 //        
 //        busDAO.createBus(bus);
+    }
+
+    public static boolean createBus(MongoClient mongoClient, String data) {
+
     }
 
     public static boolean getBusStops(MongoClient mongoClient, JsonObject result) {

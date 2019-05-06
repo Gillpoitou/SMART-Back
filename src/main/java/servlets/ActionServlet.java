@@ -152,6 +152,19 @@ public class ActionServlet extends HttpServlet {
             case "test":
                 Services.test(mongoClient);
                 break;
+            case "createBus":
+                data = this.parsePostBody(request.getReader());
+                
+                if (Services.createBus(mongoClient, data)) {
+                    try (PrintWriter out = response.getWriter()) {
+                        out.println("Bus created");
+                    }
+                } else {
+                    try (PrintWriter out = response.getWriter()) {
+                        out.println("Error");
+                    }
+                }
+                break;
             default:
                 response.sendError(422, "Unprocessable entity, please specify a valid action type ");
                 break;

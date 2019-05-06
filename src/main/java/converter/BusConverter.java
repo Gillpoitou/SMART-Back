@@ -47,6 +47,7 @@ public class BusConverter {
         if (doc.get("nbPassengers") != null) {
             bus.setNbPassengers((Integer) doc.get("nbPassengers"));
         }
+
         if (doc.get("position") != null) {
             bus.setPosition(BusStopConverter.toBusStop((Document) doc.get("position")));
         }
@@ -57,8 +58,8 @@ public class BusConverter {
         return bus;
     }
 
-    public static JsonObject BusToJson(Bus bus){
-        
+    public static JsonObject BusToJson(Bus bus) {
+
         JsonObject result = new JsonObject();
         result.addProperty("id", bus.getId());
         result.addProperty("name", bus.getName());
@@ -66,7 +67,7 @@ public class BusConverter {
         JsonObject position = BusStopConverter.BusStopToJson(bus.getPosition());
         result.add("position", position);
         result.addProperty("nbPassengers", bus.getNbPassengers());
-        
+
         return result;
     }
 }

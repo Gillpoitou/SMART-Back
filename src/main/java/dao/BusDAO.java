@@ -49,6 +49,7 @@ public class BusDAO {
 
         FindIterable<Document> busDocs = coll.find();
         for (Document busDoc : busDocs) {
+            System.out.println(busDoc);
             Bus bus = BusConverter.toBus(busDoc);
             allBus.add(bus);
         }
