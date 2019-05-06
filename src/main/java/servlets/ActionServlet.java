@@ -14,6 +14,7 @@ import dao.BusStopDAO;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Date;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -68,11 +69,18 @@ public class ActionServlet extends HttpServlet {
                 data = buffer.toString();
                 try {
                     Person person = PersonConverter.jsonToPerson(mongoClient, data);
-                    if (Services.postBusRequest(mongoClient, person)) {
+                    int personCounter = (int)request.getServletContext().getAttribute("PERSON_COUNTER");
+                    Date lastRequestDate = (Date)request.getServletContext().getAttribute("LAST_REQUEST_DATE");
+                    int maxRequestNb = (int)request.getServletContext().getAttribute("MAX_REQUEST_NB");
+                    long maxTimeInterval = (long)request.getServletContext().getAttribute("REQUEST_TIME_INTERVAL");
+                    
+                    if (Services.postBusRequest(mongoClient, person, personCounter, lastRequestDate, maxRequestNb,maxTimeInterval)) {
 
                         try (PrintWriter out = response.getWriter()) {
                             out.println("Request Posted");
                         }
+                        request.getServletContext().setAttribute("PERSON_COUNTER", personCounter+1);
+                        request.getServletContext().setAttribute("LAST_REQUEST_DATE", new Date());
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
