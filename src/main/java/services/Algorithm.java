@@ -168,41 +168,49 @@ public class Algorithm {
     }
     
     public static boolean feasibleLine(ArrayList<Person> line, Bus bus){
-        boolean feasible = true;
         int personNb = 0;
         int duration;
+        
         Date precedDate = currentDate;
+        Date arrival = currentDate;
         BusStop preced = bus.getPosition();
+        
         for(int i=0; i<line.size(); i++){
             // Si c'est un départ
             if(i == line.indexOf(line.get(i))){
                 personNb++;
-                if(precedDate.compareTo(line.get(i).getTimeDeparture()) < 0){
+                if(!preced.getId().equals(line.get(i).getId())){
+                    duration = (int) durations[preced.getBusStopID()][line.get(i).getArrival().getBusStopID()];
+                    arrival = new Date(precedDate.getTime() + duration * 60000);
+                    preced = line.get(i).getDeparture();
+                }
+                if(arrival.compareTo(line.get(i).getTimeDeparture()) < 0){
                     precedDate = line.get(i).getTimeDeparture();
                 }
-                preced = line.get(i).getDeparture();
             // Si c'est une arrivée
             }else{
                 personNb--;
-                duration = (int) durations[preced.getBusStopID()][line.get(i).getArrival().getBusStopID()];
-                Date arrivalDate = new Date(precedDate.getTime() + duration * 60000);
+                if(!preced.getId().equals(line.get(i).getId())){
+                    duration = (int) durations[preced.getBusStopID()][line.get(i).getArrival().getBusStopID()];
+                    arrival = new Date(precedDate.getTime() + duration * 60000);
+                    preced = line.get(i).getArrival();
+                }
                 
                 int durationMin = (int) ((durations[line.get(i).getDeparture().getBusStopID()][line.get(i).getArrival().getBusStopID()] * 60000) * pourcentage);
                 Date maxDate = new Date(line.get(i).getTimeDeparture().getTime() + durationMin);
-                if(arrivalDate.compareTo(maxDate) > 0){
-                    feasible = false;
-                    break;
+                if(arrival.compareTo(maxDate) > 0){
+                    return false;
                 }
-                preced = line.get(i).getArrival();
-                precedDate = arrivalDate;
+                if(arrival.compareTo(precedDate) > 0){
+                    precedDate = arrival;
+                }
             }
             
             if(personNb>bus.getNbPlaces()){
-                feasible = false;
-                break;
+                return false;
             }
         }
-        return feasible;
+        return true;
     }
     
     public static ArrayList<Line> createLines (ArrayList<ArrayList<Person>> lines, Bus[] buses, Date currentDateConst){
@@ -213,14 +221,19 @@ public class Algorithm {
         for(int i=0; i<lines.size(); i++){
             ArrayList <Person> currentCalculatedLine = lines.get(i);
             theCurrentDate = currentDateConst;
-            
             ArrayList<BusStopLine> currentLine = new ArrayList<>();
+            
             duration = (int) durations[buses[i].getPosition().getBusStopID()][currentCalculatedLine.get(0).getDeparture().getBusStopID()];
             BusStopLine currentBusStop = new BusStopLine(currentCalculatedLine.get(0).getDeparture(), 0, 0, new Date(theCurrentDate.getTime() + duration * 60000));
             currentBusStop.setNbGetOn(currentBusStop.getNbGetOn()+1);
-            Date arrivalDate = new Date(theCurrentDate.getTime() + duration * 60000);
             currentLine.add(currentBusStop);
-            theCurrentDate = currentCalculatedLine.get(0).getTimeDeparture();
+            
+            Date arrivalDate = new Date(theCurrentDate.getTime() + duration * 60000);
+            if(arrivalDate.compareTo(currentCalculatedLine.get(0).getTimeDeparture()) < 0){ 
+                theCurrentDate = currentCalculatedLine.get(0).getTimeDeparture();
+            }else{
+                theCurrentDate = arrivalDate;
+            }
             
             for(int j=1; j<currentCalculatedLine.size(); j++){
                 // Si c'est un départ
@@ -235,7 +248,7 @@ public class Algorithm {
                     if(arrivalDate.compareTo(currentCalculatedLine.get(j).getTimeDeparture()) <= 0){
                         theCurrentDate = currentCalculatedLine.get(j).getTimeDeparture();
                     }else{
-                        theCurrentDate = new Date(theCurrentDate.getTime() + duration * 60000);
+                        theCurrentDate = arrivalDate;
                     }
                     currentBusStop.setNbGetOn(currentBusStop.getNbGetOn()+1);
                 // Si c'est une arrivée
@@ -246,7 +259,9 @@ public class Algorithm {
                         currentLine.add(currentBusStop);
                         arrivalDate = new Date(theCurrentDate.getTime() + duration * 60000);
                     }
-                    theCurrentDate = new Date(theCurrentDate.getTime() + duration * 60000);
+                    if(arrivalDate.compareTo(theCurrentDate) > 0){
+                        theCurrentDate = new Date(theCurrentDate.getTime() + duration * 60000);
+                    }
                     currentBusStop.setNbGetOff(currentBusStop.getNbGetOff()+1);
                 }
             }
