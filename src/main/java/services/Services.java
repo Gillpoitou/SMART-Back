@@ -25,6 +25,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Vector;
 import java.util.concurrent.TimeUnit;
+import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletResponse;
 import static javax.ws.rs.core.HttpHeaders.USER_AGENT;
 import modele.Bus;
@@ -103,6 +104,11 @@ public class Services {
         }
     }
 
+    public static void putCallAlgoParams(ServletContext servletContext, int maxRequestNb, long maxTimeInterval) {
+        servletContext.setAttribute("MAX_REQUEST_NB", maxRequestNb);
+        servletContext.setAttribute("REQUEST_TIME_INTERVAL", maxTimeInterval);
+    }
+    
     public static boolean initDataBase(MongoClient mongoClient) {
         System.out.println("stating initialization");
         try {
