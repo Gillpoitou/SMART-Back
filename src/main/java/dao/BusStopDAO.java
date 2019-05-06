@@ -56,7 +56,7 @@ public class BusStopDAO {
     }
 
     public BusStop getBusStopById(String id) {
-        System.out.println("suuuuuuu");
+
         BusStop busStop = (BusStop) BusStopConverter.toBusStop((Document) coll.find(eq("_id", new ObjectId(id))).first());
         return busStop;
     }
@@ -67,7 +67,7 @@ public class BusStopDAO {
         for (Document busStopDoc : busStopDocs) {
             BusStop busStop = BusStopConverter.toBusStop(busStopDoc);
             result.add(busStop);
-            System.out.println(busStop.getName());
+        
         }
         return result;
     }
@@ -99,7 +99,7 @@ public class BusStopDAO {
             Document next = iterator.next();
             BusStop currentBusStop = BusStopConverter.geoJsonToBusStop((Document) next.get("busStop"));
             currentBusStop.setBusStopID(currentID);
-            System.out.println(next.toString());
+            
             result.add(currentBusStop);
             currentID++;
         }

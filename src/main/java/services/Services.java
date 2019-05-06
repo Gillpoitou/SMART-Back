@@ -45,27 +45,30 @@ public class Services {
     }
 
     public static boolean postBusRequest(MongoClient mongoClient, Person person, int personCounter, Date lastRequestDate, int maxRequestNb, long maxTimeInterval) {
-
+        
         try {
             PersonDAO personDAO = new PersonDAO(mongoClient);
-            personDAO.createPerson(person);
-            
             BusStopDAO busStopDAO = new BusStopDAO(mongoClient);
             
-            BusStop departure = busStopDAO.getBusStopById(person.getDeparture().getId());
+            BusStop departure = person.getDeparture();
+            BusStop arrival = person.getArrival();
+            
             departure.setNbPersonsWaiting(departure.getNbPersonsWaiting()+1);
+            arrival.setNbPersonsComing(arrival.getNbPersonsComing()+1);
+            
             busStopDAO.updateBusStop(departure);
-            
-            BusStop arrival = busStopDAO.getBusStopById(person.getArrival().getId());
-            arrival.setNbPersonsComing(arrival.getNbPersonsComing() +1);
             busStopDAO.updateBusStop(arrival);
-            
+           
+           Person pers = personDAO.createPerson(person);
+           
+            System.out.println(pers);
+            System.out.println(pers.getId());
             Date currentDate = new Date();
-            if (personCounter + 1 >= maxRequestNb || currentDate.getTime() >= lastRequestDate.getTime() + maxTimeInterval) {
+           /* if (personCounter + 1 >= maxRequestNb || currentDate.getTime() >= lastRequestDate.getTime() + maxTimeInterval) {
                 if (!callAlgoCalculation(mongoClient)) {
                     return false;
                 }
-            }
+            }*/
 
             return true;
         } catch (Exception e) {
@@ -99,6 +102,8 @@ public class Services {
             PersonDAO personDAO = new PersonDAO(mongoClient);
             ArrayList<Person> persons = personDAO.selectAllPersons();
             Date currentDate = new Date(); //create current date time
+            
+            //call algo
             return true;
         } catch (Exception e) {
             return false;

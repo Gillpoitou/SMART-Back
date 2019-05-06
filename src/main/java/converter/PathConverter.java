@@ -42,7 +42,7 @@ public class PathConverter {
             List<Coordinates> coords = new LinkedList();
             List<Document> _coords = (List<Document>) doc.get("coords");
             for (Document d : _coords) {
-                System.out.println(d);
+                
                 coords.add(new Coordinates(((Double) d.get("latitude")).doubleValue(), ((Double) d.get("longitude")).doubleValue())
                 );
             }

@@ -26,10 +26,15 @@ import org.bson.types.ObjectId;
 public class PersonConverter {
 
     public static Document toDocument(Person person) {
+
         Document doc = new Document("arrival", BusStopConverter.toConstantDocument(person.getArrival()))
                 .append("departure", BusStopConverter.toConstantDocument(person.getDeparture()))
-                .append("line", LineConverter.toConstantDocument(person.getLine()))
                 .append("timeDeparture", person.getTimeDeparture());
+
+        if (person.getLine() != null) {
+            doc.append("line", LineConverter.toConstantDocument(person.getLine()));
+
+        }
 
         if (person.getId() != null) {
             doc.append("_id", new ObjectId(person.getId()));
@@ -75,12 +80,15 @@ public class PersonConverter {
         Date date = sdf.parse(jsonPerson.get("departure_date").toString());
 
         BusStopDAO bsdao = new BusStopDAO(mongoClient);
-        System.out.println("suuuu");
 
-        System.out.println(jsonPerson.get("departure").toString());
+        String id_departure = jsonPerson.get("departure").toString();
+        id_departure = id_departure.substring(1, id_departure.length() - 1);
 
-        BusStop departure = bsdao.getBusStopById(jsonPerson.get("departure").toString());
-        BusStop arrival = bsdao.getBusStopById(jsonPerson.get("arrival").toString());
+        String id_arrival = jsonPerson.get("arrival").toString();
+        id_arrival = id_arrival.substring(1, id_arrival.length() - 1);
+
+        BusStop departure = bsdao.getBusStopById(id_departure);
+        BusStop arrival = bsdao.getBusStopById(id_arrival);
 
         Person person = new Person();
         person.setArrival(arrival);
