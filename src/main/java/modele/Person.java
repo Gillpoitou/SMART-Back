@@ -76,4 +76,9 @@ public class Person {
         Person other = (Person)o;
         return this.getId().equals(other.getId());
     }
+    
+    @Override
+    public String toString(){
+        return id;
+    }
 }

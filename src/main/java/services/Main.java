@@ -58,11 +58,14 @@ public class Main {
         requests.add(person6);
         requests.add(person7);
         
+        
+        
+        
         ArrayList<Line> result = Algorithm.calculateLines(durations, buses, requests, currentDate);
         
-        for(Line line: result){
+        /*for(Line line: result){
             System.out.println(line.toString());
-        }
+        }*/
     }
     
 }

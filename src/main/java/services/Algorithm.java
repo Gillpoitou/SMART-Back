@@ -83,6 +83,9 @@ public class Algorithm {
         //Créer les lignes avec BusStop
         pourcentage = 3;
         ArrayList<ArrayList<Person>> lines = greedyAlgo(buses, requests);
+        
+        optRoute(lines.get(0), 0);
+        
         if(lines != null){
             ArrayList<Line> result = createLines(lines, buses, currentDate);
             return result;
@@ -331,30 +334,41 @@ public class Algorithm {
         return copy;
     }
     
-    public static void optRoute (ArrayList<Person> aRoute, int busNb){
+    public static ArrayList<Person> optRoute (ArrayList<Person> aRoute, int busNb){
         LinkedList<Person> route = new LinkedList<>(aRoute);
         LinkedList<Person> neighbour = new LinkedList<>(route);
         
-        
-        int stop = 40;
+        int stop = 50;
         
         double previousCost = getRouteCost(route, busNb);
+        double neighbourCost;
+        
         for (int i = 0 ; i < stop ; i++){
             //create neighbour
-            createRouteNeighbour(neighbour);
+            createRouteNeighbour(route, neighbour);
             
             //test if neighbour is better
-            
-            //if needed update route and reset i
-            
-            //else reset neighbour
-            
+            neighbourCost = getRouteCost(neighbour, busNb);
+            //System.out.println("NCost : "+neighbourCost);
+            if (neighbourCost < previousCost){
+                //if needed update route and reset i
+                previousCost = neighbourCost;
+                System.out.println("Updating cost: "+previousCost);
+                copyRoute(neighbour, route);
+                i = 0;
+            }
         }
+        return new ArrayList<>(route);
     }
     
-    public static void createRouteNeighbour(LinkedList<Person> route){
+    public static void createRouteNeighbour(LinkedList<Person> route, LinkedList<Person> neighbour){
         int r1 = (int)((route.size()-1)*Math.random()); //0 .. n-2
         int r2 = (int)((route.size() - r1-1)*Math.random() + r1+1); //r1+1 .. n-1  i think
+        //System.out.println("R1: "+r1+"   R2: "+r2);
+        
+        
+        //copy route in neighbour and then modify it
+        copyRoute(route, neighbour);
         
         LinkedList<Person> buffer = new LinkedList();
         
@@ -369,17 +383,18 @@ public class Algorithm {
             j++;
         }
         
-        //copy buffer in route
-        j = 0;
+        //copy buffer in neighbour
         Iterator<Person> it = buffer.iterator();
-        for (Person current : route){
-            if (j >= r1 && j <= r2){
-                current = it.next();
-                buffer.addFirst(current);
-            }else if (j > r2){
-                break;
-            }
-            j++;
+        for (int i = r1 ; i <= r2 ; i++){
+            neighbour.set(i, it.next());
+        }
+    }
+    
+    public static void copyRoute(LinkedList<Person> from, LinkedList<Person> to){
+        int i = 0;
+        for (Person current : from){
+            to.set(i, current);
+            i++;
         }
     }
     
