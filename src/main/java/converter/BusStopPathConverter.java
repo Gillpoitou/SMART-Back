@@ -28,7 +28,7 @@ public class BusStopPathConverter {
 
     public static BusStopPath toBusStopPath(Document doc) {
         BusStopPath busStopPath = new BusStopPath();
-        busStopPath.setDuration((Double) doc.get("duration"));
+        busStopPath.setDuration((float) doc.get("duration"));
         busStopPath.setDistance((Double) doc.get("distance"));
         busStopPath.setBusStop((BusStop) BusStopConverter.toBusStop((Document) doc.get("busStop")));
 
