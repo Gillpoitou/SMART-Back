@@ -38,6 +38,16 @@ public class LineDAO {
         return result;
     }
 
+    public Line retrieveLineByBusId(String busId) {
+        Document doc = coll.find(eq("bus._id", new ObjectId(busId))).first();
+//        System.out.println(doc);
+        Line line = null;
+        if (doc != null) {
+            line = LineConverter.toLine(doc);
+        }
+        return line;
+    }
+
     public Line createLine(Line l) {
         Document doc = LineConverter.toDocument(l);
         this.coll.insertOne(doc);
@@ -58,8 +68,8 @@ public class LineDAO {
         this.coll.deleteOne(
                 eq("_id", new ObjectId(l.getId())));
     }
-    
-    public void deleteAll(){
+
+    public void deleteAll() {
         this.coll.drop();
     }
 }

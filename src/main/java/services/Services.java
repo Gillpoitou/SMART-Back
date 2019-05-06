@@ -10,6 +10,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.mongodb.client.MongoClient;
+import converter.BusConverter;
 import converter.BusStopConverter;
 import converter.LineConverter;
 import dao.BusDAO;
@@ -29,6 +30,7 @@ import javax.servlet.http.HttpServletResponse;
 import static javax.ws.rs.core.HttpHeaders.USER_AGENT;
 import modele.Bus;
 import modele.BusStop;
+import modele.BusStopLine;
 import modele.BusStopPath;
 import modele.Line;
 import modele.Person;
@@ -100,20 +102,38 @@ public class Services {
 
             PersonDAO personDAO = new PersonDAO(mongoClient);
             ArrayList<Person> persons = personDAO.selectAllPersons();
-
             Date currentDate = new Date(); //create current date time
+            Date maxCurrentDate = new Date();
 
-            Bus[] busesArray= new Bus[buses.size()];
-            for(int k = 0; k< buses.size(); k++){
-                busesArray[k] = buses.get(k);
+            LineDAO lineDAO = new LineDAO(mongoClient);
+            Bus[] busesArray = new Bus[buses.size()];
+            for (int k = 0; k < buses.size(); k++) {
+                Bus currentBus = buses.get(k);
+                Line currentLine = lineDAO.retrieveLineByBusId(currentBus.getId());
+
+                if (currentLine != null) {
+                    BusStop position;
+                    for (BusStopLine bsl : currentLine.getBusStops()) {
+                        if (bsl.getTime().after(currentDate)) {
+                            position = bsl.getBusStop();
+                            
+                            currentBus.setPosition(position);
+
+                            if (bsl.getTime().after(maxCurrentDate)) {
+                                maxCurrentDate = bsl.getTime();
+                            }
+                            break;
+                        }
+                    }
+                }
+                busesArray[k] = currentBus;
             }
 
             //call algo
-            ArrayList<Line> lines = Algorithm.calculateLines(durations, busesArray, persons, currentDate);
-            
-            LineDAO lineDAO = new LineDAO(mongoClient);
+            ArrayList<Line> lines = Algorithm.calculateLines(durations, busesArray, persons, maxCurrentDate);
+
             lineDAO.deleteAll();
-            for (Line l : lines){
+            for (Line l : lines) {
                 System.out.println(l.toString());
                 lineDAO.createLine(l);
             }
@@ -131,7 +151,6 @@ public class Services {
             Vector<BusStop> busStops = busStopDAO.selectBusStopsGeoJson(4.863718173086466, 45.7708809489496);
             for (int i = 0; i < busStops.size(); i++) {
                 busStopDAO.createBusStop(busStops.get(i));
-
             }
 
             return true;
@@ -250,7 +269,7 @@ public class Services {
     }
 
     public static boolean createBus(MongoClient mongoClient, String data) {
-
+        return false;
     }
 
     public static boolean getBusStops(MongoClient mongoClient, JsonObject result) {

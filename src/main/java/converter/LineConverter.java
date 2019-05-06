@@ -31,7 +31,7 @@ public class LineConverter {
         if (l.getArrival() != null) {
             doc.append("arrival", BusStopConverter.toConstantDocument(l.getArrival()));
         }
-        
+
         //BusStops
         ArrayList<Document> busStops = new ArrayList<>();
         for (BusStopLine bs : l.getBusStops()) {
@@ -61,8 +61,10 @@ public class LineConverter {
         Line l = new Line();
         l.setName((String) doc.get("name"));
         l.setDeparture((BusStop) BusStopConverter.toBusStop((Document) doc.get("departure")));
-        l.setArrival((BusStop) BusStopConverter.toBusStop((Document) doc.get("arrival")));
-        l.setBus((Bus) BusConverter.toBus((Document) doc.get("Bus")));
+        l.setBus((Bus) BusConverter.toBus((Document) doc.get("bus")));
+        if (doc.get("arrival") != null) {
+            l.setArrival((BusStop) BusStopConverter.toBusStop((Document) doc.get("arrival")));
+        }
 
         //BusStops
         List<Document> _busStops = (List<Document>) doc.get("busStops");
