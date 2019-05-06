@@ -5,7 +5,15 @@
  */
 package converter;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
+import modele.Coordinates;
 import modele.Path;
+import org.bson.BsonArray;
 import org.bson.Document;
 
 /**
@@ -13,13 +21,49 @@ import org.bson.Document;
  * @author thomasmalvoisin
  */
 public class PathConverter {
-    
-    public static Document toDocument(Path bus) {
-        return null;
+
+    public static Document toDocument(Path path) {
+        Document doc = new Document();
+        ArrayList<Document> coords = new ArrayList<Document>();
+        for (Coordinates coord : path.getCoordinates()) {
+            Document current = new Document("longitude", coord.longitude)
+                    .append("latitude", coord.latitude);
+            coords.add(current);
+        }
+
+        doc.append("coords", coords);
+        return doc;
     }
-    
+
     public static Path toPath(Document doc) {
-        return null;
+        Path path = new Path();
+
+        if (doc.get("coords") != null) {
+            List<Coordinates> coords = new LinkedList();
+            List<Document> _coords = (List<Document>) doc.get("coords");
+            for (Document d : _coords) {
+                
+                coords.add(new Coordinates(((Double) d.get("latitude")).doubleValue(), ((Double) d.get("longitude")).doubleValue())
+                );
+            }
+
+            path.setCoordinates(coords);
+        }
+
+        return path;
     }
-    
+
+    public static JsonObject PathToJson(Path path) {
+        JsonObject result = new JsonObject();
+        JsonArray coordinates = new JsonArray();
+        for (Coordinates coord : path.getCoordinates()) {
+            JsonObject jsonCoord = new JsonObject();
+            jsonCoord.addProperty("latitude", coord.latitude);
+            jsonCoord.addProperty("longitude", coord.longitude);
+            coordinates.add(jsonCoord);
+        }
+        result.add("coordinates", coordinates);
+        return result;
+    }
+
 }
