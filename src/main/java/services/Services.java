@@ -84,7 +84,9 @@ public class Services {
                 }
             }
             BusDAO busDAO = new BusDAO(mongoClient);
+            ArrayList<Bus> buses = busDAO.selectAllBus();
             PersonDAO personDAO = new PersonDAO(mongoClient);
+            ArrayList<Person> persons = personDAO.selectAllPersons();
             Date currentDate = new Date(); //create current date time
             return true;
         } catch (Exception e) {
