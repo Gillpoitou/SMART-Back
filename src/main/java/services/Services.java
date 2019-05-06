@@ -50,20 +50,20 @@ public class Services {
             PersonDAO personDAO = new PersonDAO(mongoClient);
             personDAO.createPerson(person);
             Date currentDate = new Date();
-            if(personCounter + 1 >= maxRequestNb || currentDate.getTime() >= lastRequestDate.getTime() + maxTimeInterval){
-                if(!callAlgoCalculation(mongoClient)){
+            if (personCounter + 1 >= maxRequestNb || currentDate.getTime() >= lastRequestDate.getTime() + maxTimeInterval) {
+                if (!callAlgoCalculation(mongoClient)) {
                     return false;
                 }
             }
-            
+
             return true;
         } catch (Exception e) {
             return false;
         }
     }
-    
-    private static boolean callAlgoCalculation(MongoClient mongoClient){
- 
+
+    private static boolean callAlgoCalculation(MongoClient mongoClient) {
+
         try {
             BusStopDAO bsDAO = new BusStopDAO(mongoClient);
             Vector<BusStop> busStops = bsDAO.selectBusStops();
@@ -108,8 +108,8 @@ public class Services {
             return false;
         }
     }
-    
-    public static boolean initDBTravel(MongoClient mongoClient){
+
+    public static boolean initDBTravel(MongoClient mongoClient) {
         try {
             BusStopDAO busStopDAO = new BusStopDAO(mongoClient);
             Vector<BusStop> busStops = busStopDAO.selectBusStops();
@@ -139,7 +139,7 @@ public class Services {
 
         System.out.println("Sending HTTP request");
         String url = "https://api.openrouteservice.org/v2/directions/driving-car?api_key=5b3ce3597851110001cf6248f04cc86b213d468795dd64628a835cab"
-                + "&start="+ latA + "," + longA +"&end="+ latB + "," + longB;
+                + "&start=" + latA + "," + longA + "&end=" + latB + "," + longB;
 
         URL obj = new URL(url);
         HttpURLConnection con = (HttpURLConnection) obj.openConnection();
@@ -171,9 +171,9 @@ public class Services {
 
         return racine;
     }
-    
-    public static boolean getBusLines(MongoClient mongoClient, JsonObject result){
-        
+
+    public static boolean getBusLines(MongoClient mongoClient, JsonObject result) {
+
         try {
             LineDAO lineDAO = new LineDAO(mongoClient);
             //TODO match with BD DAO
@@ -194,11 +194,12 @@ public class Services {
     public static void test(MongoClient mongoClient) {
         
         
-        BusDAO busDAO = new BusDAO(mongoClient);
-        BusStopDAO busStopDAO = new BusStopDAO(mongoClient);
-
-        Bus bus = busDAO.getBusById("5ccbf7bcd67d4439b2320b45");
-        System.out.println(bus);
+        
+//        BusDAO busDAO = new BusDAO(mongoClient);
+//        BusStopDAO busStopDAO = new BusStopDAO(mongoClient);
+//
+//        Bus bus = busDAO.getBusById("5ccbf7bcd67d4439b2320b45");
+//        System.out.println(bus);
 //        BusStop busStop = busStopDAO.getBusStopById("5ccb9085b5238e28b882a129");
 //        busStop.setBusStopID(999);
 //        busStop.setLatitude(12);
@@ -207,7 +208,6 @@ public class Services {
 //        busStop.setNbPersonsComing(2);
 //        busStop.setNbPersonsWaiting(5);
 //        busStop.setPaths(new Vector<BusStopPath>());
-        
 //        Bus bus = new Bus();
 //        bus.setName("test");
 //        bus.setNbPassengers(10);

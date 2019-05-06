@@ -37,17 +37,18 @@ public class PathConverter {
 
     public static Path toPath(Document doc) {
         Path path = new Path();
-        List<Coordinates> coords = new LinkedList();
 
-        List<Document> _coords = (List<Document>) doc.get("coords");
-        for (Document d : _coords) {
-            System.out.println(d);
-            coords.add(new Coordinates(((Double) d.get("latitude")).doubleValue(), ((Double) d.get("longitude")).doubleValue())
-        
-        );
+        if (doc.get("coords") != null) {
+            List<Coordinates> coords = new LinkedList();
+            List<Document> _coords = (List<Document>) doc.get("coords");
+            for (Document d : _coords) {
+                System.out.println(d);
+                coords.add(new Coordinates(((Double) d.get("latitude")).doubleValue(), ((Double) d.get("longitude")).doubleValue())
+                );
+            }
+
+            path.setCoordinates(coords);
         }
-        
-        path.setCoordinates(coords);
 
         return path;
     }

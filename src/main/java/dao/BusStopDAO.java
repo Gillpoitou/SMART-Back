@@ -26,6 +26,7 @@ import static com.mongodb.client.model.Sorts.ascending;
 import com.mongodb.client.model.Field;
 import com.mongodb.client.model.Field;
 import static com.mongodb.client.model.Filters.eq;
+import com.mongodb.client.model.Projections;
 import converter.BusStopConverter;
 import java.util.Vector;
 import modele.BusStop;
@@ -61,7 +62,7 @@ public class BusStopDAO {
 
     public Vector<BusStop> selectBusStops() {
         Vector<BusStop> result = new Vector<BusStop>(50);
-        FindIterable<Document> busStopDocs = coll.find();
+        FindIterable<Document> busStopDocs = coll.find().projection(Projections.fields(exclude("paths.path")));
         for (Document busStopDoc : busStopDocs) {
             BusStop busStop = BusStopConverter.toBusStop(busStopDoc);
             result.add(busStop);
