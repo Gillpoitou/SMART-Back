@@ -14,10 +14,10 @@ import java.util.Vector;
 public class BusStop {
 
     private String id;
+    private int busStopID;
     private String name;
     private double latitude;
     private double longitude;
-    private int busStopID;
     private int nbPersonsWaiting;
     private int nbPersonsComing;
     private Vector<BusStopPath> paths;
@@ -100,5 +100,20 @@ public class BusStop {
 
     public void setPaths(Vector<BusStopPath> paths) {
         this.paths = paths;
+    }
+    
+    public void addBusStopPath(BusStopPath bsPath){
+        this.paths.add(bsPath);
+    }
+    
+    public double getDurationToTarget(int targetBusStopId){
+        if(paths.get(targetBusStopId).getBusStop().getBusStopID()==targetBusStopId){
+            return paths.get(targetBusStopId).getDuration();
+        }else if(paths.get(targetBusStopId-1).getBusStop().getBusStopID()==targetBusStopId){
+            return paths.get(targetBusStopId-1).getDuration();
+        }else{
+            //target not found
+            return -1;
+        }
     }
 }

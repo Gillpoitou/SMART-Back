@@ -11,7 +11,7 @@ package modele;
  */
 public class BusStopPath {
 
-    private BusStop busStop;
+    private BusStop busStopDestination;
     private double duration;
     private double distance;
     private Path path;
@@ -19,19 +19,19 @@ public class BusStopPath {
     public BusStopPath() {
     }
 
-    public BusStopPath(BusStop busStop, double duration, double distance, Path path) {
-        this.busStop = busStop;
+    public BusStopPath(BusStop busStopDestination, double duration, double distance, Path path) {
+        this.busStopDestination = busStopDestination;
         this.duration = duration;
         this.distance = distance;
         this.path = path;
     }
 
     public BusStop getBusStop() {
-        return busStop;
+        return busStopDestination;
     }
 
     public void setBusStop(BusStop busStop) {
-        this.busStop = busStop;
+        this.busStopDestination = busStop;
     }
 
     public double getDuration() {

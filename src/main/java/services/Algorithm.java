@@ -14,8 +14,8 @@ import modele.*;
  * @author
  */
 public class Algorithm {
-    private static float[][] durations;
-    private static float pourcentage;
+    private static double[][] durations;
+    private static double pourcentage;
     private static Date currentDate;
     
     public static double getCost(ArrayList<ArrayList<Person>> journeys, ArrayList<Line> lines){
@@ -69,7 +69,7 @@ public class Algorithm {
         return cost/2;      //because we calculate twice for each person
     }
     
-    public static ArrayList<Line> calculateLines (float[][]journeyDurations, Bus[]buses, ArrayList <Person> requests, Date theCurrentDate){
+    public static ArrayList<Line> calculateLines (double[][]journeyDurations, Bus[]buses, ArrayList <Person> requests, Date theCurrentDate){
         durations = journeyDurations;
         currentDate = theCurrentDate;
         pourcentage = 3;
