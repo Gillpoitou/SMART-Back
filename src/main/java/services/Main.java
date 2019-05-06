@@ -24,7 +24,7 @@ public class Main {
      * @param args the command line arguments
      */
     public static void main(String[] args) throws ParseException {
-        float[][] durations = {{0, 5, 6}, {3, 0, 2}, {9, 4, 0}};
+        double[][] durations = {{0, 5, 6}, {3, 0, 2}, {9, 4, 0}};
         BusStop busStop1 = new BusStop("BusStop 1", "Montaigne Montesquieu", 0, 0, 0, 2, 1, null);
         BusStop busStop2 = new BusStop("BusStop 2", "Doyen Brus", 0, 0, 1, 1, 2, null);
         BusStop busStop3 = new BusStop("BusStop 3", "François Bordes", 0, 0, 2, 2, 2, null);
@@ -58,11 +58,14 @@ public class Main {
         requests.add(person6);
         requests.add(person7);
         
+        
+        
+        
         ArrayList<Line> result = Algorithm.calculateLines(durations, buses, requests, currentDate);
         
-        for(Line line: result){
+        /*for(Line line: result){
             System.out.println(line.toString());
-        }
+        }*/
     }
     
 }

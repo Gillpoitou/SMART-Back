@@ -6,6 +6,7 @@
 package converter;
 
 import java.util.ArrayList;
+import com.google.gson.JsonObject;
 import java.util.Date;
 import modele.BusStop;
 import modele.BusStopLine;
@@ -20,7 +21,7 @@ import org.bson.types.ObjectId;
 public class BusStopLineConverter {
         public static Document toDocument(BusStopLine busStopLine) {
 
-        Document doc = new Document("busStop", busStopLine.getBusStop())
+        Document doc = new Document("busStop", BusStopConverter.toConstantDocument(busStopLine.getBusStop()))
                 .append("nbGetOn", busStopLine.getNbGetOn())
                 .append("nbGetOff", busStopLine.getNbGetOff())
                 .append("time", busStopLine.getTime())
@@ -39,4 +40,15 @@ public class BusStopLineConverter {
 
         return b;
     }
+    
+    public static JsonObject BusStopLineToJson(BusStopLine busStopLine){
+        JsonObject result = new JsonObject();
+        JsonObject busStop = BusStopConverter.BusStopToJson(busStopLine.getBusStop());
+        result.add("busStop",busStop);
+        result.addProperty("nbGetOn", busStopLine.getNbGetOn());
+        result.addProperty("nbGetOff", busStopLine.getNbGetOff());
+        //TODO ADD DATE TO RESULT
+        return result;
+    }
+        
 }

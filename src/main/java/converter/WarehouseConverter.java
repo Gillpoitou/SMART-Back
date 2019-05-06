@@ -5,6 +5,7 @@
  */
 package converter;
 
+import java.util.Arrays;
 import modele.Warehouse;
 import org.bson.Document;
 import org.bson.types.ObjectId;
@@ -19,7 +20,14 @@ public class WarehouseConverter {
         Document doc = new Document("name", w.getName())
                 .append("latitude", w.getLatitude())
                 .append("longitude", w.getLongitude())
-                .append("nbBus", w.getNbBus());
+                .append("nbBus", w.getNbBus())
+                .append("busStopId", w.getBusStopID());
+        
+        //Coordinates
+        Document coord = new Document("type", "Point")
+                .append("coordinates", Arrays.asList(w.getLongitude(), w.getLatitude()));
+        doc.append("location", coord);
+        
         if (w.getId() != null) {
             doc.append("_id", w.getId());
         }
