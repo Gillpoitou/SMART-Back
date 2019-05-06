@@ -67,14 +67,14 @@ public class Services {
         try {
             BusStopDAO bsDAO = new BusStopDAO(mongoClient);
             Vector<BusStop> busStops = bsDAO.selectBusStops();
-            float[][] durations = new float[busStops.size()][busStops.size()];
+            double[][] durations = new double[busStops.size()][busStops.size()];
             for (int i = 0; i < busStops.size(); i++) {
                 for (int j = 0; j < busStops.size(); j++) {
                     if (i == j) {
                         durations[i][j] = 0;
                     } else {
 
-                        float result = busStops.get(i).getDurationToTarget(j);
+                        double result = busStops.get(i).getDurationToTarget(j);
                         if (result == -1) {
                             //DB error, target bus not found
                             return false;
