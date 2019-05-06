@@ -15,6 +15,7 @@ import modele.*;
  */
 public class Algorithm {
     private static float[][] durations;
+    private static float pourcentage;
     
     public static double getCost(ArrayList<ArrayList<Person>> journeys, ArrayList<Line> lines){
         double cost = 0;
@@ -67,12 +68,16 @@ public class Algorithm {
         return cost/2;      //because we calculate twice for each person
     }
     
-    public static ArrayList<Line> calculateLines (float[][]journeyDurations, Bus[]buses, Person[]requests, Date currentDate){
+    public static ArrayList<Line> calculateLines (float[][]journeyDurations, Bus[]buses, ArrayList <Person> requests, Date currentDate){
         durations = journeyDurations;
-        //Appeler greedy
-        //Appeler taboueLine currentLine = new Line();
-        //Créer les lignes avec BusStop
+        pourcentage = 3;
+        ArrayList<ArrayList<Person>> lines = greedyAlgo(buses, requests, currentDate);
+        if(lines != null){
+            ArrayList<Line> result = createLines(lines, buses, currentDate);
+            return result;
+        }
         return null;
+        //Créer les lignes avec BusStop
     }
     
     public static ArrayList<ArrayList<Person>> greedyAlgo(Bus[]buses, ArrayList<Person> requests, Date currentDate){
@@ -81,78 +86,113 @@ public class Algorithm {
         int lineNb = 0;
         busLines.add(currentLine);
         
-        for (Person request : requests) {
-            currentLine.add(request);
-            currentLine.add(request);
-            
-            for(int i=0; i< requests.size(); i++){
-                for(int j=0; j< requests.size(); j++){
-                    int indexDepartureI = currentLine.indexOf(requests.get(i));
-                    int indexArrivalI = currentLine.lastIndexOf(requests.get(i));
-                    int indexDepartureJ = currentLine.indexOf(requests.get(j));
-                    int indexArrivalJ = currentLine.lastIndexOf(requests.get(j));
-                    int durationI = (int) durations[requests.get(i).getDeparture().getBusStopID()][requests.get(i).getArrival().getBusStopID()];
-                    int durationJ = (int) durations[requests.get(j).getDeparture().getBusStopID()][requests.get(j).getArrival().getBusStopID()];
-                    Date dateArrivalI = new Date(requests.get(i).getTimeDeparture().getTime() + durationI * 60000);
-                    Date dateArrivalJ = new Date(requests.get(j).getTimeDeparture().getTime() + durationJ * 60000);
+        for (int k=0; k<requests.size(); k++) {
+            Person request = requests.get(k);
+            boolean feasible = false;
+            while(feasible == false){
+                currentLine.add(request);
+                currentLine.add(request);
+                boolean endIsDeparture = true;
+                for(int i=0; i< currentLine.size()-2; i++){
+                    int indexDepartureI = currentLine.indexOf(currentLine.get(i));
+                    int indexArrivalI = currentLine.lastIndexOf(currentLine.get(i));
                     
-                    if(requests.get(i).getTimeDeparture().compareTo(requests.get(j).getTimeDeparture()) < 0 && indexDepartureI > indexDepartureJ){
-                        Person temp = currentLine.get(indexDepartureI);
-                        currentLine.set(indexDepartureI, currentLine.get(indexDepartureJ));
-                        currentLine.set(indexDepartureJ, temp);
-                    }else if(requests.get(i).getTimeDeparture().compareTo(dateArrivalJ) < 0 && indexDepartureI > indexArrivalJ){
-                        Person temp = currentLine.get(indexDepartureI);
-                        currentLine.set(indexDepartureI, currentLine.get(indexArrivalJ));
-                        currentLine.set(indexArrivalJ, temp);
-                    }else if(dateArrivalI.compareTo(requests.get(j).getTimeDeparture()) < 0 && indexArrivalI > indexDepartureJ){
-                        Person temp = currentLine.get(indexArrivalI);
-                        currentLine.set(indexArrivalI, currentLine.get(indexDepartureJ));
-                        currentLine.set(indexDepartureJ, temp);
-                    }else if(dateArrivalI.compareTo(dateArrivalJ) < 0 && indexArrivalI > indexArrivalJ){
-                        Person temp = currentLine.get(indexArrivalI);
-                        currentLine.set(indexArrivalI, currentLine.get(indexArrivalJ));
-                        currentLine.set(indexArrivalJ, temp);
+                    int durationK = (int) (durations[requests.get(k).getDeparture().getBusStopID()][requests.get(k).getArrival().getBusStopID()] * pourcentage);
+                    Date dateArrivalK = new Date(requests.get(k).getTimeDeparture().getTime() + durationK * 60000);
+                    int durationI = (int) (durations[currentLine.get(i).getDeparture().getBusStopID()][currentLine.get(i).getArrival().getBusStopID()] * pourcentage);
+                    Date dateArrivalI = new Date(currentLine.get(i).getTimeDeparture().getTime() + durationI * 60000);
+                    
+                    if(i == indexDepartureI){
+                        if(request.getTimeDeparture().compareTo(currentLine.get(i).getTimeDeparture()) <= 0 && endIsDeparture){
+                            currentLine.add(indexDepartureI, request);
+                            currentLine.remove(currentLine.size()-1);
+                            endIsDeparture = false;
+                        }
+                        if(dateArrivalK.compareTo(currentLine.get(i).getTimeDeparture()) <= 0){
+                            currentLine.add(indexDepartureI, request);
+                            currentLine.remove(currentLine.size()-1);
+                            break;
+                        }
+                    }else{
+                        if(request.getTimeDeparture().compareTo(dateArrivalI) <= 0 && endIsDeparture){
+                            currentLine.add(indexArrivalI, request);
+                            currentLine.remove(currentLine.size()-1);
+                            endIsDeparture = false;
+                        }
+                        if(dateArrivalK.compareTo(dateArrivalI) <= 0){
+                            currentLine.add(indexArrivalI, request);
+                            currentLine.remove(currentLine.size()-1);
+                            break;
+                        }
+                    }
+                }
+                /*
+                for(Person person: currentLine){
+                    System.out.println(person.getId());
+                }*/
+
+                if(feasibleLine(currentLine, buses[busLines.indexOf(currentLine)], currentDate)){
+                    feasible = true;
+                    currentLine = busLines.get(0);
+                }else{
+                    currentLine.remove(request);
+                    currentLine.remove(request);
+                    
+                    if(busLines.indexOf(currentLine)==lineNb){
+                        if(busLines.indexOf(currentLine) != buses.length-1){
+                            ArrayList<Person> newLine = new ArrayList<>();
+                            busLines.add(newLine);
+                            currentLine=newLine;
+                            lineNb++;
+                        }else{
+                            System.out.println("Pas assez de bus");
+                            return null;
+                        }
+                    }else{
+                        currentLine = busLines.get(busLines.indexOf(currentLine)+1);
                     }
                 }
             }
-            
-            if(feasibleLine(currentLine, buses[lineNb], currentDate)){
-                requests.remove(request);
-                currentLine = busLines.get(0);
-                lineNb=0;
-            }else{
-                currentLine.remove(request);
-                currentLine.remove(request);
-                ArrayList<Person> newLine = new ArrayList<>();
-                busLines.add(newLine);
-                currentLine=newLine;
-                lineNb++;
-            } 
         }
+        
+        for(ArrayList <Person> line: busLines){
+            System.out.println("Nouvelle ligne");
+            for(Person person: line){
+                System.out.println(person.getId());
+            }
+        }
+        
         return busLines;
     }
     
     public static boolean feasibleLine(ArrayList<Person> line, Bus bus, Date currentDate){
         boolean feasible = true;
         int personNb = 0;
-        int duration = 0;
+        int duration;
+        Date precedDate = currentDate;
         BusStop preced = bus.getPosition();
-        
         for(int i=0; i<line.size(); i++){
+            // Si c'est un départ
             if(i == line.indexOf(line.get(i))){
                 personNb++;
-                duration += durations[preced.getBusStopID()][line.get(i).getDeparture().getBusStopID()];
+                if(precedDate.compareTo(line.get(i).getTimeDeparture()) < 0){
+                    precedDate = line.get(i).getTimeDeparture();
+                }
+                preced = line.get(i).getDeparture();
+            // Si c'est une arrivée
             }else{
                 personNb--;
-                duration += durations[preced.getBusStopID()][line.get(i).getArrival().getBusStopID()];
+                duration = (int) durations[preced.getBusStopID()][line.get(i).getArrival().getBusStopID()];
+                Date arrivalDate = new Date(precedDate.getTime() + duration * 60000);
                 
-                Date arrivalDate = new Date(currentDate.getTime() + duration * 60000);
-                int durationMin = (int) (durations[line.get(i).getDeparture().getBusStopID()][line.get(i).getArrival().getBusStopID()] * 60000);
-                Date maxDate = new Date(line.get(i).getTimeDeparture().getTime() + durationMin); // A changer avec pourcentage
+                int durationMin = (int) ((durations[line.get(i).getDeparture().getBusStopID()][line.get(i).getArrival().getBusStopID()] * 60000) * pourcentage);
+                Date maxDate = new Date(line.get(i).getTimeDeparture().getTime() + durationMin);
                 if(arrivalDate.compareTo(maxDate) > 0){
                     feasible = false;
                     break;
                 }
+                preced = line.get(i).getArrival();
+                precedDate = arrivalDate;
             }
             
             if(personNb>bus.getNbPlaces()){
@@ -163,40 +203,56 @@ public class Algorithm {
         return feasible;
     }
     
-    public static ArrayList<Line> createLines (ArrayList<ArrayList<Person>> lines, Bus[] buses, Date currentDate){
-        ArrayList <Line> calculatedLines = new ArrayList<>();
-        int duration = 0;
-        
+    public static ArrayList<Line> createLines (ArrayList<ArrayList<Person>> lines, Bus[] buses, Date currentDateConst){
+        ArrayList <Line> result = new ArrayList<>();
+        int duration;
+        Date currentDate;
+
         for(int i=0; i<lines.size(); i++){
             ArrayList <Person> currentCalculatedLine = lines.get(i);
+            currentDate = currentDateConst;
             
             ArrayList<BusStopLine> currentLine = new ArrayList<>();
+            duration = (int) durations[buses[i].getPosition().getBusStopID()][currentCalculatedLine.get(0).getDeparture().getBusStopID()];
             BusStopLine currentBusStop = new BusStopLine(currentCalculatedLine.get(0).getDeparture(), 0, 0, new Date(currentDate.getTime() + duration * 60000));
+            currentBusStop.setNbGetOn(currentBusStop.getNbGetOn()+1);
+            Date arrivalDate = new Date(currentDate.getTime() + duration * 60000);
             currentLine.add(currentBusStop);
-            duration += durations[buses[i].getPosition().getBusStopID()][currentBusStop.getBusStop().getBusStopID()];
+            currentDate = currentCalculatedLine.get(0).getTimeDeparture();
             
             for(int j=1; j<currentCalculatedLine.size(); j++){
-                if(j == lines.indexOf(lines.get(j))){
+                // Si c'est un départ
+                if(j == currentCalculatedLine.indexOf(currentCalculatedLine.get(j))){
                     if(!currentBusStop.getBusStop().getName().equals(currentCalculatedLine.get(j).getDeparture().getName())){
-                        duration += durations[currentBusStop.getBusStop().getBusStopID()][currentCalculatedLine.get(j).getDeparture().getBusStopID()];
+                        duration = (int) durations[currentBusStop.getBusStop().getBusStopID()][currentCalculatedLine.get(j).getDeparture().getBusStopID()];
                         currentBusStop = new BusStopLine(currentCalculatedLine.get(j).getDeparture(), 0, 0, new Date(currentDate.getTime() + duration * 60000));
                         currentLine.add(currentBusStop);
+                        arrivalDate = new Date(currentDate.getTime() + duration * 60000);
+                    }
+                    
+                    if(arrivalDate.compareTo(currentCalculatedLine.get(j).getTimeDeparture()) <= 0){
+                        currentDate = currentCalculatedLine.get(j).getTimeDeparture();
+                    }else{
+                        currentDate = new Date(currentDate.getTime() + duration * 60000);
                     }
                     currentBusStop.setNbGetOn(currentBusStop.getNbGetOn()+1);
+                // Si c'est une arrivée
                 }else{
                     if(!currentBusStop.getBusStop().getName().equals(currentCalculatedLine.get(j).getArrival().getName())){
-                        duration += durations[currentBusStop.getBusStop().getBusStopID()][currentCalculatedLine.get(j).getArrival().getBusStopID()];
+                        duration = (int) durations[currentBusStop.getBusStop().getBusStopID()][currentCalculatedLine.get(j).getArrival().getBusStopID()];
                         currentBusStop = new BusStopLine(currentCalculatedLine.get(j).getArrival(), 0, 0, new Date(currentDate.getTime() + duration * 60000));
                         currentLine.add(currentBusStop);
+                        arrivalDate = new Date(currentDate.getTime() + duration * 60000);
                     }
+                    currentDate = new Date(currentDate.getTime() + duration * 60000);
                     currentBusStop.setNbGetOff(currentBusStop.getNbGetOff()+1);
                 }
             }
             Line newLine = new Line("Line "+i, buses[i].getPosition(), null, currentLine, buses[i]);
-            calculatedLines.add(newLine);
+            result.add(newLine);
         }
         
-        return calculatedLines;
+        return result;
     }
     
     public static void TabuSearch (Bus[]buses, Person[]requests){

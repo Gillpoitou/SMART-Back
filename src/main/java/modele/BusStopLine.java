@@ -59,4 +59,9 @@ public class BusStopLine {
     public void setNbGetOff(int nbGetOff) {
         this.nbGetOff = nbGetOff;
     }
+    
+    public String toString(){
+        String result = busStop.getName() + ": "+time+" (nbGetOn: "+nbGetOn+", nbGetOff: "+nbGetOff+") \n";
+        return result;
+    }
 }
