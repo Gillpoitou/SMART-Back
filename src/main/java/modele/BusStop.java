@@ -105,4 +105,15 @@ public class BusStop {
     public void addBusStopPath(BusStopPath bsPath){
         this.paths.add(bsPath);
     }
+    
+    public float getDurationToTarget(int targetBusStopId){
+        if(paths.get(targetBusStopId).getBusStop().getBusStopID()==targetBusStopId){
+            return paths.get(targetBusStopId).getDuration();
+        }else if(paths.get(targetBusStopId-1).getBusStop().getBusStopID()==targetBusStopId){
+            return paths.get(targetBusStopId-1).getDuration();
+        }else{
+            //target not found
+            return -1;
+        }
+    }
 }
