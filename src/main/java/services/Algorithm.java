@@ -6,7 +6,10 @@
 package services;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Iterator;
 import modele.*;
 
 /**
@@ -16,6 +19,7 @@ import modele.*;
 public class Algorithm {
     private static float[][] durations;
     private static Date currentDate;
+    private static Bus[] buses;
     
     public static double getCost(ArrayList<ArrayList<Person>> journeys, ArrayList<Line> lines){
         double cost = 0;
@@ -68,9 +72,11 @@ public class Algorithm {
         return cost/2;      //because we calculate twice for each person
     }
     
-    public static ArrayList<Line> calculateLines (float[][]journeyDurations, Bus[]buses, Person[]requests, Date theCurrentDate){
+    public static ArrayList<Line> calculateLines (float[][]journeyDurations, Bus[]aBuses, Person[]requests, Date theCurrentDate){
         durations = journeyDurations;
         currentDate = theCurrentDate;
+        buses = aBuses;
+        
         //Appeler greedy
         //Appeler taboueLine currentLine = new Line();
         //Créer les lignes avec BusStop
@@ -249,5 +255,78 @@ public class Algorithm {
             copy.add(part);
         }
         return copy;
+    }
+    
+    public static void optRoute (ArrayList<Person> aRoute, int busNb){
+        LinkedList<Person> route = new LinkedList<>(aRoute);
+        LinkedList<Person> neighbour = new LinkedList<>(route);
+        
+        
+        int stop = 40;
+        
+        double previousCost = getRouteCost(route, busNb);
+        for (int i = 0 ; i < stop ; i++){
+            //create neighbour
+            createRouteNeighbour(neighbour);
+            
+            //test if neighbour is better
+            
+            //if needed update route and reset i
+            
+            //else reset neighbour
+            
+        }
+    }
+    
+    public static void createRouteNeighbour(LinkedList<Person> route){
+        int r1 = (int)((route.size()-1)*Math.random()); //0 .. n-2
+        int r2 = (int)((route.size() - r1-1)*Math.random() + r1+1); //r1+1 .. n-1  i think
+        
+        LinkedList<Person> buffer = new LinkedList();
+        
+        int j = 0;
+        //filling buffer (reverse way)
+        for (Person current : route){
+            if (j >= r1 && j <= r2){
+                buffer.addFirst(current);
+            }else if (j > r2){
+                break;
+            }
+            j++;
+        }
+        
+        //copy buffer in route
+        j = 0;
+        Iterator<Person> it = buffer.iterator();
+        for (Person current : route){
+            if (j >= r1 && j <= r2){
+                current = it.next();
+                buffer.addFirst(current);
+            }else if (j > r2){
+                break;
+            }
+            j++;
+        }
+    }
+    
+    public static double getRouteCost(LinkedList<Person> route, int busNb){
+        double cost = 0;
+        int previousStop = buses[busNb].getPosition().getBusStopID();
+        HashSet<String> alreadySeen = new HashSet<>();
+        
+        for (Person current : route) {
+            String currentPersonId = current.getId();
+            int currentStop;
+            if (alreadySeen.contains(currentPersonId)){
+                alreadySeen.remove(currentPersonId);
+                currentStop = current.getArrival().getBusStopID();
+            }else{
+                alreadySeen.add(currentPersonId);
+                currentStop = current.getDeparture().getBusStopID();
+            }
+            cost += durations[previousStop][currentStop];
+            previousStop = currentStop;
+        }
+        return cost;
     }
 }
