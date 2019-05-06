@@ -9,6 +9,7 @@ import modele.Bus;
 
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoCollection;
+import static com.mongodb.client.model.Filters.eq;
 import converter.BusConverter;
 import org.bson.Document;
 import org.bson.types.ObjectId;
@@ -31,6 +32,11 @@ public class BusDAO {
         ObjectId id = (ObjectId) doc.get("_id");
         bus.setId(id.toHexString());
         return bus;
+    }
+    
+    public Bus getBusById(String id){
+        Bus b =  (Bus) BusConverter.toBus((Document)coll.find(eq("_id", new ObjectId(id))).first());
+        return b;
     }
 
 }

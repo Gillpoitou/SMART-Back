@@ -16,14 +16,20 @@ public class Bus {
     private String id;
     private String name;
     private int nbPlaces;
+    private BusStop position;
+    private int nbPassengers;
 
     public Bus() {
+        this.nbPassengers = 0;
+        position = null;
     }
 
-    public Bus(String id, String name, int nbPlaces) {
+    public Bus(String id, String name, int nbPlaces, BusStop position, int nbPassengers) {
         this.id = id;
         this.name = name;
         this.nbPlaces = nbPlaces;
+        this.position = position;
+        this.nbPassengers = nbPassengers;
     }
 
     public String getId() {
@@ -48,5 +54,21 @@ public class Bus {
 
     public void setNbPlaces(int nbPlaces) {
         this.nbPlaces = nbPlaces;
+    }
+
+    public BusStop getPosition() {
+        return position;
+    }
+
+    public void setPosition(BusStop position) {
+        this.position = position;
+    }
+
+    public int getNbPassengers() {
+        return nbPassengers;
+    }
+
+    public void setNbPassengers(int nbPassengers) {
+        this.nbPassengers = nbPassengers;
     }
 }

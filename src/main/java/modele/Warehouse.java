@@ -5,6 +5,7 @@
  */
 package modele;
 
+import java.util.Vector;
 import org.bson.types.ObjectId;
 
 /**
@@ -17,8 +18,8 @@ public class Warehouse extends BusStop{
     public Warehouse() {
     }
 
-    public Warehouse(int nbBus, String id, String name, double latitude, double longitude) {
-        super(id, name, latitude, longitude);
+    public Warehouse(int nbBus, String id, String name, double latitude, double longitude, int busStopID, int nbPersonsWaiting, int nbPersonsComing, Vector<BusStopPath> paths) {
+        super(id, name, latitude, longitude, busStopID, nbPersonsWaiting, nbPersonsComing, paths);
         this.nbBus = nbBus;
     }
 
@@ -29,6 +30,4 @@ public class Warehouse extends BusStop{
     public void setNbBus(int nbBus) {
         this.nbBus = nbBus;
     }
-    
-    
 }

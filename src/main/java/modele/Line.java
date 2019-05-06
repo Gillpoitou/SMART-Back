@@ -15,12 +15,13 @@ public class Line {
 
     private String id;
     private String name;
-    private Warehouse departure;
-    private Warehouse arrival;
+    private BusStop departure;
+    private BusStop arrival;
     ArrayList<BusStopLine> busStops;
     private Bus bus;
 
     public Line() {
+        busStops = new ArrayList<BusStopLine>();
     }
 
     public Line(String name, Warehouse departure, Warehouse arrival, ArrayList<BusStopLine> busStops, Bus bus) {
@@ -47,19 +48,19 @@ public class Line {
         this.name = name;
     }
 
-    public Warehouse getDeparture() {
+    public BusStop getDeparture() {
         return departure;
     }
 
-    public void setDeparture(Warehouse departure) {
+    public void setDeparture(BusStop departure) {
         this.departure = departure;
     }
 
-    public Warehouse getArrival() {
+    public BusStop getArrival() {
         return arrival;
     }
 
-    public void setArrival(Warehouse arrival) {
+    public void setArrival(BusStop arrival) {
         this.arrival = arrival;
     }
 
@@ -77,56 +78,5 @@ public class Line {
 
     public void setBus(Bus bus) {
         this.bus = bus;
-    }
-
-    public class BusStopLine {
-
-        private BusStop busStop;
-        private int nbGetOn;
-        private int nbGetOff;
-        private float time;
-
-        public BusStopLine() {
-        }
-
-        public BusStopLine(BusStop busStop, int nbGetOn, int nbGetOff, float time) {
-            this.busStop = busStop;
-            this.nbGetOn = nbGetOn;
-            this.nbGetOff = nbGetOff;
-            this.time = time;
-        }
-
-        public float getTime() {
-            return time;
-        }
-
-        public void setTime(float time) {
-            this.time = time;
-        }
-
-        public BusStop getBusStop() {
-            return busStop;
-        }
-
-        public void setBusStop(BusStop busStop) {
-            this.busStop = busStop;
-        }
-
-        public int getNbGetOn() {
-            return nbGetOn;
-        }
-
-        public void setNbGetOn(int nbGetOn) {
-            this.nbGetOn = nbGetOn;
-        }
-
-        public int getNbGetOff() {
-            return nbGetOff;
-        }
-
-        public void setNbGetOff(int nbGetOff) {
-            this.nbGetOff = nbGetOff;
-        }
-
     }
 }
