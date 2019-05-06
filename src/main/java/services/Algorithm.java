@@ -73,7 +73,7 @@ public class Algorithm {
         return cost / 2;      //because we calculate twice for each person
     }
 
-    public static ArrayList<Line> calculateLines(double[][] journeyDurations, Bus[] buses, ArrayList<Person> requests, Date theCurrentDate) {
+    public static ArrayList<Line> calculateLines(double[][] journeyDurations, Bus[] aBuses, ArrayList<Person> requests, Date theCurrentDate) {
         durations = journeyDurations;
         currentDate = theCurrentDate;
         buses = aBuses;
