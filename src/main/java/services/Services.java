@@ -46,47 +46,47 @@ public class Services {
     }
 
     public static boolean postBusRequest(MongoClient mongoClient, Person person, int personCounter, Date lastRequestDate, int maxRequestNb, long maxTimeInterval) {
-
+        
         try {
             PersonDAO personDAO = new PersonDAO(mongoClient);
-            personDAO.createPerson(person);
-            
             BusStopDAO busStopDAO = new BusStopDAO(mongoClient);
             
-            BusStop departure = busStopDAO.getBusStopById(person.getDeparture().getId());
+            BusStop departure = person.getDeparture();
+            BusStop arrival = person.getArrival();
+            
             departure.setNbPersonsWaiting(departure.getNbPersonsWaiting()+1);
+            arrival.setNbPersonsComing(arrival.getNbPersonsComing()+1);
+            
             busStopDAO.updateBusStop(departure);
-            
-            BusStop arrival = busStopDAO.getBusStopById(person.getArrival().getId());
-            arrival.setNbPersonsComing(arrival.getNbPersonsComing() +1);
             busStopDAO.updateBusStop(arrival);
-            
+           
+           Person pers = personDAO.createPerson(person);
             Date currentDate = new Date();
-            if(personCounter + 1 >= maxRequestNb || currentDate.getTime() >= lastRequestDate.getTime() + maxTimeInterval){
-                if(!callAlgoCalculation(mongoClient)){
+           /* if (personCounter + 1 >= maxRequestNb || currentDate.getTime() >= lastRequestDate.getTime() + maxTimeInterval) {
+                if (!callAlgoCalculation(mongoClient)) {
                     return false;
                 }
-            }
-            
+            }*/
+
             return true;
         } catch (Exception e) {
             return false;
         }
     }
-    
-    private static boolean callAlgoCalculation(MongoClient mongoClient){
- 
+
+    private static boolean callAlgoCalculation(MongoClient mongoClient) {
+
         try {
             BusStopDAO bsDAO = new BusStopDAO(mongoClient);
             Vector<BusStop> busStops = bsDAO.selectBusStops();
-            float[][] durations = new float[busStops.size()][busStops.size()];
+            double[][] durations = new double[busStops.size()][busStops.size()];
             for (int i = 0; i < busStops.size(); i++) {
                 for (int j = 0; j < busStops.size(); j++) {
                     if (i == j) {
                         durations[i][j] = 0;
                     } else {
 
-                        float result = busStops.get(i).getDurationToTarget(j);
+                        double result = busStops.get(i).getDurationToTarget(j);
                         if (result == -1) {
                             //DB error, target bus not found
                             return false;
@@ -96,8 +96,12 @@ public class Services {
                 }
             }
             BusDAO busDAO = new BusDAO(mongoClient);
+            ArrayList<Bus> buses = busDAO.selectAllBus();
             PersonDAO personDAO = new PersonDAO(mongoClient);
+            ArrayList<Person> persons = personDAO.selectAllPersons();
             Date currentDate = new Date(); //create current date time
+            
+            //call algo
             return true;
         } catch (Exception e) {
             return false;
@@ -125,8 +129,8 @@ public class Services {
             return false;
         }
     }
-    
-    public static boolean initDBTravel(MongoClient mongoClient){
+
+    public static boolean initDBTravel(MongoClient mongoClient) {
         try {
             BusStopDAO busStopDAO = new BusStopDAO(mongoClient);
             Vector<BusStop> busStops = busStopDAO.selectBusStops();
@@ -156,7 +160,7 @@ public class Services {
 
         System.out.println("Sending HTTP request");
         String url = "https://api.openrouteservice.org/v2/directions/driving-car?api_key=5b3ce3597851110001cf6248f04cc86b213d468795dd64628a835cab"
-                + "&start="+ latA + "," + longA +"&end="+ latB + "," + longB;
+                + "&start=" + latA + "," + longA + "&end=" + latB + "," + longB;
 
         URL obj = new URL(url);
         HttpURLConnection con = (HttpURLConnection) obj.openConnection();
@@ -188,9 +192,9 @@ public class Services {
 
         return racine;
     }
-    
-    public static boolean getBusLines(MongoClient mongoClient, JsonObject result){
-        
+
+    public static boolean getBusLines(MongoClient mongoClient, JsonObject result) {
+
         try {
             LineDAO lineDAO = new LineDAO(mongoClient);
             //TODO match with BD DAO
@@ -211,11 +215,12 @@ public class Services {
     public static void test(MongoClient mongoClient) {
         
         
-        BusDAO busDAO = new BusDAO(mongoClient);
-        BusStopDAO busStopDAO = new BusStopDAO(mongoClient);
-
-        Bus bus = busDAO.getBusById("5ccbf7bcd67d4439b2320b45");
-        System.out.println(bus);
+        
+//        BusDAO busDAO = new BusDAO(mongoClient);
+//        BusStopDAO busStopDAO = new BusStopDAO(mongoClient);
+//
+//        Bus bus = busDAO.getBusById("5ccbf7bcd67d4439b2320b45");
+//        System.out.println(bus);
 //        BusStop busStop = busStopDAO.getBusStopById("5ccb9085b5238e28b882a129");
 //        busStop.setBusStopID(999);
 //        busStop.setLatitude(12);
@@ -224,7 +229,6 @@ public class Services {
 //        busStop.setNbPersonsComing(2);
 //        busStop.setNbPersonsWaiting(5);
 //        busStop.setPaths(new Vector<BusStopPath>());
-        
 //        Bus bus = new Bus();
 //        bus.setName("test");
 //        bus.setNbPassengers(10);

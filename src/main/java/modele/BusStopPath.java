@@ -12,7 +12,7 @@ package modele;
 public class BusStopPath {
 
     private BusStop busStopDestination;
-    private float duration;
+    private double duration;
     private double distance;
     private Path path;
 
@@ -34,11 +34,11 @@ public class BusStopPath {
         this.busStopDestination = busStop;
     }
 
-    public float getDuration() {
+    public double getDuration() {
         return duration;
     }
 
-    public void setDuration(float duration) {
+    public void setDuration(double duration) {
         this.duration = duration;
     }
 
