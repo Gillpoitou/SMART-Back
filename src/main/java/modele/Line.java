@@ -79,4 +79,23 @@ public class Line {
     public void setBus(Bus bus) {
         this.bus = bus;
     }
+    
+    @Override
+    public boolean equals (Object o){
+        if(!(o instanceof Line)){
+            return false;
+        }
+        Line other = (Line)o;
+        return this.getId().equals(other.getId());
+    }
+    
+    @Override
+    public String toString(){
+        String result = name + "\n";
+        result += "Departure: "+ departure.getName()+"\n";
+        for(BusStopLine busStop: busStops){
+            result += busStop.toString();
+        }
+        return result;
+    }
 }

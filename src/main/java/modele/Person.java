@@ -69,4 +69,11 @@ public class Person {
     public void setLine(Line line) {
         this.line = line;
     }
+    
+    public boolean equals (Object o){
+        if(!(o instanceof Person))
+        return false;
+        Person other = (Person)o;
+        return this.getId().equals(other.getId());
+    }
 }
