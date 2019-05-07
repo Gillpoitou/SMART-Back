@@ -121,12 +121,6 @@ public class Services {
         }
     }
 
-    public static void putCallAlgoParams(ServletContext servletContext, int maxRequestNb, long maxTimeInterval) {
-        servletContext.setAttribute("MAX_REQUEST_NB", maxRequestNb);
-        servletContext.setAttribute("REQUEST_TIME_INTERVAL", maxTimeInterval);
-    }
-    
-    
     public static boolean initDataBase(MongoClient mongoClient) {
         System.out.println("stating initialization");
         try {

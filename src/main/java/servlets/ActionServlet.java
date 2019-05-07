@@ -151,22 +151,22 @@ public class ActionServlet extends HttpServlet {
                             out.println("Error");
                         } 
                 } 
-            break;
-            case "putCallAlgoParams" :
-                System.out.println("suuuu");
-                Services.putCallAlgoParams(request.getServletContext(), 4, 12);
-                System.out.println(request.getServletContext().getAttribute("MAX_REQUEST_NB"));
-                System.out.println(request.getServletContext().getAttribute("REQUEST_TIME_INTERVAL"));
-                break; 
+            break; 
             case "postAlgoParameters" :
                 response.setContentType("text");
                 data = this.parsePostBody(request.getReader());
                 System.out.println(data);
                 
                 try {
-                    AlgoParameters aP = AlgoParametersConverter.jsonToAlgoParameters(mongoClient, data);
+                    AlgoParameters aP = AlgoParametersConverter.jsonToAlgoParameters(data);
                     PrintWriter out = response.getWriter();
-                    out.println("Request Posted");
+                    if(Services.postAlgoParameters(mongoClient,aP)){                
+                        out.println("Request Posted"); 
+                    }else{
+                        response.sendError(500);
+                        out.println("Error DB Access");
+                    }
+                    
                     
                 } catch (Exception e) {
                     e.printStackTrace();

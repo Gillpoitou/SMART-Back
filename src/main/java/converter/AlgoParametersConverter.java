@@ -55,7 +55,7 @@ public class AlgoParametersConverter {
         return result;
     } 
     
-    public static AlgoParameters jsonToAlgoParameters(MongoClient mongoClient, String json) throws Exception {
+    public static AlgoParameters jsonToAlgoParameters(String json) throws Exception {
 
         JsonElement jelement = new JsonParser().parse(json);
         JsonObject jsonAP = jelement.getAsJsonObject();
