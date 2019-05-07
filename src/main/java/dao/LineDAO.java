@@ -32,7 +32,10 @@ public class LineDAO {
 
         FindIterable<Document> lines = coll.find();
         for (Document d : lines) {
+            System.out.println(d);
+
             result.add(LineConverter.toLine(d));
+
         }
 
         return result;

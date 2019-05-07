@@ -110,8 +110,8 @@ public class Services {
 
             Date currentDate = new Date(); //create current date time
 
-            Bus[] busesArray= new Bus[buses.size()];
-            for(int k = 0; k< buses.size(); k++){
+            Bus[] busesArray = new Bus[buses.size()];
+            for (int k = 0; k < buses.size(); k++) {
                 busesArray[k] = buses.get(k);
             }
 
@@ -213,20 +213,20 @@ public class Services {
         try {
             LineDAO lineDAO = new LineDAO(mongoClient);
             List<Line> lines = lineDAO.retrieveAll();
-           
+
             JsonArray linesJson = new JsonArray();
             for (Line l : lines) {
                 BusStopDAO bsDAO = new BusStopDAO(mongoClient);
-                for(int i = 0 ; i < l.getBusStops().size() -1 ; i++){
+                for (int i = 0; i < l.getBusStops().size() - 1; i++) {
                     l.getBusStops().get(i).setBusStop(bsDAO.getBusStopById(l.getBusStops().get(i).getBusStop().getId()));
                     Vector<BusStopPath> busStopsPaths = new Vector();
-                    for(BusStopPath bsp : l.getBusStops().get(i).getBusStop().getPaths()){
-                        if(bsp.getBusStop().getId().equals(l.getBusStops().get(i+1).getBusStop().getId())){
+                    for (BusStopPath bsp : l.getBusStops().get(i).getBusStop().getPaths()) {
+                        if (bsp.getBusStop().getId().equals(l.getBusStops().get(i + 1).getBusStop().getId())) {
                             busStopsPaths.add(bsp);
                         }
                     }
                     l.getBusStops().get(i).getBusStop().setPaths(busStopsPaths);
-                    
+
                 }
                 JsonObject line = LineConverter.LineToJson(l);
                 linesJson.add(line);
@@ -238,36 +238,43 @@ public class Services {
             return false;
         }
     }
-    
-    public static boolean postBusProgress(MongoClient mongoClient, JsonObject result){
+
+    public static boolean postBusProgress(MongoClient mongoClient, JsonObject result) {
         try {
+
             BusDAO busDAO = new BusDAO(mongoClient);
             PersonDAO personDAO = new PersonDAO(mongoClient);
             LineDAO lineDAO = new LineDAO(mongoClient);
-            
+
             LinkedList<Line> lineList = lineDAO.retrieveAll();
+
             Date precedTime = lineList.get(0).getBus().getLastModif();
             Date now = new Date();
-               
-            for(Line line: lineList){
-                for(BusStopLine busStopLine: line.getBusStops()){
-                    if(busStopLine.getTime().getTime() >= now.getTime()){
+            
+            for (Line line : lineList) {
+                for (BusStopLine busStopLine : line.getBusStops()) {
+                    if (busStopLine.getTime().getTime() >= now.getTime()) {
                         // Update bus position
                         line.getBus().setPosition(busStopLine.getBusStop());
+                        
+                        //Récupérer bus by id
+                        
                         // Update passengers position
-                        for(Person person: line.getBus().getPassengers()){
+                        for (Person person : line.getBus().getPassengers()) {
+                            
+                            //récupérer personne by id
                             person.setDeparture(busStopLine.getBusStop());
                             person.setTimeDeparture(now);
                             personDAO.updatePerson(person);
                         }
                         break;
-                    }else if(busStopLine.getTime().getTime() >= precedTime.getTime()){
+                    } else if (busStopLine.getTime().getTime() >= precedTime.getTime()) {
                         // New passengers get on the bus
-                        for(Person person: busStopLine.getGetOnPersons()){
+                        for (Person person : busStopLine.getGetOnPersons()) {
                             line.getBus().addPassenger(person);
                         }
                         // Passenger get off if it is their stop
-                        for(Person person: line.getBus().getPassengers()){
+                        for (Person person : line.getBus().getPassengers()) {
                             line.getBus().removePassenger(person);
                             personDAO.deletePerson(person);
                         }

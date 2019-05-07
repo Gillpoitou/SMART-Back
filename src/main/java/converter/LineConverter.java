@@ -71,12 +71,12 @@ public class LineConverter {
 
         ObjectId id = (ObjectId) doc.get("_id");
         l.setId(id.toHexString());
-       
+
         return l;
     }
-    
-    public static JsonObject LineToJson(Line line){
-        
+
+    public static JsonObject LineToJson(Line line) {
+
         JsonObject result = new JsonObject();
         result.addProperty("id", line.getId());
         result.addProperty("name", line.getName());
@@ -85,7 +85,7 @@ public class LineConverter {
         //JsonObject bus = BusConverter.BusToJson(line.getBus());
         //result.add("bus", bus);
         JsonArray busStops = new JsonArray();
-        for(BusStopLine bsl : line.getBusStops()){
+        for (BusStopLine bsl : line.getBusStops()) {
             JsonObject busStopLine = BusStopLineConverter.BusStopLineToJson(bsl);
             busStops.add(busStopLine);
         }
