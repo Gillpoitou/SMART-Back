@@ -200,7 +200,7 @@ public class Algorithm {
                     arrival = new Date(precedDate.getTime() + duration * 1000);
                     preced = line.get(i).getDeparture();
                 }
-                if (arrival.compareTo(line.get(i).getTimeDeparture()) < 0) {
+                if (arrival.compareTo(line.get(i).getTimeDeparture()) < 0 && precedDate.compareTo(line.get(i).getTimeDeparture()) < 0) {
                     precedDate = line.get(i).getTimeDeparture();
                 }
                 // Si c'est une arrivée
