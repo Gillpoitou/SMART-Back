@@ -38,7 +38,7 @@ public class BusStop {
         this.nbPersonsComing = nbPersonsComing;
         this.paths = paths;
     }
-    
+
     public String getId() {
         return id;
     }
@@ -70,6 +70,7 @@ public class BusStop {
     public void setLongitude(double longitude) {
         this.longitude = longitude;
     }
+
     public void setBusStopID(int busStopID) {
         this.busStopID = busStopID;
     }
@@ -101,8 +102,19 @@ public class BusStop {
     public void setPaths(Vector<BusStopPath> paths) {
         this.paths = paths;
     }
-    
-    public void addBusStopPath(BusStopPath bsPath){
+
+    public void addBusStopPath(BusStopPath bsPath) {
         this.paths.add(bsPath);
+    }
+
+    public double getDurationToTarget(int targetBusStopId) {
+        if (targetBusStopId > 0 && paths.get(targetBusStopId - 1).getBusStop().getBusStopID() == targetBusStopId) {
+            return paths.get(targetBusStopId - 1).getDuration();
+        } else if (paths.get(targetBusStopId).getBusStop().getBusStopID() == targetBusStopId) {
+            return paths.get(targetBusStopId).getDuration();
+        }else {
+            //target not found
+            return -1;
+        }
     }
 }

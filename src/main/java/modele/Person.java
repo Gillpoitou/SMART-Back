@@ -6,7 +6,6 @@
 package modele;
 
 import java.util.Date;
-import org.bson.types.ObjectId;
 
 /**
  *
@@ -17,7 +16,6 @@ public class Person {
     private BusStop departure;
     private BusStop arrival;
     private Date timeDeparture;
-    private Line line;
 
     public Person() {
     }
@@ -27,7 +25,6 @@ public class Person {
         this.departure = departure;
         this.arrival = arrival;
         this.timeDeparture = timeDeparture;
-        this.line = line;
     }
 
     public String getId() {
@@ -61,12 +58,17 @@ public class Person {
     public void setTimeDeparture(Date time_departure) {
         this.timeDeparture = time_departure;
     }
-
-    public Line getLine() {
-        return line;
+    
+    @Override
+    public boolean equals (Object o){
+        if(!(o instanceof Person))
+        return false;
+        Person other = (Person)o;
+        return this.getId().equals(other.getId());
     }
-
-    public void setLine(Line line) {
-        this.line = line;
+    
+    @Override
+    public String toString(){
+        return id;
     }
 }

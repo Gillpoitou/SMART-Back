@@ -5,12 +5,17 @@
  */
 package dao;
 
+import com.mongodb.client.FindIterable;
 import modele.Bus;
 
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoCollection;
 import static com.mongodb.client.model.Filters.eq;
+import com.mongodb.client.model.Projections;
+import static com.mongodb.client.model.Projections.exclude;
 import converter.BusConverter;
+import java.util.ArrayList;
+import java.util.Vector;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 
@@ -33,10 +38,23 @@ public class BusDAO {
         bus.setId(id.toHexString());
         return bus;
     }
-    
-    public Bus getBusById(String id){
-        Bus b =  (Bus) BusConverter.toBus((Document)coll.find(eq("_id", new ObjectId(id))).first());
+
+    public Bus getBusById(String id) {
+        Bus b = (Bus) BusConverter.toBus((Document) coll.find(eq("_id", new ObjectId(id))).first());
         return b;
+    }
+
+    public ArrayList<Bus> selectAllBus() {
+        ArrayList<Bus> allBus = new ArrayList<Bus>();
+
+        FindIterable<Document> busDocs = coll.find();
+        for (Document busDoc : busDocs) {
+            System.out.println(busDoc);
+            Bus bus = BusConverter.toBus(busDoc);
+            allBus.add(bus);
+        }
+
+        return allBus;
     }
 
 }

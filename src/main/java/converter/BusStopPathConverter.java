@@ -31,19 +31,26 @@ public class BusStopPathConverter {
         busStopPath.setDuration((Double) doc.get("duration"));
         busStopPath.setDistance((Double) doc.get("distance"));
         busStopPath.setBusStop((BusStop) BusStopConverter.toBusStop((Document) doc.get("busStop")));
-        busStopPath.setPath((Path) PathConverter.toPath((Document) doc.get("path")));
+
+        if (doc.get("path") != null) {
+            busStopPath.setPath((Path) PathConverter.toPath((Document) doc.get("path")));
+        }
 
         return busStopPath;
     }
-    
-    public static JsonObject BusStopPathToJson(BusStopPath busStopPath){
+
+    public static JsonObject BusStopPathToJson(BusStopPath busStopPath) {
         JsonObject result = new JsonObject();
         JsonObject busStopDestination = BusStopConverter.BusStopToJson(busStopPath.getBusStop());
-        result.add("busStopDestination",busStopDestination);
-        result.addProperty("duration",busStopPath.getDuration());
-        result.addProperty("distance",busStopPath.getDistance());
-        JsonObject path = PathConverter.PathToJson(busStopPath.getPath());
-        result.add("path", path);
+        result.add("busStopDestination", busStopDestination);
+        result.addProperty("duration", busStopPath.getDuration());
+        result.addProperty("distance", busStopPath.getDistance());
+
+        if (busStopPath.getPath() != null) {
+            JsonObject path = PathConverter.PathToJson(busStopPath.getPath());
+            result.add("path", path);
+        }
+
         return result;
     }
 }

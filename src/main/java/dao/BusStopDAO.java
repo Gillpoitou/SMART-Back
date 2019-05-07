@@ -26,6 +26,7 @@ import static com.mongodb.client.model.Sorts.ascending;
 import com.mongodb.client.model.Field;
 import com.mongodb.client.model.Field;
 import static com.mongodb.client.model.Filters.eq;
+import com.mongodb.client.model.Projections;
 import converter.BusStopConverter;
 import java.util.Vector;
 import modele.BusStop;
@@ -55,17 +56,18 @@ public class BusStopDAO {
     }
 
     public BusStop getBusStopById(String id) {
+
         BusStop busStop = (BusStop) BusStopConverter.toBusStop((Document) coll.find(eq("_id", new ObjectId(id))).first());
         return busStop;
     }
 
     public Vector<BusStop> selectBusStops() {
         Vector<BusStop> result = new Vector<BusStop>(50);
-        FindIterable<Document> busStopDocs = coll.find();
+        FindIterable<Document> busStopDocs = coll.find().projection(Projections.fields(exclude("paths.path")));
         for (Document busStopDoc : busStopDocs) {
             BusStop busStop = BusStopConverter.toBusStop(busStopDoc);
             result.add(busStop);
-            System.out.println(busStop.getName());
+        
         }
         return result;
     }
@@ -97,7 +99,7 @@ public class BusStopDAO {
             Document next = iterator.next();
             BusStop currentBusStop = BusStopConverter.geoJsonToBusStop((Document) next.get("busStop"));
             currentBusStop.setBusStopID(currentID);
-            System.out.println(next.toString());
+            
             result.add(currentBusStop);
             currentID++;
         }

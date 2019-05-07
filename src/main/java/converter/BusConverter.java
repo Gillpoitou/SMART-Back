@@ -40,6 +40,7 @@ public class BusConverter {
     }
 
     public static Bus toBus(Document doc) {
+        
         Bus bus = new Bus();
         bus.setName((String) doc.get("name"));
         bus.setNbPlaces((Integer) doc.get("nbPlaces"));
@@ -47,8 +48,11 @@ public class BusConverter {
         if (doc.get("nbPassengers") != null) {
             bus.setNbPassengers((Integer) doc.get("nbPassengers"));
         }
+
         if (doc.get("position") != null) {
+            
             bus.setPosition(BusStopConverter.toBusStop((Document) doc.get("position")));
+            
         }
 
         ObjectId id = (ObjectId) doc.get("_id");
@@ -57,16 +61,20 @@ public class BusConverter {
         return bus;
     }
 
-    public static JsonObject BusToJson(Bus bus){
+    public static JsonObject BusToJson(Bus bus) {
         
         JsonObject result = new JsonObject();
         result.addProperty("id", bus.getId());
         result.addProperty("name", bus.getName());
         result.addProperty("nbPlaces", bus.getNbPlaces());
-        JsonObject position = BusStopConverter.BusStopToJson(bus.getPosition());
-        result.add("position", position);
-        result.addProperty("nbPassengers", bus.getNbPassengers());
         
+        if (bus.getPosition() != null) {
+            JsonObject position = BusStopConverter.BusStopToJson(bus.getPosition());
+            result.add("position", position);
+        }
+
+        result.addProperty("nbPassengers", bus.getNbPassengers());
+
         return result;
     }
 }
