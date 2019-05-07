@@ -96,6 +96,7 @@ public class Line {
         for(BusStopLine busStop: busStops){
             result += busStop.toString();
         }
+//        result+= "Arrival: " + arrival.getName() + "\n";
         return result;
     }
 }
