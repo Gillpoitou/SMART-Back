@@ -86,9 +86,13 @@ public class LineConverter {
         result.addProperty("id", line.getId());
         result.addProperty("name", line.getName());
         JsonObject busStopDpt = BusStopConverter.BusStopToJson(line.getDeparture());
-        JsonObject busStopArr = BusStopConverter.BusStopToJson(line.getArrival());
         result.add("departure", busStopDpt);
-        result.add("arrival", busStopArr);
+
+        if (line.getArrival() != null) {
+            JsonObject busStopArr = BusStopConverter.BusStopToJson(line.getArrival());
+            result.add("arrival", busStopArr);
+        }
+
         JsonObject bus = BusConverter.BusToJson(line.getBus());
         result.add("bus", bus);
         JsonArray busStops = new JsonArray();

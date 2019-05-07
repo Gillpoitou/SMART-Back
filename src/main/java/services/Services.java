@@ -23,6 +23,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Vector;
 import java.util.concurrent.TimeUnit;
@@ -116,7 +117,7 @@ public class Services {
                     for (BusStopLine bsl : currentLine.getBusStops()) {
                         if (bsl.getTime().after(currentDate)) {
                             position = bsl.getBusStop();
-                            
+
                             currentBus.setPosition(position);
 
                             if (bsl.getTime().after(maxCurrentDate)) {
@@ -222,30 +223,30 @@ public class Services {
 
         return racine;
     }
-
-    public static boolean getBusLines(MongoClient mongoClient, JsonObject result) {
-
-        try {
-            LineDAO lineDAO = new LineDAO(mongoClient);
-            //TODO match with BD DAO
-            List<Line> lines = new ArrayList();
-            JsonArray linesJson = new JsonArray();
-            for (Line l : lines) {
-                JsonObject line = LineConverter.LineToJson(l);
-                linesJson.add(line);
-            }
-            result.add("lines", linesJson);
-            return true;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
+//
+//    public static boolean getBusLines(MongoClient mongoClient, JsonObject result) {
+//
+//        try {
+//            LineDAO lineDAO = new LineDAO(mongoClient);
+//            //TODO match with BD DAO
+//            List<Line> lines = new ArrayList();
+//            JsonArray linesJson = new JsonArray();
+//            for (Line l : lines) {
+//                JsonObject line = LineConverter.LineToJson(l);
+//                linesJson.add(line);
+//            }
+//            result.add("lines", linesJson);
+//            return true;
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            return false;
+//        }
+//    }
 
     public static void test(MongoClient mongoClient) {
 
-        callAlgoCalculation(mongoClient);
 
+//        callAlgoCalculation(mongoClient);
 //        BusDAO busDAO = new BusDAO(mongoClient);
 //        BusStopDAO busStopDAO = new BusStopDAO(mongoClient);
 //
@@ -286,5 +287,68 @@ public class Services {
             e.printStackTrace();
             return false;
         }
+    }
+
+    public static boolean getBusLines(MongoClient mongoClient, JsonObject result) {
+        try {
+
+            JsonArray linesArray = new JsonArray();
+            LineDAO lineDAO = new LineDAO(mongoClient);
+            BusStopDAO busStopDAO = new BusStopDAO(mongoClient);
+            BusDAO busDAO = new BusDAO(mongoClient);
+
+            LinkedList<Line> lines = lineDAO.retrieveAll();
+
+            BusStop currentBusStop;
+            BusStop nextBusStop;
+            BusStop currentBusStopComplete;
+
+            for (Line line : lines) {
+                System.out.println(line.getBusStops().size());
+
+                currentBusStop = busDAO.getBusById(line.getBus().getId()).getPosition();
+
+                for (int i = 0; i < line.getBusStops().size(); i++) {
+                    nextBusStop = line.getBusStops().get(i).getBusStop();
+
+                    System.out.println(i + "  current : " + currentBusStop.getBusStopID() + "   " + currentBusStop.getName());
+                    System.out.println("next : " + nextBusStop.getBusStopID() + "   " + nextBusStop.getName());
+
+                    currentBusStopComplete = busStopDAO.getBusStopById(currentBusStop.getId());
+
+                    int index = nextBusStop.getBusStopID();
+
+                    if (currentBusStop.getBusStopID() < nextBusStop.getBusStopID()) {
+                        index--;
+                    }
+
+                    currentBusStop.addBusStopPath(currentBusStopComplete.getPaths().get(index));
+
+                    if (i == 0) {
+                        line.setDeparture(currentBusStop);
+                    } else {
+                        line.getBusStops().get(i - 1).setBusStop(currentBusStop);
+                    }
+
+                    currentBusStop = nextBusStop;
+                }
+
+//            System.out.println(BusStopConverter.toDocument(line.getDeparture()))
+//                    
+//            for (int i = 0; i<line.getBusStops().size(); i++) {
+//                BusStopLine busStopLine = line.getBusStops().get(i);
+//                System.out.println(i + "    : " + BusStopConverter.toDocument(busStopLine.getBusStop()));
+//            }
+//
+//            System.out.println(line.getBusStops().size());
+                linesArray.add(LineConverter.LineToJson(line));
+            }
+            result.add("lines", linesArray);
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+
     }
 }
