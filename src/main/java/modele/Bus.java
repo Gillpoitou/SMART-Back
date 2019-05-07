@@ -20,12 +20,13 @@ public class Bus {
     private int nbPlaces;
     private BusStop position;
     private int nbPassengers;
-    private ArrayList <Person> passengers;
+    private ArrayList<Person> passengers;
     private Date lastModif;
 
     public Bus() {
         this.nbPassengers = 0;
-        position = null;
+        this.position = null;
+        this.passengers = new ArrayList<>();
     }
 
     public Bus(String id, String name, int nbPlaces, BusStop position, int nbPassengers) {
@@ -76,28 +77,28 @@ public class Bus {
     public void setNbPassengers(int nbPassengers) {
         this.nbPassengers = nbPassengers;
     }
-    
-    public ArrayList<Person> getPassengers(){
+
+    public ArrayList<Person> getPassengers() {
         return this.passengers;
     }
-    
-    public void setPassengers(ArrayList<Person> persons){
+
+    public void setPassengers(ArrayList<Person> persons) {
         this.passengers = persons;
     }
-    
-    public void addPassenger(Person person){
+
+    public void addPassenger(Person person) {
         this.passengers.add(person);
     }
-    
-    public void removePassenger(Person person){
+
+    public void removePassenger(Person person) {
         this.passengers.remove(person);
     }
-    
-    public void setLastModif(Date newDate){
+
+    public void setLastModif(Date newDate) {
         this.lastModif = newDate;
     }
-    
-    public Date getLastModif(){
+
+    public Date getLastModif() {
         return this.lastModif;
     }
 }

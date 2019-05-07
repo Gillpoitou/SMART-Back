@@ -41,12 +41,6 @@ import modele.Person;
  * @author etien
  */
 public class Services {
-
-    public static String getBusMapDisplay() {
-
-        return "GET_BUS_MAP_DISPLAY";
-    }
-
     public static boolean postBusRequest(MongoClient mongoClient, Person person, int personCounter, Date lastRequestDate, int maxRequestNb, long maxTimeInterval) {
 
         try {
@@ -306,6 +300,16 @@ public class Services {
     }
 
     public static boolean createBus(MongoClient mongoClient, String data) {
+        BusDAO busDAO = new BusDAO(mongoClient);
+        BusStopDAO busStopDA0 = new BusStopDAO(mongoClient);
+        
+        Bus bus = BusConverter.jsonToBus(data);
+        
+        BusStop position  = busStopDA0.getBusStopByName("Charpennes");
+        bus.setPosition(position);
+        
+        busDAO.createBus(bus);
+        
         return true;
     }
 
