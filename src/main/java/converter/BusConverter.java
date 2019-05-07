@@ -5,7 +5,9 @@
  */
 package converter;
 
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -74,8 +76,8 @@ public class BusConverter {
         if (doc.get("position") != null) {
             bus.setPosition(BusStopConverter.toBusStop((Document) doc.get("position")));
         }
+        
         ArrayList<Person> passengers = new ArrayList<Person>();
-
         if (doc.get("passengers") != null) {
             List<Document> _passengers = (List<Document>) doc.get("passengers");
             for (Document d : _passengers) {
@@ -97,7 +99,7 @@ public class BusConverter {
         result.addProperty("id", bus.getId());
         result.addProperty("name", bus.getName());
         result.addProperty("nbPlaces", bus.getNbPlaces());
-        
+
         if (bus.getPosition() != null) {
             JsonObject position = BusStopConverter.BusStopToJson(bus.getPosition());
             result.add("position", position);
@@ -106,5 +108,21 @@ public class BusConverter {
         result.addProperty("nbPassengers", bus.getNbPassengers());
 
         return result;
+    }
+
+    public static Bus jsonToBus(String json) {
+        Bus bus = new Bus();
+
+        JsonElement jelement = new JsonParser().parse(json);
+        JsonObject jsonBus = jelement.getAsJsonObject();
+        jsonBus = jsonBus.getAsJsonObject("bus");
+        
+        String name = jsonBus.get("name").getAsString();
+        bus.setName(name);
+        
+        int nbPlaces = jsonBus.get("nbPlaces").getAsInt();
+        bus.setNbPlaces(nbPlaces);
+        
+        return bus;
     }
 }
