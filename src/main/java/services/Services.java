@@ -247,43 +247,43 @@ public class Services {
             LineDAO lineDAO = new LineDAO(mongoClient);
 
             LinkedList<Line> lineList = lineDAO.retrieveAll();
-
-            Date precedTime = lineList.get(0).getBus().getLastModif();
-            Date now = new Date();
             
+            Bus firstBus = busDAO.getBusById(lineList.get(0).getBus().getId());
+            Date precedTime = firstBus.getLastModif();
+            Date now = new Date();
+
             for (Line line : lineList) {
+                Bus bus = busDAO.getBusById(line.getBus().getId());
                 for (BusStopLine busStopLine : line.getBusStops()) {
+                    
                     if (busStopLine.getTime().getTime() >= now.getTime()) {
                         // Update bus position
-                        line.getBus().setPosition(busStopLine.getBusStop());
-                        
-                        //Récupérer bus by id
+                        bus.setPosition(busStopLine.getBusStop());
                         
                         // Update passengers position
-                        for (Person person : line.getBus().getPassengers()) {
-                            
-                            //récupérer personne by id
-                            person.setDeparture(busStopLine.getBusStop());
-                            person.setTimeDeparture(now);
-                            personDAO.updatePerson(person);
+                        for (Person person : bus.getPassengers()) {
+                            Person completePerson = personDAO.getPersonById(person.getId());
+                            completePerson.setDeparture(busStopLine.getBusStop());
+                            completePerson.setTimeDeparture(now);
+                            personDAO.updatePerson(completePerson);
                         }
                         break;
                     } else if (busStopLine.getTime().getTime() >= precedTime.getTime()) {
                         // New passengers get on the bus
                         for (Person person : busStopLine.getGetOnPersons()) {
-                            line.getBus().addPassenger(person);
+                            bus.addPassenger(person);
                         }
                         // Passenger get off if it is their stop
-                        for (Person person : line.getBus().getPassengers()) {
-                            line.getBus().removePassenger(person);
+                        for (Person person : bus.getPassengers()) {
+                            bus.removePassenger(person);
                             personDAO.deletePerson(person);
                         }
                         line.removeBusStopLine(busStopLine);
                         lineDAO.updateLine(line);
                     }
                 }
-                line.getBus().setLastModif(now);
-                busDAO.updateBus(line.getBus());
+                bus.setLastModif(now);
+                busDAO.updateBus(bus);
             }
 
             return true;
