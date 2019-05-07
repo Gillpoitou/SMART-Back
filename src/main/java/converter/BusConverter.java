@@ -88,8 +88,6 @@ public class BusConverter {
         ObjectId id = (ObjectId) doc.get("_id");
         bus.setId(id.toHexString());
 
-        System.out.println("Suuu 2");
-
         return bus;
     }
 

@@ -223,7 +223,7 @@ public class Services {
 
         return racine;
     }
-    
+
     public static boolean postBusProgress(MongoClient mongoClient, JsonObject result) {
         try {
 
@@ -232,7 +232,7 @@ public class Services {
             LineDAO lineDAO = new LineDAO(mongoClient);
 
             LinkedList<Line> lineList = lineDAO.retrieveAll();
-            
+
             Bus firstBus = busDAO.getBusById(lineList.get(0).getBus().getId());
             Date precedTime = firstBus.getLastModif();
             Date now = new Date();
@@ -240,11 +240,11 @@ public class Services {
             for (Line line : lineList) {
                 Bus bus = busDAO.getBusById(line.getBus().getId());
                 for (BusStopLine busStopLine : line.getBusStops()) {
-                    
+
                     if (busStopLine.getTime().getTime() >= now.getTime()) {
                         // Update bus position
                         bus.setPosition(busStopLine.getBusStop());
-                        
+
                         // Update passengers position
                         for (Person person : bus.getPassengers()) {
                             Person completePerson = personDAO.getPersonById(person.getId());
@@ -253,7 +253,7 @@ public class Services {
                             personDAO.updatePerson(completePerson);
                         }
                         break;
-                    } else if (busStopLine.getTime().getTime() >= precedTime.getTime()) {
+                    } else if (busStopLine.getTime().getTime() >= precedTime.getTime()) {      
                         // New passengers get on the bus
                         for (Person person : busStopLine.getGetOnPersons()) {
                             bus.addPassenger(person);
@@ -273,15 +273,14 @@ public class Services {
 
             getBusLines(mongoClient, result);
             getBusStops(mongoClient, result);
-            
+
             return true;
         } catch (Exception e) {
             return false;
         }
     }
-    
-    public static void test(MongoClient mongoClient) {
 
+    public static void test(MongoClient mongoClient) {
 
 //        callAlgoCalculation(mongoClient);
 //        BusDAO busDAO = new BusDAO(mongoClient);
@@ -342,15 +341,15 @@ public class Services {
             Bus currentBus;
 
             for (Line line : lines) {
-                System.out.println(line.getBusStops().size());
+//                System.out.println(line.getBusStops().size());
                 currentBus = busDAO.getBusById(line.getBus().getId());
                 currentBusStop = currentBus.getPosition();
 
                 for (int i = 0; i < line.getBusStops().size(); i++) {
                     nextBusStop = line.getBusStops().get(i).getBusStop();
 
-                    System.out.println(i + "  current : " + currentBusStop.getBusStopID() + "   " + currentBusStop.getName());
-                    System.out.println("next : " + nextBusStop.getBusStopID() + "   " + nextBusStop.getName());
+//                    System.out.println(i + "  current : " + currentBusStop.getBusStopID() + "   " + currentBusStop.getName());
+//                    System.out.println("next : " + nextBusStop.getBusStopID() + "   " + nextBusStop.getName());
 
                     currentBusStopComplete = busStopDAO.getBusStopById(currentBusStop.getId());
 
@@ -371,14 +370,6 @@ public class Services {
                     currentBusStop = nextBusStop;
                 }
                 line.setBus(currentBus);
-//            System.out.println(BusStopConverter.toDocument(line.getDeparture()))
-//                    
-//            for (int i = 0; i<line.getBusStops().size(); i++) {
-//                BusStopLine busStopLine = line.getBusStops().get(i);
-//                System.out.println(i + "    : " + BusStopConverter.toDocument(busStopLine.getBusStop()));
-//            }
-//
-//            System.out.println(line.getBusStops().size());
                 linesArray.add(LineConverter.LineToJson(line));
             }
             result.add("lines", linesArray);
@@ -387,6 +378,5 @@ public class Services {
             e.printStackTrace();
             return false;
         }
-
     }
 }
