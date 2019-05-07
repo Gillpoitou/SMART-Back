@@ -69,17 +69,17 @@ public class ActionServlet extends HttpServlet {
                 data = buffer.toString();
                 try {
                     Person person = PersonConverter.jsonToPerson(mongoClient, data);
-                    int personCounter = (int)request.getServletContext().getAttribute("PERSON_COUNTER");
-                    Date lastRequestDate = (Date)request.getServletContext().getAttribute("LAST_REQUEST_DATE");
-                    int maxRequestNb = (int)request.getServletContext().getAttribute("MAX_REQUEST_NB");
-                    long maxTimeInterval = (long)request.getServletContext().getAttribute("REQUEST_TIME_INTERVAL");
-                    
-                    if (Services.postBusRequest(mongoClient, person, personCounter, lastRequestDate, maxRequestNb,maxTimeInterval)) {
+                    int personCounter = (int) request.getServletContext().getAttribute("PERSON_COUNTER");
+                    Date lastRequestDate = (Date) request.getServletContext().getAttribute("LAST_REQUEST_DATE");
+                    int maxRequestNb = (int) request.getServletContext().getAttribute("MAX_REQUEST_NB");
+                    long maxTimeInterval = (long) request.getServletContext().getAttribute("REQUEST_TIME_INTERVAL");
+
+                    if (Services.postBusRequest(mongoClient, person, personCounter, lastRequestDate, maxRequestNb, maxTimeInterval)) {
 
                         try (PrintWriter out = response.getWriter()) {
                             out.println("Request Posted");
                         }
-                        request.getServletContext().setAttribute("PERSON_COUNTER", personCounter+1);
+                        request.getServletContext().setAttribute("PERSON_COUNTER", personCounter + 1);
                         request.getServletContext().setAttribute("LAST_REQUEST_DATE", new Date());
                     }
                 } catch (Exception e) {
@@ -88,7 +88,7 @@ public class ActionServlet extends HttpServlet {
                 }
                 break;
             case "initDataBase":
-                if(request.getParameter("key")== null || !request.getParameter("key").equals("iamanadministrator")){
+                if (request.getParameter("key") == null || !request.getParameter("key").equals("iamanadministrator")) {
                     try (PrintWriter out = response.getWriter()) {
                         out.println("Access denied !");
                         response.setStatus(401);
@@ -106,7 +106,7 @@ public class ActionServlet extends HttpServlet {
                 }
                 break;
             case "initDBTravel":
-                if(request.getParameter("key")== null || !request.getParameter("key").equals("iamanadministrator")){
+                if (request.getParameter("key") == null || !request.getParameter("key").equals("iamanadministrator")) {
                     try (PrintWriter out = response.getWriter()) {
                         out.println("Access denied !");
                         response.setStatus(401);
@@ -135,9 +135,9 @@ public class ActionServlet extends HttpServlet {
                         out.println("Error");
                     }
                 }
-            break;
+                break;
             case "getBusLines":
-               response.setContentType("application/json");
+                response.setContentType("application/json");
                 JsonObject resultLines = new JsonObject();
                 if(Services.getBusLines(mongoClient,resultLines)){
                    try (PrintWriter out = response.getWriter()){
@@ -167,7 +167,7 @@ public class ActionServlet extends HttpServlet {
                 break;
             case "createBus":
                 data = this.parsePostBody(request.getReader());
-                
+
                 if (Services.createBus(mongoClient, data)) {
                     try (PrintWriter out = response.getWriter()) {
                         out.println("Bus created");

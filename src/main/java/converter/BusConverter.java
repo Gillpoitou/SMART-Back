@@ -99,8 +99,12 @@ public class BusConverter {
         result.addProperty("id", bus.getId());
         result.addProperty("name", bus.getName());
         result.addProperty("nbPlaces", bus.getNbPlaces());
-        JsonObject position = BusStopConverter.BusStopToJson(bus.getPosition());
-        result.add("position", position);
+        
+        if (bus.getPosition() != null) {
+            JsonObject position = BusStopConverter.BusStopToJson(bus.getPosition());
+            result.add("position", position);
+        }
+
         result.addProperty("nbPassengers", bus.getNbPassengers());
 
         return result;

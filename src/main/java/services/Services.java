@@ -10,6 +10,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.mongodb.client.MongoClient;
+import converter.BusConverter;
 import converter.BusStopConverter;
 import converter.LineConverter;
 import dao.BusDAO;
@@ -80,9 +81,6 @@ public class Services {
         try {
             BusStopDAO bsDAO = new BusStopDAO(mongoClient);
             Vector<BusStop> busStops = bsDAO.selectBusStops();
-
-            System.out.println(busStops.size());
-
             double[][] durations = new double[busStops.size()][busStops.size()];
             for (int i = 0; i < busStops.size(); i++) {
                 for (int j = 0; j < busStops.size(); j++) {
@@ -105,21 +103,40 @@ public class Services {
 
             PersonDAO personDAO = new PersonDAO(mongoClient);
             ArrayList<Person> persons = personDAO.selectAllPersons();
-
-            System.out.println(persons.size());
-
             Date currentDate = new Date(); //create current date time
+            Date maxCurrentDate = new Date();
 
+            LineDAO lineDAO = new LineDAO(mongoClient);
             Bus[] busesArray = new Bus[buses.size()];
             for (int k = 0; k < buses.size(); k++) {
-                busesArray[k] = buses.get(k);
+                Bus currentBus = buses.get(k);
+                Line currentLine = lineDAO.retrieveLineByBusId(currentBus.getId());
+
+                if (currentLine != null) {
+                    BusStop position;
+                    for (BusStopLine bsl : currentLine.getBusStops()) {
+                        if (bsl.getTime().after(currentDate)) {
+                            position = bsl.getBusStop();
+
+                            currentBus.setPosition(position);
+
+                            if (bsl.getTime().after(maxCurrentDate)) {
+                                maxCurrentDate = bsl.getTime();
+                            }
+                            break;
+                        }
+                    }
+                }
+                busesArray[k] = currentBus;
             }
 
             //call algo
-            ArrayList<Line> lines = Algorithm.calculateLines(durations, busesArray, persons, currentDate);
+            ArrayList<Line> lines = Algorithm.calculateLines(durations, busesArray, persons, maxCurrentDate);
 
+            lineDAO.deleteAll();
             for (Line l : lines) {
                 System.out.println(l.toString());
+                lineDAO.createLine(l);
             }
 
             return true;
@@ -135,7 +152,6 @@ public class Services {
             Vector<BusStop> busStops = busStopDAO.selectBusStopsGeoJson(4.863718173086466, 45.7708809489496);
             for (int i = 0; i < busStops.size(); i++) {
                 busStopDAO.createBusStop(busStops.get(i));
-
             }
 
             return true;
@@ -207,38 +223,7 @@ public class Services {
 
         return racine;
     }
-
-    public static boolean getBusLines(MongoClient mongoClient, JsonObject result) {
-
-        try {
-            LineDAO lineDAO = new LineDAO(mongoClient);
-            List<Line> lines = lineDAO.retrieveAll();
-
-            JsonArray linesJson = new JsonArray();
-            for (Line l : lines) {
-                BusStopDAO bsDAO = new BusStopDAO(mongoClient);
-                for (int i = 0; i < l.getBusStops().size() - 1; i++) {
-                    l.getBusStops().get(i).setBusStop(bsDAO.getBusStopById(l.getBusStops().get(i).getBusStop().getId()));
-                    Vector<BusStopPath> busStopsPaths = new Vector();
-                    for (BusStopPath bsp : l.getBusStops().get(i).getBusStop().getPaths()) {
-                        if (bsp.getBusStop().getId().equals(l.getBusStops().get(i + 1).getBusStop().getId())) {
-                            busStopsPaths.add(bsp);
-                        }
-                    }
-                    l.getBusStops().get(i).getBusStop().setPaths(busStopsPaths);
-
-                }
-                JsonObject line = LineConverter.LineToJson(l);
-                linesJson.add(line);
-            }
-            result.add("lines", linesJson);
-            return true;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
-
+    
     public static boolean postBusProgress(MongoClient mongoClient, JsonObject result) {
         try {
 
@@ -291,11 +276,11 @@ public class Services {
             return false;
         }
     }
-
+    
     public static void test(MongoClient mongoClient) {
 
-        callAlgoCalculation(mongoClient);
 
+//        callAlgoCalculation(mongoClient);
 //        BusDAO busDAO = new BusDAO(mongoClient);
 //        BusStopDAO busStopDAO = new BusStopDAO(mongoClient);
 //
@@ -336,5 +321,68 @@ public class Services {
             e.printStackTrace();
             return false;
         }
+    }
+
+    public static boolean getBusLines(MongoClient mongoClient, JsonObject result) {
+        try {
+
+            JsonArray linesArray = new JsonArray();
+            LineDAO lineDAO = new LineDAO(mongoClient);
+            BusStopDAO busStopDAO = new BusStopDAO(mongoClient);
+            BusDAO busDAO = new BusDAO(mongoClient);
+
+            LinkedList<Line> lines = lineDAO.retrieveAll();
+
+            BusStop currentBusStop;
+            BusStop nextBusStop;
+            BusStop currentBusStopComplete;
+
+            for (Line line : lines) {
+                System.out.println(line.getBusStops().size());
+
+                currentBusStop = busDAO.getBusById(line.getBus().getId()).getPosition();
+
+                for (int i = 0; i < line.getBusStops().size(); i++) {
+                    nextBusStop = line.getBusStops().get(i).getBusStop();
+
+                    System.out.println(i + "  current : " + currentBusStop.getBusStopID() + "   " + currentBusStop.getName());
+                    System.out.println("next : " + nextBusStop.getBusStopID() + "   " + nextBusStop.getName());
+
+                    currentBusStopComplete = busStopDAO.getBusStopById(currentBusStop.getId());
+
+                    int index = nextBusStop.getBusStopID();
+
+                    if (currentBusStop.getBusStopID() < nextBusStop.getBusStopID()) {
+                        index--;
+                    }
+
+                    currentBusStop.addBusStopPath(currentBusStopComplete.getPaths().get(index));
+
+                    if (i == 0) {
+                        line.setDeparture(currentBusStop);
+                    } else {
+                        line.getBusStops().get(i - 1).setBusStop(currentBusStop);
+                    }
+
+                    currentBusStop = nextBusStop;
+                }
+
+//            System.out.println(BusStopConverter.toDocument(line.getDeparture()))
+//                    
+//            for (int i = 0; i<line.getBusStops().size(); i++) {
+//                BusStopLine busStopLine = line.getBusStops().get(i);
+//                System.out.println(i + "    : " + BusStopConverter.toDocument(busStopLine.getBusStop()));
+//            }
+//
+//            System.out.println(line.getBusStops().size());
+                linesArray.add(LineConverter.LineToJson(line));
+            }
+            result.add("lines", linesArray);
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+
     }
 }
