@@ -59,8 +59,7 @@ public class LineConverter {
         Line l = new Line();
         l.setName((String) doc.get("name"));
         l.setDeparture((BusStop) BusStopConverter.toBusStop((Document) doc.get("departure")));
-        l.setArrival((BusStop) BusStopConverter.toBusStop((Document) doc.get("arrival")));
-        l.setBus((Bus) BusConverter.toBus((Document) doc.get("Bus")));
+        l.setBus((Bus) BusConverter.toBus((Document) doc.get("bus")));
 
         //BusStops
         List<Document> _busStops = (List<Document>) doc.get("busStops");
@@ -72,7 +71,7 @@ public class LineConverter {
 
         ObjectId id = (ObjectId) doc.get("_id");
         l.setId(id.toHexString());
-
+       
         return l;
     }
     
@@ -82,11 +81,9 @@ public class LineConverter {
         result.addProperty("id", line.getId());
         result.addProperty("name", line.getName());
         JsonObject busStopDpt = BusStopConverter.BusStopToJson(line.getDeparture());
-        JsonObject busStopArr = BusStopConverter.BusStopToJson(line.getArrival());
         result.add("departure", busStopDpt);
-        result.add("arrival",busStopArr);
-        JsonObject bus = BusConverter.BusToJson(line.getBus());
-        result.add("bus", bus);
+        //JsonObject bus = BusConverter.BusToJson(line.getBus());
+        //result.add("bus", bus);
         JsonArray busStops = new JsonArray();
         for(BusStopLine bsl : line.getBusStops()){
             JsonObject busStopLine = BusStopLineConverter.BusStopLineToJson(bsl);

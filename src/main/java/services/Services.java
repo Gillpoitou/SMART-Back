@@ -29,6 +29,7 @@ import javax.servlet.http.HttpServletResponse;
 import static javax.ws.rs.core.HttpHeaders.USER_AGENT;
 import modele.Bus;
 import modele.BusStop;
+import modele.BusStopLine;
 import modele.BusStopPath;
 import modele.Line;
 import modele.Person;
@@ -210,10 +211,22 @@ public class Services {
 
         try {
             LineDAO lineDAO = new LineDAO(mongoClient);
-            //TODO match with BD DAO
-            List<Line> lines = new ArrayList();
+            List<Line> lines = lineDAO.retrieveAll();
+           
             JsonArray linesJson = new JsonArray();
             for (Line l : lines) {
+                BusStopDAO bsDAO = new BusStopDAO(mongoClient);
+                for(int i = 0 ; i < l.getBusStops().size() -1 ; i++){
+                    l.getBusStops().get(i).setBusStop(bsDAO.getBusStopById(l.getBusStops().get(i).getBusStop().getId()));
+                    Vector<BusStopPath> busStopsPaths = new Vector();
+                    for(BusStopPath bsp : l.getBusStops().get(i).getBusStop().getPaths()){
+                        if(bsp.getBusStop().getId().equals(l.getBusStops().get(i+1).getBusStop().getId())){
+                            busStopsPaths.add(bsp);
+                        }
+                    }
+                    l.getBusStops().get(i).getBusStop().setPaths(busStopsPaths);
+                    
+                }
                 JsonObject line = LineConverter.LineToJson(l);
                 linesJson.add(line);
             }

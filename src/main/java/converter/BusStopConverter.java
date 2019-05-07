@@ -123,7 +123,7 @@ public class BusStopConverter {
 
     public static JsonObject BusStopToJson(BusStop busStop) {
         JsonObject result = new JsonObject();
-
+        
         result.addProperty("id", busStop.getId());
         result.addProperty("busStopId", busStop.getBusStopID());
         result.addProperty("name", busStop.getName());
