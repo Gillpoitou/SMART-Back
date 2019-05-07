@@ -5,8 +5,6 @@
  */
 package modele;
 
-import org.bson.types.ObjectId;
-
 /**
  *
  * @author thomasmalvoisin

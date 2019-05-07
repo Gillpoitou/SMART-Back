@@ -7,6 +7,7 @@ package servlets;
 
 import com.google.gson.JsonObject;
 import com.mongodb.client.MongoClient;
+import converter.AlgoParametersConverter;
 import converter.BusConverter;
 import converter.PersonConverter;
 import dao.BusDAO;
@@ -19,6 +20,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import modele.AlgoParameters;
 import modele.Bus;
 import modele.BusStop;
 import modele.Person;
@@ -73,6 +75,7 @@ public class ActionServlet extends HttpServlet {
                     Date lastRequestDate = (Date)request.getServletContext().getAttribute("LAST_REQUEST_DATE");
                     int maxRequestNb = (int)request.getServletContext().getAttribute("MAX_REQUEST_NB");
                     long maxTimeInterval = (long)request.getServletContext().getAttribute("REQUEST_TIME_INTERVAL");
+                    
                     
                     if (Services.postBusRequest(mongoClient, person, personCounter, lastRequestDate, maxRequestNb,maxTimeInterval)) {
 
@@ -149,6 +152,27 @@ public class ActionServlet extends HttpServlet {
                         } 
                 } 
             break;
+            case "putCallAlgoParams" :
+                System.out.println("suuuu");
+                Services.putCallAlgoParams(request.getServletContext(), 4, 12);
+                System.out.println(request.getServletContext().getAttribute("MAX_REQUEST_NB"));
+                System.out.println(request.getServletContext().getAttribute("REQUEST_TIME_INTERVAL"));
+                break; 
+            case "postAlgoParameters" :
+                response.setContentType("text");
+                data = this.parsePostBody(request.getReader());
+                System.out.println(data);
+                
+                try {
+                    AlgoParameters aP = AlgoParametersConverter.jsonToAlgoParameters(mongoClient, data);
+                    PrintWriter out = response.getWriter();
+                    out.println("Request Posted");
+                    
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    response.sendError(422, "Unprocessable entity");
+                }
+                break;
             case "test":
                 Services.test(mongoClient);
                 break;

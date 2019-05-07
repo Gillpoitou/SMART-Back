@@ -12,6 +12,7 @@ import com.google.gson.JsonParser;
 import com.mongodb.client.MongoClient;
 import converter.BusStopConverter;
 import converter.LineConverter;
+import dao.AlgoParametersDAO;
 import dao.BusDAO;
 import dao.BusStopDAO;
 import dao.LineDAO;
@@ -28,6 +29,7 @@ import java.util.concurrent.TimeUnit;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletResponse;
 import static javax.ws.rs.core.HttpHeaders.USER_AGENT;
+import modele.AlgoParameters;
 import modele.Bus;
 import modele.BusStop;
 import modele.BusStopPath;
@@ -44,7 +46,18 @@ public class Services {
 
         return "GET_BUS_MAP_DISPLAY";
     }
+    
+    public static boolean postAlgoParameters(MongoClient mongoClient, AlgoParameters aP) {
+        try{
+            AlgoParametersDAO aPDAO = new AlgoParametersDAO(mongoClient);
+            aPDAO.createAlgoParameters(aP);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
 
+    }
+    
     public static boolean postBusRequest(MongoClient mongoClient, Person person, int personCounter, Date lastRequestDate, int maxRequestNb, long maxTimeInterval) {
         
         try {
@@ -112,6 +125,7 @@ public class Services {
         servletContext.setAttribute("MAX_REQUEST_NB", maxRequestNb);
         servletContext.setAttribute("REQUEST_TIME_INTERVAL", maxTimeInterval);
     }
+    
     
     public static boolean initDataBase(MongoClient mongoClient) {
         System.out.println("stating initialization");
