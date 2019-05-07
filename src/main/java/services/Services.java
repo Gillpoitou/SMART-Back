@@ -271,6 +271,9 @@ public class Services {
                 busDAO.updateBus(bus);
             }
 
+            getBusLines(mongoClient, result);
+            getBusStops(mongoClient, result);
+            
             return true;
         } catch (Exception e) {
             return false;
@@ -336,11 +339,12 @@ public class Services {
             BusStop currentBusStop;
             BusStop nextBusStop;
             BusStop currentBusStopComplete;
+            Bus currentBus;
 
             for (Line line : lines) {
                 System.out.println(line.getBusStops().size());
-
-                currentBusStop = busDAO.getBusById(line.getBus().getId()).getPosition();
+                currentBus = busDAO.getBusById(line.getBus().getId());
+                currentBusStop = currentBus.getPosition();
 
                 for (int i = 0; i < line.getBusStops().size(); i++) {
                     nextBusStop = line.getBusStops().get(i).getBusStop();
@@ -366,7 +370,7 @@ public class Services {
 
                     currentBusStop = nextBusStop;
                 }
-
+                line.setBus(currentBus);
 //            System.out.println(BusStopConverter.toDocument(line.getDeparture()))
 //                    
 //            for (int i = 0; i<line.getBusStops().size(); i++) {
