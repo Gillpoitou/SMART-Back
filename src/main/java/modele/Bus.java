@@ -5,6 +5,8 @@
  */
 package modele;
 
+import java.util.ArrayList;
+import java.util.Date;
 import org.bson.types.ObjectId;
 
 /**
@@ -18,6 +20,8 @@ public class Bus {
     private int nbPlaces;
     private BusStop position;
     private int nbPassengers;
+    private ArrayList <Person> passengers;
+    private Date lastModif;
 
     public Bus() {
         this.nbPassengers = 0;
@@ -30,6 +34,7 @@ public class Bus {
         this.nbPlaces = nbPlaces;
         this.position = position;
         this.nbPassengers = nbPassengers;
+        this.passengers = new ArrayList<>();
     }
 
     public String getId() {
@@ -70,5 +75,29 @@ public class Bus {
 
     public void setNbPassengers(int nbPassengers) {
         this.nbPassengers = nbPassengers;
+    }
+    
+    public ArrayList<Person> getPassengers(){
+        return this.passengers;
+    }
+    
+    public void setPassengers(ArrayList<Person> persons){
+        this.passengers = persons;
+    }
+    
+    public void addPassenger(Person person){
+        this.passengers.add(person);
+    }
+    
+    public void removePassenger(Person person){
+        this.passengers.remove(person);
+    }
+    
+    public void setLastModif(Date newDate){
+        this.lastModif = newDate;
+    }
+    
+    public Date getLastModif(){
+        return this.lastModif;
     }
 }

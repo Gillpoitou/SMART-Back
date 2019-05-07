@@ -76,7 +76,7 @@ public class LineConverter {
 
         ObjectId id = (ObjectId) doc.get("_id");
         l.setId(id.toHexString());
-       
+
         return l;
     }
 

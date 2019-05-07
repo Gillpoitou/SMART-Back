@@ -139,14 +139,27 @@ public class ActionServlet extends HttpServlet {
             case "getBusLines":
                 response.setContentType("application/json");
                 JsonObject resultLines = new JsonObject();
-                if (Services.getBusLines(mongoClient, resultLines)) {
-                    try (PrintWriter out = response.getWriter()) {
-                        out.println(resultLines);
-                    }
-                } else {
-                    try (PrintWriter out = response.getWriter()) {
-                        out.println("Error");
-                    }
+                if(Services.getBusLines(mongoClient,resultLines)){
+                   try (PrintWriter out = response.getWriter()){
+                            out.println(resultLines);
+                        } 
+                }else{
+                    try (PrintWriter out = response.getWriter()){
+                            out.println("Error");
+                        } 
+                } 
+            break;
+            case "postBusProgress":
+                response.setContentType("application/json");
+                JsonObject resultingContext = new JsonObject();
+                if(Services.postBusProgress(mongoClient, resultingContext)){
+                   try (PrintWriter out = response.getWriter()){
+                            out.println(resultingContext);
+                        } 
+                }else{
+                    try (PrintWriter out = response.getWriter()){
+                            out.println("Error");
+                        } 
                 }
                 break;
             case "test":
