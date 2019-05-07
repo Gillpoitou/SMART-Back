@@ -252,7 +252,7 @@ public class Services {
     }
 
     public static boolean createBus(MongoClient mongoClient, String data) {
-
+        return true;
     }
 
     public static boolean getBusStops(MongoClient mongoClient, JsonObject result) {
