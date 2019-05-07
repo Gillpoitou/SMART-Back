@@ -77,14 +77,17 @@ public class Algorithm {
         durations = journeyDurations;
         currentDate = theCurrentDate;
         buses = aBuses;
-        
-        //Appeler greedy
-        //Appeler taboueLine currentLine = new Line();
-        //Créer les lignes avec BusStop
-        pourcentage = 3;
+        pourcentage = 2;
         ArrayList<ArrayList<Person>> lines = greedyAlgo(buses, requests);
         
-        optRoute(lines.get(0), 0);
+        lines.set(0, optRoute(lines.get(0), 0));
+        
+        for(ArrayList <Person> persons : lines){
+            System.out.println("Autre Ligne");
+            for(Person person: persons){
+                System.out.println(person.getId());
+            }
+        }
         
         if(lines != null){
             ArrayList<Line> result = createLines(lines, buses, currentDate);
@@ -169,13 +172,13 @@ public class Algorithm {
                 }
             }
         }
-
+/*
         for (ArrayList<Person> line : busLines) {
             System.out.println("Nouvelle ligne");
             for (Person person : line) {
                 System.out.println(person.getId());
             }
-        }
+        }*/
 
         return busLines;
     }
