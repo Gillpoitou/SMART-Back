@@ -71,6 +71,10 @@ public class Line {
     public void setBusStops(ArrayList<BusStopLine> busStops) {
         this.busStops = busStops;
     }
+    
+    public void removeBusStopLine(BusStopLine busStopLine){
+        this.busStops.remove(busStopLine);
+    }
 
     public Bus getBus() {
         return bus;

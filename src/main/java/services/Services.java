@@ -22,6 +22,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Vector;
 import java.util.concurrent.TimeUnit;
@@ -234,6 +235,52 @@ public class Services {
             return true;
         } catch (Exception e) {
             e.printStackTrace();
+            return false;
+        }
+    }
+    
+    public static boolean postBusProgress(MongoClient mongoClient, JsonObject result){
+        try {
+            BusDAO busDAO = new BusDAO(mongoClient);
+            PersonDAO personDAO = new PersonDAO(mongoClient);
+            LineDAO lineDAO = new LineDAO(mongoClient);
+            
+            LinkedList<Line> lineList = lineDAO.retrieveAll();
+            Date precedTime = lineList.get(0).getBus().getLastModif();
+            Date now = new Date();
+               
+            for(Line line: lineList){
+                for(BusStopLine busStopLine: line.getBusStops()){
+                    if(busStopLine.getTime().getTime() >= now.getTime()){
+                        // Update bus position
+                        line.getBus().setPosition(busStopLine.getBusStop());
+                        // Update passengers position
+                        for(Person person: line.getBus().getPassengers()){
+                            person.setDeparture(busStopLine.getBusStop());
+                            person.setTimeDeparture(now);
+                            personDAO.updatePerson(person);
+                        }
+                        break;
+                    }else if(busStopLine.getTime().getTime() >= precedTime.getTime()){
+                        // New passengers get on the bus
+                        for(Person person: busStopLine.getGetOnPersons()){
+                            line.getBus().addPassenger(person);
+                        }
+                        // Passenger get off if it is their stop
+                        for(Person person: line.getBus().getPassengers()){
+                            line.getBus().removePassenger(person);
+                            personDAO.deletePerson(person);
+                        }
+                        line.removeBusStopLine(busStopLine);
+                        lineDAO.updateLine(line);
+                    }
+                }
+                line.getBus().setLastModif(now);
+                busDAO.updateBus(line.getBus());
+            }
+
+            return true;
+        } catch (Exception e) {
             return false;
         }
     }

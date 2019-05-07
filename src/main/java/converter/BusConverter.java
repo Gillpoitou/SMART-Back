@@ -6,7 +6,13 @@
 package converter;
 
 import com.google.gson.JsonObject;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
 import modele.Bus;
+import modele.BusStopLine;
+import modele.Person;
 
 import org.bson.Document;
 import org.bson.types.ObjectId;
@@ -23,9 +29,21 @@ public class BusConverter {
                 .append("nbPlaces", bus.getNbPlaces())
                 .append("position", BusStopConverter.toConstantDocument(bus.getPosition()))
                 .append("nbPassengers", bus.getNbPassengers());
+                
         if (bus.getId() != null) {
             doc.append("_id", new ObjectId(bus.getId()));
         }
+        
+        if(bus.getLastModif() != null) {
+            doc.append("lastModif", bus.getLastModif());
+        }
+        
+        ArrayList<Document> passengers = new ArrayList<>();
+        for (Person person : bus.getPassengers()) {
+            passengers.add(PersonConverter.toConstantDocument(person));
+        }
+        doc.append("passengers", passengers);
+        
         return doc;
     }
 
@@ -45,15 +63,24 @@ public class BusConverter {
         bus.setName((String) doc.get("name"));
         bus.setNbPlaces((Integer) doc.get("nbPlaces"));
 
+        if(doc.get("lastModif") != null){
+            bus.setLastModif((Date) doc.get("lastModif"));
+        }
+        
         if (doc.get("nbPassengers") != null) {
             bus.setNbPassengers((Integer) doc.get("nbPassengers"));
         }
 
-        if (doc.get("position") != null) {
-            
-            bus.setPosition(BusStopConverter.toBusStop((Document) doc.get("position")));
-            
+        if (doc.get("position") != null) { 
+            bus.setPosition(BusStopConverter.toBusStop((Document) doc.get("position")));  
         }
+        
+        List<Document> _passengers = (List<Document>) doc.get("passengers");
+        ArrayList<Person> passengers = new ArrayList<Person>();
+        for (Document d : _passengers) {
+            passengers.add(PersonConverter.toPerson(d));
+        }
+        bus.setPassengers(passengers);
 
         ObjectId id = (ObjectId) doc.get("_id");
         bus.setId(id.toHexString());
