@@ -50,19 +50,18 @@ public class BusDAO {
 
         FindIterable<Document> busDocs = coll.find();
         for (Document busDoc : busDocs) {
-            System.out.println(busDoc);
             Bus bus = BusConverter.toBus(busDoc);
             allBus.add(bus);
         }
 
         return allBus;
     }
-    
-    public Bus updateBus(Bus bus){
+
+    public Bus updateBus(Bus bus) {
         this.coll.replaceOne(eq("_id", new ObjectId(bus.getId())),
                 BusConverter.toDocument(bus)
-                );
-        
+        );
+
         return bus;
     }
 

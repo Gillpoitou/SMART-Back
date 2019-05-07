@@ -41,6 +41,7 @@ import modele.Person;
  * @author etien
  */
 public class Services {
+
     public static boolean postBusRequest(MongoClient mongoClient, Person person, int personCounter, Date lastRequestDate, int maxRequestNb, long maxTimeInterval) {
 
         try {
@@ -247,7 +248,7 @@ public class Services {
                             personDAO.updatePerson(completePerson);
                         }
                         break;
-                    } else if (busStopLine.getTime().getTime() >= precedTime.getTime()) {      
+                    } else if (busStopLine.getTime().getTime() >= precedTime.getTime()) {
                         // New passengers get on the bus
                         for (Person person : busStopLine.getGetOnPersons()) {
                             bus.addPassenger(person);
@@ -302,14 +303,14 @@ public class Services {
     public static boolean createBus(MongoClient mongoClient, String data) {
         BusDAO busDAO = new BusDAO(mongoClient);
         BusStopDAO busStopDA0 = new BusStopDAO(mongoClient);
-        
+
         Bus bus = BusConverter.jsonToBus(data);
-        
-        BusStop position  = busStopDA0.getBusStopByName("Charpennes");
+
+        BusStop position = busStopDA0.getBusStopByName("Charpennes");
         bus.setPosition(position);
-        
+
         busDAO.createBus(bus);
-        
+
         return true;
     }
 
@@ -354,7 +355,6 @@ public class Services {
 
 //                    System.out.println(i + "  current : " + currentBusStop.getBusStopID() + "   " + currentBusStop.getName());
 //                    System.out.println("next : " + nextBusStop.getBusStopID() + "   " + nextBusStop.getName());
-
                     currentBusStopComplete = busStopDAO.getBusStopById(currentBusStop.getId());
 
                     int index = nextBusStop.getBusStopID();
@@ -382,5 +382,25 @@ public class Services {
             e.printStackTrace();
             return false;
         }
+    }
+
+    public static void initDBValues(MongoClient mongoClient) throws Exception {
+        BusDAO busDAO = new BusDAO(mongoClient);
+        BusStopDAO busStopDAO = new BusStopDAO(mongoClient);
+        
+        ArrayList<Bus> buses = busDAO.selectAllBus();
+        
+        Date currentDate = new Date();
+        
+        for(Bus bus : buses){
+            
+            bus.setLastModif(currentDate);
+//            bus.setNbPassengers(0);
+//            bus.setPassengers(new ArrayList<Person>());
+//            bus.setPosition(busStopDAO.getBusStopByName("Charpennes"));
+            bus = busDAO.updateBus(bus);
+        }
+        
+        
     }
 }
