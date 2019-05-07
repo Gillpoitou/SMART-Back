@@ -288,8 +288,10 @@ public class Algorithm {
     public static void TabuSearch(Bus[] buses, ArrayList<Person> requests) {
         int timeSinceLastBestUpdate = 0;
 
-        //Initialise sol with greedy
+        //Initialise sol with greedy and optRoutes
         ArrayList<ArrayList<Person>> sol = greedyAlgo(buses, requests);
+        optRoutes(sol);
+        
         //Careful: never change the person's attributes
         ArrayList<ArrayList<Person>> bestSol = createCopy(sol);
         ArrayList<ArrayList<Person>> neighbour = createCopy(sol);
@@ -305,11 +307,23 @@ public class Algorithm {
         int iter = 0;
         int bestLastUpdate = 0;
         int convergence = 40;
+        int routesNb = sol.size();
 
         while (iter - bestLastUpdate < convergence) {
             iter++;
-
             //searching for the best OR a good neighbour
+            //best among 10
+            for (int i = 0 ; i < 10 ; i++){
+                int fromRoute = (int)(Math.random()*routesNb);
+                int toRoute = (int)(Math.random()*(routesNb-1));
+                if (toRoute >= fromRoute){
+                    toRoute++;
+                }
+                
+                //get a random person from 'from', check it's not Tabu
+                //if Tabu reset randoms
+                //else put person in 'to'
+            }
             //using only non tabu requests
             //move to bestNeighbour AND update tabuList of the request that has been moved
             //update bestSol if needed
@@ -327,6 +341,12 @@ public class Algorithm {
             copy.add(part);
         }
         return copy;
+    }
+    
+    public static void optRoutes(ArrayList<ArrayList<Person>> routes){
+        for (int i = 0 ; i < routes.size() ; i++){
+            routes.set(i, optRoute(routes.get(i), i));
+        }
     }
     
     public static ArrayList<Person> optRoute (ArrayList<Person> aRoute, int busNb){
