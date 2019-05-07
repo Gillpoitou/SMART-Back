@@ -24,19 +24,18 @@ public class Algorithm {
     private static Date currentDate;
     private static Bus[] buses;
 
-
     public static ArrayList<Line> calculateLines(double[][] journeyDurations, Bus[] aBuses, ArrayList<Person> requests, Date theCurrentDate) {
         durations = journeyDurations;
         currentDate = theCurrentDate;
         buses = aBuses;
         percentage = 3;
-        
+
         //call tabu who is calling greedy to initialise and then optimise the 
         //dispatchment of persons and the route of each line (optRoute)
         ArrayList<ArrayList<Person>> solution = tabuSearch(requests);
-        
+
         ArrayList<Line> lines = createLines(solution);
-        
+
         return lines;
         /*
         //Appeler greedy
@@ -139,6 +138,17 @@ public class Algorithm {
         }
 
         return busLines;
+    }
+
+    public static boolean feasibleLines(ArrayList<ArrayList<Person>> lines) {
+        int i = 0;
+        for (ArrayList<Person> line : lines) {
+            if (!feasibleLine(line, buses[i])) {
+                return false;
+            }
+            i++;
+        }
+        return true;
     }
 
     public static boolean feasibleLine(ArrayList<Person> line, Bus bus) {
@@ -258,12 +268,11 @@ public class Algorithm {
         ArrayList<ArrayList<Person>> bestSol = createCopy(sol);
         ArrayList<ArrayList<Person>> neighbour = createCopy(sol);
         ArrayList<ArrayList<Person>> bestNeighbour = createCopy(sol);
-        
+
         double currentCost = getCost(sol, solLines);
         double neighbourCost;
         double bestNeighbourCost;
         double bestSolCost = currentCost;
-        
 
         //Generate tabu list as the last time a person was used in a move
         HashMap<String, Integer> tabuList = new HashMap<>();
@@ -296,24 +305,26 @@ public class Algorithm {
 
                     //get a random person from 'from', check it's not Tabu
                     randomPerson = (int) (Math.random() * sol.get(fromRoute).size());
+                    //System.out.println("sol"+sol.get(fromRoute).size()+"    n"+neighbour.get(fromRoute).size());
                 } while (iter - tabuList.get(sol.get(fromRoute).get(randomPerson).getId()) <= TABU_LENGTH); //if Tabu reset randoms
                 //else put person in 'to'
                 tabuList.put(sol.get(fromRoute).get(randomPerson).getId(), iter);
+                neighbour = createCopy(sol);
+                Person p = neighbour.get(fromRoute).get(randomPerson);
                 
-                Person  p = neighbour.get(fromRoute).get(randomPerson);
                 neighbour.get(fromRoute).remove(p);
                 neighbour.get(fromRoute).remove(p);
                 neighbour.get(toRoute).add(p);
                 neighbour.get(toRoute).add(p);
-                
+
                 //opt the routes we changed
                 neighbour.set(fromRoute, optRoute(neighbour.get(fromRoute), fromRoute));
                 neighbour.set(toRoute, optRoute(neighbour.get(toRoute), toRoute));
-                
+
                 //checking the cost
                 ArrayList<Line> neighbourLines = createLines(neighbour);
                 neighbourCost = getCost(neighbour, neighbourLines);
-                if (neighbourCost < bestNeighbourCost){
+                if (neighbourCost < bestNeighbourCost) {
                     bestNeighbour = createCopy(neighbour);
                     bestNeighbourCost = neighbourCost;
                     bestNeighbourMoveId = sol.get(fromRoute).get(randomPerson).getId();
@@ -323,12 +334,12 @@ public class Algorithm {
             tabuList.put(bestNeighbourMoveId, iter);
             sol = createCopy(bestNeighbour);
             currentCost = bestNeighbourCost;
-            
+
             //update bestSol if needed
-            if (currentCost < bestSolCost){
+            if (currentCost < bestSolCost && feasibleLines(sol)) {
                 bestSol = createCopy(sol);
                 bestSolCost = currentCost;
-                
+
                 //to reset the 'get out' countdown
                 bestLastUpdate = iter;
             }
@@ -336,11 +347,10 @@ public class Algorithm {
         return bestSol;
     }
 
-    
     //TABU UTIL METHODS
     public static double getCost(ArrayList<ArrayList<Person>> journeys, ArrayList<Line> lines) {
-        System.out.println(journeys);
-        System.out.println(lines);
+        //System.out.println(journeys);
+        //System.out.println(lines);
         double cost = 0;
         for (int i = 0; i < journeys.size(); i++) {
             ArrayList<Person> journey = journeys.get(i);
@@ -353,13 +363,22 @@ public class Algorithm {
 
                 //search for the first stop of the line after the departure time
                 //to avoid being confused by possibles loop of the line
-                
                 int k = 0;
-                
                 Date firstStopDate = stops.get(k).getTime();
                 while (depDate.after(firstStopDate)) {
                     k++;
                     firstStopDate = stops.get(k).getTime();
+                }
+
+                //need to check the previous one because firstStopDate is the date the bus arrive at a stop
+                //not the date it leaves this stop: it might wait for someone
+                //so we check that the bus hasn't left before the client departure
+                if (k > 0) {
+                    double travelTime = durations[stops.get(k - 1).getBusStop().getBusStopID()][stops.get(k).getBusStop().getBusStopID()];
+                    double bus_leavingTime = stops.get(k).getTime().getTime() / 1000.0 - travelTime;
+                    if (depDate.getTime() / 1000.0 <= bus_leavingTime) {
+                        k--;
+                    }
                 }
 
                 //search for the waiting time at the bus stop
@@ -368,9 +387,12 @@ public class Algorithm {
                     k++;
                     CurStopId = stops.get(k).getBusStop().getId();
                 }
-                System.out.println("after dep k: "+k);
+                //System.out.println("after dep k: "+k);
 
                 //search for the time the bus reach the arrivalStop
+                System.out.println(stops);
+                System.out.println(DepId+"  "+ArrId + "  "+depDate);
+                System.out.println("feasible "+feasibleLines(journeys));
                 while (!ArrId.equals(CurStopId)) {
                     k++;
                     CurStopId = stops.get(k).getBusStop().getId();
@@ -385,14 +407,14 @@ public class Algorithm {
                 double value = realDuration / bestDuration;
 
                 //DEBUG
-                System.out.println("realD: " + realDuration + "   bestD: " + bestDuration + "   Val: " + value);
+                //System.out.println("realD: " + realDuration + "   bestD: " + bestDuration + "   Val: " + value);
 
                 cost += value;
             }
         }
         return cost / 2;      //because we calculate twice for each person
     }
-    
+
     public static ArrayList<ArrayList<Person>> createCopy(ArrayList<ArrayList<Person>> origin) {
         ArrayList<ArrayList<Person>> copy = new ArrayList<>();
         for (int i = 0; i < origin.size(); i++) {
@@ -427,7 +449,7 @@ public class Algorithm {
             //test if neighbour is better
             neighbourCost = getRouteCost(neighbour, busNb);
             //System.out.println("NCost : "+neighbourCost);
-            if (neighbourCost < previousCost) {
+            if (neighbourCost < previousCost && feasibleLine(new ArrayList<>(neighbour), buses[busNb])) {
                 //if needed update route and reset i
                 previousCost = neighbourCost;
                 System.out.println("Updating cost: " + previousCost);
