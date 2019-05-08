@@ -69,10 +69,10 @@ public class ActionServlet extends HttpServlet {
                     Person person = PersonConverter.jsonToPerson(mongoClient, data);
                     int personCounter = (int) request.getServletContext().getAttribute("PERSON_COUNTER");
                     Date lastRequestDate = (Date) request.getServletContext().getAttribute("LAST_REQUEST_DATE");
-                    int maxRequestNb = (int) request.getServletContext().getAttribute("MAX_REQUEST_NB");
-                    long maxTimeInterval = (long) request.getServletContext().getAttribute("REQUEST_TIME_INTERVAL");
+//                    int maxRequestNb = (int) request.getServletContext().getAttribute("MAX_REQUEST_NB");
+//                    long maxTimeInterval = (long) request.getServletContext().getAttribute("REQUEST_TIME_INTERVAL");
 
-                    if (Services.postBusRequest(mongoClient, person, personCounter, lastRequestDate, maxRequestNb, maxTimeInterval)) {
+                    if (Services.postBusRequest(mongoClient, person, personCounter, lastRequestDate)) {
 
                         try (PrintWriter out = response.getWriter()) {
                             out.println("Request Posted");

@@ -50,7 +50,6 @@ public class ContextListener implements ServletContextListener {
             System.out.println(e.getMessage());
             throw new RuntimeException("MongoClient init failed or initialization failed");
         }
-
     }
 
     @Override

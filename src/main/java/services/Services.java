@@ -52,9 +52,9 @@ public class Services {
 
         return "GET_BUS_MAP_DISPLAY";
     }
-    
+
     public static boolean postAlgoParameters(MongoClient mongoClient, AlgoParameters aP) {
-        try{
+        try {
             AlgoParametersDAO aPDAO = new AlgoParametersDAO(mongoClient);
             aPDAO.createAlgoParameters(aP);
             return true;
@@ -63,12 +63,13 @@ public class Services {
         }
 
     }
-    
-    public static boolean postBusRequest(MongoClient mongoClient, Person person, int personCounter, Date lastRequestDate, int maxRequestNb, long maxTimeInterval) {
+
+    public static boolean postBusRequest(MongoClient mongoClient, Person person, int personCounter, Date lastRequestDate) {
 
         try {
             PersonDAO personDAO = new PersonDAO(mongoClient);
             BusStopDAO busStopDAO = new BusStopDAO(mongoClient);
+            AlgoParametersDAO algoParametersDAO = new AlgoParametersDAO(mongoClient);
 
             BusStop departure = person.getDeparture();
             BusStop arrival = person.getArrival();
@@ -80,8 +81,17 @@ public class Services {
             busStopDAO.updateBusStop(arrival);
 
             Person pers = personDAO.createPerson(person);
+
             Date currentDate = new Date();
-            if (personCounter + 1 >= maxRequestNb || currentDate.getTime() >= lastRequestDate.getTime() + maxTimeInterval) {
+
+            AlgoParameters algoParameters = algoParametersDAO.getParameters();
+            int maxRequestNb = algoParameters.getMaxRequestNb();
+            long maxTimeInterval = algoParameters.getMaxTimeInterval();
+            System.out.println("Current requestNumber : " + personCounter + 1);
+//            System.out.println("MAxRequest Number : " + maxRequestNb);
+//            System.out.println("Max time interval : " + maxTimeInterval);
+
+            if ((personCounter + 1) % maxRequestNb == 0 || currentDate.getTime() >= lastRequestDate.getTime() + maxTimeInterval) {
                 System.out.println("Algo calcul");
                 if (!callAlgoCalculation(mongoClient)) {
                     return false;
@@ -124,21 +134,21 @@ public class Services {
             Date currentDate = new Date(); //create current date time
 //            Date maxCurrentDate = new Date();
             Date[] busDates = new Date[buses.size()];
-            
+
             LineDAO lineDAO = new LineDAO(mongoClient);
             Bus[] busesArray = new Bus[buses.size()];
             for (int k = 0; k < buses.size(); k++) {
                 Bus currentBus = buses.get(k);
                 Line currentLine = lineDAO.retrieveLineByBusId(currentBus.getId());
                 busDates[k] = currentDate;
-                
+
                 if (currentLine != null) {
                     BusStop position;
                     for (BusStopLine bsl : currentLine.getBusStops()) {
                         if (bsl.getTime().after(currentDate)) {
                             position = bsl.getBusStop();
                             currentBus.setPosition(position);
-                            
+
                             busDates[k] = bsl.getTime();
 //                            if (bsl.getTime().after(maxCurrentDate)) {
 //                                maxCurrentDate = bsl.getTime();
@@ -159,7 +169,6 @@ public class Services {
             }
 
 //            System.out.println(maxCurrentDate.toString());
-
             System.out.println("Before algo");
             //call algo
             ArrayList<Line> lines = Algorithm.calculateLines(durations, busesArray, persons, busDates);
