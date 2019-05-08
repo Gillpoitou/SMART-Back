@@ -211,6 +211,7 @@ public class ActionServlet extends HttpServlet {
                 }
                 break;
             case "startSimulation":
+                response.setContentType("text");
                 data = this.parsePostBody(request.getReader());
                 JsonElement jelement = new JsonParser().parse(data);
                 JsonObject jobject = jelement.getAsJsonObject();
@@ -223,6 +224,7 @@ public class ActionServlet extends HttpServlet {
                 }
                 break;
             case "stopSimulation":
+                response.setContentType("text");
                 ServletContext servletContext = request.getServletContext();
 
                 Thread t = (Thread) servletContext.getAttribute("SIMULATION_THREAD");
