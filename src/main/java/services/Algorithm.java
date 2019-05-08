@@ -209,9 +209,6 @@ public class Algorithm {
         Date theCurrentDate;
 
         for (int i = 0; i < lines.size(); i++) {
-            for(Person person: lines.get(i)){
-                System.out.println(person.getId());
-            }
             ArrayList<Person> currentCalculatedLine = lines.get(i);
             theCurrentDate = currentDate[i];
             ArrayList<BusStopLine> currentLine = new ArrayList<>();
@@ -238,8 +235,10 @@ public class Algorithm {
                         arrivalDate = new Date(theCurrentDate.getTime() + duration * 1000);
                     }
 
-                    if (arrivalDate.compareTo(currentCalculatedLine.get(j).getTimeDeparture()) <= 0 && theCurrentDate.compareTo(currentCalculatedLine.get(j).getTimeDeparture()) < 0) {
-                        theCurrentDate = currentCalculatedLine.get(j).getTimeDeparture();
+                    if (arrivalDate.compareTo(currentCalculatedLine.get(j).getTimeDeparture()) <= 0) {
+                        if(theCurrentDate.compareTo(currentCalculatedLine.get(j).getTimeDeparture()) < 0){
+                            theCurrentDate = currentCalculatedLine.get(j).getTimeDeparture();
+                        }
                     } else {
                         theCurrentDate = arrivalDate;
                     }
