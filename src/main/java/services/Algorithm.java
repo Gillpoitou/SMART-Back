@@ -209,13 +209,17 @@ public class Algorithm {
         Date theCurrentDate;
 
         for (int i = 0; i < lines.size(); i++) {
-            /*for(Person person: lines.get(i)){
-                System.out.println(person.getId());
-            }*/
             ArrayList<Person> currentCalculatedLine = lines.get(i);
             theCurrentDate = currentDate[i];
             ArrayList<BusStopLine> currentLine = new ArrayList<>();
-
+            
+            
+            //if empty line:
+            if (currentCalculatedLine.isEmpty()){
+                Line newLine = new Line("Line " + i, buses[i].getPosition(), null, currentLine, buses[i]);
+                result.add(newLine);
+                continue;
+            }
             duration = (int) durations[buses[i].getPosition().getBusStopID()][currentCalculatedLine.get(0).getDeparture().getBusStopID()];
             BusStopLine currentBusStop = new BusStopLine(currentCalculatedLine.get(0).getDeparture(), 0, 0, new Date(theCurrentDate.getTime() + duration * 1000));
             currentBusStop.setNbGetOn(currentBusStop.getNbGetOn() + 1);
@@ -238,8 +242,10 @@ public class Algorithm {
                         arrivalDate = new Date(theCurrentDate.getTime() + duration * 1000);
                     }
 
-                    if (arrivalDate.compareTo(currentCalculatedLine.get(j).getTimeDeparture()) <= 0 && theCurrentDate.compareTo(currentCalculatedLine.get(j).getTimeDeparture()) < 0) {
-                        theCurrentDate = currentCalculatedLine.get(j).getTimeDeparture();
+                    if (arrivalDate.compareTo(currentCalculatedLine.get(j).getTimeDeparture()) <= 0) {
+                        if(theCurrentDate.compareTo(currentCalculatedLine.get(j).getTimeDeparture()) < 0){
+                            theCurrentDate = currentCalculatedLine.get(j).getTimeDeparture();
+                        }
                     } else {
                         theCurrentDate = arrivalDate;
                     }
@@ -286,9 +292,9 @@ public class Algorithm {
         //Generate tabu list as the last time a person was used in a move
         HashMap<String, Integer> tabuList = new HashMap<>();
         for (int i = 0; i < requests.size(); i++) {
-            tabuList.put(requests.get(i).getId(), -100);     //to free every move
+            tabuList.put(requests.get(i).getId(), -1000);     //to free every move
         }
-        int TABU_LENGTH = 15;
+        int TABU_LENGTH = 4;
 
         int iter = 0;
         int bestLastUpdate = 0;
@@ -306,7 +312,10 @@ public class Algorithm {
                 int fromRoute;
                 int toRoute;
                 do {
-                    fromRoute = (int) (Math.random() * routesNb);
+                    do{
+                        fromRoute = (int) (Math.random() * routesNb);
+                    }while(sol.get(fromRoute).isEmpty());
+                    
                     toRoute = (int) (Math.random() * (routesNb - 1));
                     if (toRoute >= fromRoute) {
                         toRoute++;
@@ -317,7 +326,6 @@ public class Algorithm {
                     //System.out.println("sol"+sol.get(fromRoute).size()+"    n"+neighbour.get(fromRoute).size());
                 } while (iter - tabuList.get(sol.get(fromRoute).get(randomPerson).getId()) <= TABU_LENGTH); //if Tabu reset randoms
                 //else put person in 'to'
-                tabuList.put(sol.get(fromRoute).get(randomPerson).getId(), iter);
                 neighbour = createCopy(sol);
                 Person p = neighbour.get(fromRoute).get(randomPerson);
                 
@@ -325,11 +333,11 @@ public class Algorithm {
                 neighbour.get(fromRoute).remove(p);
                 neighbour.get(toRoute).add(p);
                 neighbour.get(toRoute).add(p);
-
+                
                 //opt the routes we changed
                 neighbour.set(fromRoute, optRoute(neighbour.get(fromRoute), fromRoute));
                 neighbour.set(toRoute, optRoute(neighbour.get(toRoute), toRoute));
-
+                
                 //checking the cost
                 ArrayList<Line> neighbourLines = createLines(neighbour);
                 neighbourCost = getCost(neighbour, neighbourLines);
@@ -358,7 +366,7 @@ public class Algorithm {
 
     //TABU UTIL METHODS
     public static double getCost(ArrayList<ArrayList<Person>> journeys, ArrayList<Line> lines) {
-        //System.out.println(journeys);
+        //System.out.println("ini "+journeys);
         //System.out.println(lines);
         double cost = 0;
         for (int i = 0; i < journeys.size(); i++) {
@@ -374,6 +382,13 @@ public class Algorithm {
                 //to avoid being confused by possibles loop of the line
                 int k = 0;
                 Date firstStopDate = stops.get(k).getTime();
+                
+                System.out.println(journey.get(j));
+                System.out.println("dep "+ DepId+"  arr "+ArrId+"  date"+ depDate);
+                System.out.println(journey);
+                System.out.println(stops);
+                
+                System.out.println();
                 while (depDate.after(firstStopDate)) {
                     k++;
                     firstStopDate = stops.get(k).getTime();
@@ -468,8 +483,8 @@ public class Algorithm {
             //System.out.println("NCost : "+neighbourCost);
             if (neighbourCost < previousCost && feasibleLine(new ArrayList<>(neighbour), busNb)) {
                 //if needed update route and reset i
+                System.out.println("Updating cost Opt: " + previousCost +" to "+ neighbourCost);
                 previousCost = neighbourCost;
-                System.out.println("Updating cost Opt: " + previousCost);
                 copyRoute(neighbour, route);
                 i = 0;
             }
@@ -478,6 +493,7 @@ public class Algorithm {
     }
 
     public static void createRouteNeighbour(LinkedList<Person> route, LinkedList<Person> neighbour) {
+        if (route.size() <= 2) return;
         int r1 = (int) ((route.size() - 1) * Math.random()); //0 .. n-2
         int r2 = (int) ((route.size() - r1 - 1) * Math.random() + r1 + 1); //r1+1 .. n-1  i think
         //System.out.println("R1: "+r1+"   R2: "+r2);
@@ -500,7 +516,7 @@ public class Algorithm {
 
         //copy buffer in neighbour
         Iterator<Person> it = buffer.iterator();
-        for (int i = r1; i < r2; i++) {
+        for (int i = r1; i <= r2; i++) {
             neighbour.set(i, it.next());
         }
     }
