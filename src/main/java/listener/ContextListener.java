@@ -46,7 +46,10 @@ public class ContextListener implements ServletContextListener {
     public void contextDestroyed(ServletContextEvent sce) {
         MongoClient mongo = (MongoClient) sce.getServletContext()
                 .getAttribute("MONGO_CLIENT");
+        Thread t = (Thread)sce.getServletContext().getAttribute("SIMULATION_THREAD");
+        t.interrupt();
         mongo.close();
+        
         System.out.println("MongoClient closed successfully");
     }
 

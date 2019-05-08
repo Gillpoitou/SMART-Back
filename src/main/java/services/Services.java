@@ -25,6 +25,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Vector;
 import java.util.concurrent.TimeUnit;
+import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletResponse;
 import static javax.ws.rs.core.HttpHeaders.USER_AGENT;
 import modele.Bus;
@@ -33,6 +34,8 @@ import modele.BusStopLine;
 import modele.BusStopPath;
 import modele.Line;
 import modele.Person;
+import modele.Simulation;
+import modele.SimulationRatio;
 
 /**
  *
@@ -264,7 +267,8 @@ public class Services {
 //        busDAO.createBus(bus);
     }
 
-    public static boolean createBus(MongoClient mongoClient, String data) {
+    public static boolean createBus(MongoClient mongoclient ,String data) {
+        
         return true;
     }
 
@@ -282,5 +286,27 @@ public class Services {
             e.printStackTrace();
             return false;
         }
+    }
+    
+    public static boolean startSimulation(JsonObject request, ServletContext context){
+        JsonArray busStopRatio = request.getAsJsonArray("busStopRatio");
+        int numberTravelers = request.get("number").getAsInt();
+        ArrayList<SimulationRatio> ratioArray = new ArrayList();
+        
+        for(JsonElement jel : busStopRatio){
+            JsonObject jobj = jel.getAsJsonObject();
+            SimulationRatio currentRatio = new SimulationRatio(jobj.get("busStop").getAsString(), jobj.get("frequency").getAsDouble());
+            ratioArray.add(currentRatio);
+        }
+        
+        Simulation simulation = new Simulation();
+        simulation.setBusStopsRatios(ratioArray);
+        simulation.setNumberTravelers(numberTravelers);
+        
+        
+        CalculSimulationThread thread = new CalculSimulationThread(simulation);
+        context.setAttribute("SIMULATION_THREAD", thread);
+        thread.start();
+        return true;
     }
 }
