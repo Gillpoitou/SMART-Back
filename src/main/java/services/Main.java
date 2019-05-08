@@ -22,6 +22,7 @@ public class Main {
 
     /**
      * @param args the command line arguments
+     * @throws java.text.ParseException
      */
     public static void main(String[] args) throws ParseException {
         double[][] durations = {{0, 5*60, 6*60}, {3*60, 0, 2*60}, {60*9, 4*60, 0}};
@@ -33,7 +34,13 @@ public class Main {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
         Date currentDate = simpleDateFormat.parse("2019-05-03 09:50:00");
         
-        Bus[] buses = {new Bus("Bus 1", "Bus 1", 5, busStop1, 0), new Bus("Bus 2", "Bus 2", 5, busStop1, 2), new Bus("Bus 3", "Bus 3", 5, busStop2, 2)}; 
+        Bus[] buses = {new Bus("Bus 1", "Bus 1", 5, busStop1, 0), new Bus("Bus 2", "Bus 2", 5, busStop1, 2), new Bus("Bus 3", "Bus 3", 5, busStop2, 2)};
+        
+        Date[] dates = new Date[buses.length];
+        for (int i = 0 ; i < dates.length ; i++){
+            dates[i] = currentDate;
+        }
+        
         
         Date date1 = simpleDateFormat.parse("2019-05-03 09:51:40");
         Date date2 = simpleDateFormat.parse("2019-05-03 10:25:56");
@@ -61,7 +68,7 @@ public class Main {
         
         
         
-//        ArrayList<Line> result = Algorithm.calculateLines(durations, buses, requests, currentDate);
+        ArrayList<Line> result = Algorithm.calculateLines(durations, buses, requests, dates);
         
         /*for(Line line: result){
             System.out.println(line.toString());

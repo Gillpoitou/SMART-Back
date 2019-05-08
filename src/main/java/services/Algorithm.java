@@ -45,7 +45,7 @@ public class Algorithm {
         percentage = 3;
         ArrayList<ArrayList<Person>> lines = greedyAlgo(buses, requests);
         
-//        optRoute(lines.get(0), 0);
+        optRoute(lines.get(0), 0);
         
         if(lines != null){
             ArrayList<Line> result = createLines(lines);
@@ -63,8 +63,8 @@ public class Algorithm {
         for (int k = 0; k < requests.size(); k++) {
 
             Person request = requests.get(k);
-            System.out.println(k);
-            System.out.println(request.getId());
+            //System.out.println(k);
+            //System.out.println(request.getId());
             boolean feasible = false;
             while (feasible == false) {
                 currentLine.add(request);
@@ -104,10 +104,10 @@ public class Algorithm {
                     }
                 }
                 
-                System.out.println("nouvel essai");
+                //System.out.println("nouvel essai");
                 
                 for(Person person: currentLine){
-                    System.out.println(person.getId());
+                    //System.out.println(person.getId());
                 }
 
                 if (feasibleLine(currentLine, busLines.indexOf(currentLine))) {
@@ -203,11 +203,15 @@ public class Algorithm {
     }
 
     public static ArrayList<Line> createLines(ArrayList<ArrayList<Person>> lines) {
+        
         ArrayList<Line> result = new ArrayList<>();
         int duration;
         Date theCurrentDate;
 
         for (int i = 0; i < lines.size(); i++) {
+            for(Person person: lines.get(i)){
+                System.out.println(person.getId());
+            }
             ArrayList<Person> currentCalculatedLine = lines.get(i);
             theCurrentDate = currentDate[i];
             ArrayList<BusStopLine> currentLine = new ArrayList<>();
@@ -234,7 +238,7 @@ public class Algorithm {
                         arrivalDate = new Date(theCurrentDate.getTime() + duration * 1000);
                     }
 
-                    if (arrivalDate.compareTo(currentCalculatedLine.get(j).getTimeDeparture()) <= 0) {
+                    if (arrivalDate.compareTo(currentCalculatedLine.get(j).getTimeDeparture()) <= 0 && theCurrentDate.compareTo(currentCalculatedLine.get(j).getTimeDeparture()) < 0) {
                         theCurrentDate = currentCalculatedLine.get(j).getTimeDeparture();
                     } else {
                         theCurrentDate = arrivalDate;
@@ -395,9 +399,9 @@ public class Algorithm {
                 //System.out.println("after dep k: "+k);
 
                 //search for the time the bus reach the arrivalStop
-                System.out.println(stops);
-                System.out.println(DepId+"  "+ArrId + "  "+depDate);
-                System.out.println("feasible "+feasibleLines(journeys));
+                //System.out.println(stops);
+                //System.out.println(DepId+"  "+ArrId + "  "+depDate);
+                //System.out.println("feasible "+feasibleLines(journeys));
                 while (!ArrId.equals(CurStopId)) {
                     k++;
                     CurStopId = stops.get(k).getBusStop().getId();
@@ -412,7 +416,13 @@ public class Algorithm {
                 double value = realDuration / bestDuration;
 
                 //DEBUG
-                //System.out.println("realD: " + realDuration + "   bestD: " + bestDuration + "   Val: " + value);
+                System.out.println("realD: " + realDuration + "   bestD: " + bestDuration + "   Val: " + value);
+                System.out.println(journey.get(j));
+                System.out.println("dep "+ departureId+"  arr "+arrivalId+"  date"+ depDate);
+                System.out.println(journey);
+                System.out.println(stops);
+                System.out.println();
+                if (value < 1) System.exit(0);
 
                 cost += value;
             }
@@ -457,7 +467,7 @@ public class Algorithm {
             if (neighbourCost < previousCost && feasibleLine(new ArrayList<>(neighbour), busNb)) {
                 //if needed update route and reset i
                 previousCost = neighbourCost;
-                System.out.println("Updating cost: " + previousCost);
+                System.out.println("Updating cost Opt: " + previousCost);
                 copyRoute(neighbour, route);
                 i = 0;
             }
