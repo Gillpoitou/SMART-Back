@@ -5,7 +5,9 @@
  */
 package servlets;
 
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.mongodb.client.MongoClient;
 import converter.BusConverter;
 import converter.PersonConverter;
@@ -117,6 +119,17 @@ public class ActionServlet extends HttpServlet {
                     }
                 }
                 break;
+            case "initDBValues":
+                if(Services.initDBValues(mongoClient)){
+                    try (PrintWriter out = response.getWriter()) {
+                        out.println("Values initialized");
+                    }
+                } else {
+                    try (PrintWriter out = response.getWriter()) {
+                        out.println("Error");
+                    }
+                }; 
+                break;
             case "getBusStops":
                 response.setContentType("application/json");
                 JsonObject result = new JsonObject();
@@ -172,6 +185,19 @@ public class ActionServlet extends HttpServlet {
                     }
                 }
                 break;
+            case "startSimulation":
+                data = this.parsePostBody(request.getReader());
+                JsonElement jelement = new JsonParser().parse(data);
+                JsonObject jobject = jelement.getAsJsonObject();
+                JsonObject simulation = jobject.get("simulation").getAsJsonObject();
+                System.out.println(simulation);
+                if (Services.startSimulation(simulation, request.getServletContext())) {
+                    try (PrintWriter out = response.getWriter()) {
+                        out.println("Simulation started");
+                    }
+                }
+                break;
+
             default:
                 response.sendError(422, "Unprocessable entity, please specify a valid action type ");
                 break;

@@ -18,15 +18,16 @@ public class MongoCommandListener implements CommandListener {
 
     @Override
     public void commandStarted(final CommandStartedEvent event) {
-        System.out.println(String.format("Sent command '%s:%s' with id %s to database '%s' "
-                + "on connection '%s' to server '%s'",
-                event.getCommandName(),
-                event.getCommand().get(event.getCommandName()),
-                event.getRequestId(),
-                event.getDatabaseName(),
-                event.getConnectionDescription()
-                        .getConnectionId(),
-                event.getConnectionDescription().getServerAddress()));
+//        System.out.println(String.format("Sent command '%s:%s' with id %s to database '%s' "
+//                + "on connection '%s' to server '%s'",
+//                event.getCommandName(),
+//                event.getCommand().get(event.getCommandName()),
+//                event.getRequestId(),
+//                event.getDatabaseName(),
+//                event.getConnectionDescription()
+//                        .getConnectionId(),
+//                event.getConnectionDescription().getServerAddress()));
+        System.out.println(String.format("comand sent : %s", event.getCommand().toString()));
     }
 
     @Override

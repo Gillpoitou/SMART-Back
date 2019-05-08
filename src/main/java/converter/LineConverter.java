@@ -28,9 +28,9 @@ public class LineConverter {
                 .append("departure", BusStopConverter.toConstantDocument(l.getDeparture()))
                 .append("bus", BusConverter.toConstantDocument(l.getBus()));
 
-        if (l.getArrival() != null) {
-            doc.append("arrival", BusStopConverter.toConstantDocument(l.getArrival()));
-        }
+//        if (l.getArrival() != null) {
+//            doc.append("arrival", BusStopConverter.toConstantDocument(l.getArrival()));
+//        }
 
         //BusStops
         ArrayList<Document> busStops = new ArrayList<>();

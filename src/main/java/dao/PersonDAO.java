@@ -66,5 +66,10 @@ public class PersonDAO {
 
         return allPersons;
     }
+    
+    public boolean deleteAllPersons(){
+        this.coll.drop();
+        return true;
+    }
 
 }
