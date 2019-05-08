@@ -39,4 +39,10 @@ public class AlgoParametersDAO {
                 doc);
         return aP;
     }
+    
+    public AlgoParameters getParameters(){
+        Document doc = this.coll.find().first();
+        
+        return AlgoParametersConverter.toAlgoParameters(doc);
+    }
 }

@@ -5,7 +5,9 @@
  */
 package servlets;
 
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.mongodb.client.MongoClient;
 import converter.AlgoParametersConverter;
 import converter.BusConverter;
@@ -54,12 +56,6 @@ public class ActionServlet extends HttpServlet {
             return;
         }
         switch (request.getParameter("action")) {
-            case "getBusMapDisplay":
-                response.setContentType("application/json");
-                try (PrintWriter out = response.getWriter()) {
-                    out.println(Services.getBusMapDisplay());
-                }
-                break;
             case "postBusRequest":
                 response.setContentType("text");
                 StringBuilder buffer = new StringBuilder();
@@ -71,18 +67,17 @@ public class ActionServlet extends HttpServlet {
                 data = buffer.toString();
                 try {
                     Person person = PersonConverter.jsonToPerson(mongoClient, data);
-                    int personCounter = (int)request.getServletContext().getAttribute("PERSON_COUNTER");
-                    Date lastRequestDate = (Date)request.getServletContext().getAttribute("LAST_REQUEST_DATE");
-                    int maxRequestNb = (int)request.getServletContext().getAttribute("MAX_REQUEST_NB");
-                    long maxTimeInterval = (long)request.getServletContext().getAttribute("REQUEST_TIME_INTERVAL");
-                    
-                    
-                    if (Services.postBusRequest(mongoClient, person, personCounter, lastRequestDate, maxRequestNb,maxTimeInterval)) {
+                    int personCounter = (int) request.getServletContext().getAttribute("PERSON_COUNTER");
+                    Date lastRequestDate = (Date) request.getServletContext().getAttribute("LAST_REQUEST_DATE");
+                    int maxRequestNb = (int) request.getServletContext().getAttribute("MAX_REQUEST_NB");
+                    long maxTimeInterval = (long) request.getServletContext().getAttribute("REQUEST_TIME_INTERVAL");
+
+                    if (Services.postBusRequest(mongoClient, person, personCounter, lastRequestDate, maxRequestNb, maxTimeInterval)) {
 
                         try (PrintWriter out = response.getWriter()) {
                             out.println("Request Posted");
                         }
-                        request.getServletContext().setAttribute("PERSON_COUNTER", personCounter+1);
+                        request.getServletContext().setAttribute("PERSON_COUNTER", personCounter + 1);
                         request.getServletContext().setAttribute("LAST_REQUEST_DATE", new Date());
                     }
                 } catch (Exception e) {
@@ -91,7 +86,7 @@ public class ActionServlet extends HttpServlet {
                 }
                 break;
             case "initDataBase":
-                if(request.getParameter("key")== null || !request.getParameter("key").equals("iamanadministrator")){
+                if (request.getParameter("key") == null || !request.getParameter("key").equals("iamanadministrator")) {
                     try (PrintWriter out = response.getWriter()) {
                         out.println("Access denied !");
                         response.setStatus(401);
@@ -109,7 +104,7 @@ public class ActionServlet extends HttpServlet {
                 }
                 break;
             case "initDBTravel":
-                if(request.getParameter("key")== null || !request.getParameter("key").equals("iamanadministrator")){
+                if (request.getParameter("key") == null || !request.getParameter("key").equals("iamanadministrator")) {
                     try (PrintWriter out = response.getWriter()) {
                         out.println("Access denied !");
                         response.setStatus(401);
@@ -126,6 +121,18 @@ public class ActionServlet extends HttpServlet {
                     }
                 }
                 break;
+            case "initDBValues":
+                if (Services.initDBValues(mongoClient)) {
+                    try (PrintWriter out = response.getWriter()) {
+                        out.println("Values initialized");
+                    }
+                } else {
+                    try (PrintWriter out = response.getWriter()) {
+                        out.println("Error");
+                    }
+                }
+                ;
+                break;
             case "getBusStops":
                 response.setContentType("application/json");
                 JsonObject result = new JsonObject();
@@ -138,36 +145,49 @@ public class ActionServlet extends HttpServlet {
                         out.println("Error");
                     }
                 }
-            break;
+                break;
             case "getBusLines":
-               response.setContentType("application/json");
+                response.setContentType("application/json");
                 JsonObject resultLines = new JsonObject();
-                if(Services.getBusLines(mongoClient,resultLines)){
-                   try (PrintWriter out = response.getWriter()){
-                            out.println(resultLines);
-                        } 
-                }else{
-                    try (PrintWriter out = response.getWriter()){
-                            out.println("Error");
-                        } 
-                } 
-            break; 
-            case "postAlgoParameters" :
+                if (Services.getBusLines(mongoClient, resultLines)) {
+                    try (PrintWriter out = response.getWriter()) {
+                        out.println(resultLines);
+                    }
+                } else {
+                    try (PrintWriter out = response.getWriter()) {
+                        out.println("Error");
+                    }
+                }
+                break;
+            case "postBusProgress":
+                response.setContentType("application/json");
+                JsonObject resultingContext = new JsonObject();
+                if (Services.postBusProgress(mongoClient, resultingContext)) {
+                    try (PrintWriter out = response.getWriter()) {
+                        out.println(resultingContext);
+                    }
+                } else {
+                    try (PrintWriter out = response.getWriter()) {
+                        out.println("Error");
+                    }
+
+                }
+                break;
+            case "postAlgoParameters":
                 response.setContentType("text");
                 data = this.parsePostBody(request.getReader());
                 System.out.println(data);
-                
+
                 try {
                     AlgoParameters aP = AlgoParametersConverter.jsonToAlgoParameters(data);
                     PrintWriter out = response.getWriter();
-                    if(Services.postAlgoParameters(mongoClient,aP)){                
-                        out.println("Request Posted"); 
-                    }else{
+                    if (Services.postAlgoParameters(mongoClient, aP)) {
+                        out.println("Request Posted");
+                    } else {
                         response.sendError(500);
                         out.println("Error DB Access");
                     }
-                    
-                    
+
                 } catch (Exception e) {
                     e.printStackTrace();
                     response.sendError(422, "Unprocessable entity");
@@ -176,6 +196,32 @@ public class ActionServlet extends HttpServlet {
             case "test":
                 Services.test(mongoClient);
                 break;
+            case "createBus":
+                data = this.parsePostBody(request.getReader());
+
+                if (Services.createBus(mongoClient, data)) {
+                    try (PrintWriter out = response.getWriter()) {
+                        out.println("Bus created");
+                    }
+                } else {
+                    try (PrintWriter out = response.getWriter()) {
+                        out.println("Error");
+                    }
+                }
+                break;
+            case "startSimulation":
+                data = this.parsePostBody(request.getReader());
+                JsonElement jelement = new JsonParser().parse(data);
+                JsonObject jobject = jelement.getAsJsonObject();
+                JsonObject simulation = jobject.get("simulation").getAsJsonObject();
+                System.out.println(simulation);
+                if (Services.startSimulation(simulation, request.getServletContext())) {
+                    try (PrintWriter out = response.getWriter()) {
+                        out.println("Simulation started");
+                    }
+                }
+                break;
+
             default:
                 response.sendError(422, "Unprocessable entity, please specify a valid action type ");
                 break;

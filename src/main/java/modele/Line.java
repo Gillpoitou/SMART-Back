@@ -24,7 +24,7 @@ public class Line {
         busStops = new ArrayList<BusStopLine>();
     }
 
-    public Line(String name, Warehouse departure, Warehouse arrival, ArrayList<BusStopLine> busStops, Bus bus) {
+    public Line(String name, BusStop departure, BusStop arrival, ArrayList<BusStopLine> busStops, Bus bus) {
         this.name = name;
         this.departure = departure;
         this.arrival = arrival;
@@ -71,6 +71,10 @@ public class Line {
     public void setBusStops(ArrayList<BusStopLine> busStops) {
         this.busStops = busStops;
     }
+    
+    public void removeBusStopLine(BusStopLine busStopLine){
+        this.busStops.remove(busStopLine);
+    }
 
     public Bus getBus() {
         return bus;
@@ -78,5 +82,25 @@ public class Line {
 
     public void setBus(Bus bus) {
         this.bus = bus;
+    }
+    
+    @Override
+    public boolean equals (Object o){
+        if(!(o instanceof Line)){
+            return false;
+        }
+        Line other = (Line)o;
+        return this.getId().equals(other.getId());
+    }
+    
+    @Override
+    public String toString(){
+        String result = name + "\n";
+        result += "Departure: "+ departure.getName()+"\n";
+        for(BusStopLine busStop: busStops){
+            result += busStop.toString();
+        }
+//        result+= "Arrival: " + arrival.getName() + "\n";
+        return result;
     }
 }

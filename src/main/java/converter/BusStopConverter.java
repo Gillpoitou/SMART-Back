@@ -78,6 +78,7 @@ public class BusStopConverter {
             busStop.setNbPersonsComing((Integer) doc.get("nbPersonsComing"));
         }
 
+
         //Coordinates
         List<Double> coord = (List<Double>) ((Document) doc.get("location")).get("coordinates");
         busStop.setLatitude(coord.get(1));
@@ -85,6 +86,7 @@ public class BusStopConverter {
 
         //Paths
         if (doc.get("paths") != null) {
+
             Vector<BusStopPath> paths = new Vector<BusStopPath>();
             List<Document> _paths = (List<Document>) doc.get("paths");
 //        System.out.println(doc);
@@ -121,7 +123,7 @@ public class BusStopConverter {
 
     public static JsonObject BusStopToJson(BusStop busStop) {
         JsonObject result = new JsonObject();
-
+        
         result.addProperty("id", busStop.getId());
         result.addProperty("busStopId", busStop.getBusStopID());
         result.addProperty("name", busStop.getName());

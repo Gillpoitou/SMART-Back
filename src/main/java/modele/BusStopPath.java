@@ -19,7 +19,7 @@ public class BusStopPath {
     public BusStopPath() {
     }
 
-    public BusStopPath(BusStop busStopDestination, float duration, double distance, Path path) {
+    public BusStopPath(BusStop busStopDestination, double duration, double distance, Path path) {
         this.busStopDestination = busStopDestination;
         this.duration = duration;
         this.distance = distance;

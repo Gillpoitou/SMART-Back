@@ -5,9 +5,12 @@
  */
 package converter;
 
+import java.util.ArrayList;
 import com.google.gson.JsonObject;
+import java.util.Date;
 import modele.BusStop;
 import modele.BusStopLine;
+import modele.Person;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 
@@ -23,6 +26,14 @@ public class BusStopLineConverter {
                 .append("nbGetOff", busStopLine.getNbGetOff())
                 .append("time", busStopLine.getTime());
         
+        ArrayList<Document> persons = new ArrayList<Document>();
+                
+        for(Person p : busStopLine.getGetOnPersons()){
+            persons.add(PersonConverter.toConstantDocument(p));
+        }
+        
+        doc.append("getOnPersons", persons);
+
         return doc;
     }
     
@@ -31,7 +42,8 @@ public class BusStopLineConverter {
         b.setBusStop((BusStop) BusStopConverter.toBusStop((Document)doc.get("busStop")));
         b.setNbGetOn((int) doc.get("nbGetOn"));
         b.setNbGetOff((int) doc.get("nbGetOff"));
-        b.setTime((float) doc.get("time"));
+        b.setTime((Date) doc.get("time"));
+        b.setGetOnPersons((ArrayList<Person>) doc.get("getOnPersons"));
 
         return b;
     }
@@ -45,4 +57,5 @@ public class BusStopLineConverter {
         //TODO ADD DATE TO RESULT
         return result;
     }
+        
 }

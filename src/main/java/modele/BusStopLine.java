@@ -5,6 +5,9 @@
  */
 package modele;
 
+import java.util.ArrayList;
+import java.util.Date;
+
 /**
  *
  * @author elise
@@ -14,23 +17,25 @@ public class BusStopLine {
     private BusStop busStop;
     private int nbGetOn;
     private int nbGetOff;
-    private float time;
+    private Date time;
+    private ArrayList <Person> getOnPersons;
 
     public BusStopLine() {
     }
 
-    public BusStopLine(BusStop busStop, int nbGetOn, int nbGetOff, float time) {
+    public BusStopLine(BusStop busStop, int nbGetOn, int nbGetOff, Date time) {
         this.busStop = busStop;
         this.nbGetOn = nbGetOn;
         this.nbGetOff = nbGetOff;
         this.time = time;
+        this.getOnPersons = new ArrayList<>();
     }
  
-    public float getTime() {
+    public Date getTime() {
         return time;
     }
 
-    public void setTime(float time) {
+    public void setTime(Date time) {
         this.time = time;
     }
 
@@ -56,5 +61,26 @@ public class BusStopLine {
 
     public void setNbGetOff(int nbGetOff) {
         this.nbGetOff = nbGetOff;
+    }
+    
+    public ArrayList<Person> getGetOnPersons (){
+        return this.getOnPersons;
+    }
+    
+    public void setGetOnPersons (ArrayList <Person> persons){
+        this.getOnPersons = persons;
+    }
+    
+    public void addGetOnPerson (Person person){
+        this.getOnPersons.add(person);
+    }
+    
+    public void removeGetOnPerson (Person person){
+        this.getOnPersons.remove(person);
+    }
+    
+    public String toString(){
+        String result = busStop.getName() + ": "+time+" (nbGetOn: "+nbGetOn+", nbGetOff: "+nbGetOff+") \n";
+        return result;
     }
 }

@@ -24,17 +24,11 @@ import org.bson.types.ObjectId;
  * @author elise
  */
 public class PersonConverter {
-
-    public static Document toDocument(Person person) {
-
+    
+     public static Document toDocument(Person person) {
         Document doc = new Document("arrival", BusStopConverter.toConstantDocument(person.getArrival()))
                 .append("departure", BusStopConverter.toConstantDocument(person.getDeparture()))
                 .append("timeDeparture", person.getTimeDeparture());
-
-        if (person.getLine() != null) {
-            doc.append("line", LineConverter.toConstantDocument(person.getLine()));
-
-        }
 
         if (person.getId() != null) {
             doc.append("_id", new ObjectId(person.getId()));
@@ -59,9 +53,6 @@ public class PersonConverter {
         p.setArrival((BusStop) BusStopConverter.toBusStop((Document) doc.get("arrival")));
         p.setDeparture((BusStop) BusStopConverter.toBusStop((Document) doc.get("departure")));
 
-        if (doc.get("line") != null) {
-            p.setLine((Line) LineConverter.toLine((Document) doc.get("line")));
-        }
         if (doc.get("timeDeparture") != null) {
             p.setTimeDeparture((Date) doc.get("timeDeparture"));
         }
