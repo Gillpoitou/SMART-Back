@@ -6,6 +6,7 @@
 package services;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.Date;
 import java.util.HashMap;
@@ -203,7 +204,7 @@ public class Algorithm {
     }
 
     public static ArrayList<Line> createLines(ArrayList<ArrayList<Person>> lines) {
-        
+        System.out.println("Calcul Lines");
         ArrayList<Line> result = new ArrayList<>();
         int duration;
         Date theCurrentDate;
@@ -236,6 +237,7 @@ public class Algorithm {
                 // Si c'est un départ
                 if (j == currentCalculatedLine.indexOf(currentCalculatedLine.get(j))) {
                     if (!currentBusStop.getBusStop().getName().equals(currentCalculatedLine.get(j).getDeparture().getName())) {
+                        System.out.println("currentDate depart "+ theCurrentDate);
                         duration = (int) durations[currentBusStop.getBusStop().getBusStopID()][currentCalculatedLine.get(j).getDeparture().getBusStopID()];
                         currentBusStop = new BusStopLine(currentCalculatedLine.get(j).getDeparture(), 0, 0, new Date(theCurrentDate.getTime() + duration * 1000));
                         currentLine.add(currentBusStop);
@@ -246,7 +248,7 @@ public class Algorithm {
                         if(theCurrentDate.compareTo(currentCalculatedLine.get(j).getTimeDeparture()) < 0){
                             theCurrentDate = currentCalculatedLine.get(j).getTimeDeparture();
                         }
-                    } else {
+                    } else if(arrivalDate.compareTo(theCurrentDate) > 0){
                         theCurrentDate = arrivalDate;
                     }
                     currentBusStop.setNbGetOn(currentBusStop.getNbGetOn() + 1);
@@ -254,7 +256,12 @@ public class Algorithm {
                     // Si c'est une arrivée
                 } else {
                     if (!currentBusStop.getBusStop().getName().equals(currentCalculatedLine.get(j).getArrival().getName())) {
+                        System.out.println("currentDate arrivee "+ theCurrentDate);
                         duration = (int) durations[currentBusStop.getBusStop().getBusStopID()][currentCalculatedLine.get(j).getArrival().getBusStopID()];
+                        System.out.println("from "+currentBusStop.getBusStop().getBusStopID());
+                        System.out.println("to " +currentCalculatedLine.get(j).getArrival().getBusStopID());
+                        System.out.println(duration);
+                        
                         currentBusStop = new BusStopLine(currentCalculatedLine.get(j).getArrival(), 0, 0, new Date(theCurrentDate.getTime() + duration * 1000));
                         currentLine.add(currentBusStop);
                         arrivalDate = new Date(theCurrentDate.getTime() + duration * 1000);
