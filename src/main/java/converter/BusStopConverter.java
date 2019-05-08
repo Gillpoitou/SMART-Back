@@ -131,14 +131,14 @@ public class BusStopConverter {
         result.addProperty("longitude", busStop.getLongitude());
         result.addProperty("nbPersonsWaiting", busStop.getNbPersonsWaiting());
         result.addProperty("nbPersonsComing", busStop.getNbPersonsComing());
-        if (busStop.getPaths() != null) {
-            JsonArray busStopPaths = new JsonArray();
-            for (BusStopPath bsPath : busStop.getPaths()) {
-                JsonObject busStopPathJson = BusStopPathConverter.BusStopPathToJson(bsPath);
-                busStopPaths.add(busStopPathJson);
-            }
-            result.add("paths", busStopPaths);
-        }
+//        if (busStop.getPaths() != null) {
+//            JsonArray busStopPaths = new JsonArray();
+//            for (BusStopPath bsPath : busStop.getPaths()) {
+//                JsonObject busStopPathJson = BusStopPathConverter.BusStopPathToJson(bsPath);
+//                busStopPaths.add(busStopPathJson);
+//            }
+//            result.add("paths", busStopPaths);
+//        }
         return result;
     }
 

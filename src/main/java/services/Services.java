@@ -175,7 +175,7 @@ public class Services {
 
             System.out.println("After algo");
 
-            if (lineDAO.retrieveAll().size() > 0) {
+            if (lineDAO.retrieveAll().size() > 0 && lines.size() > 0) {
                 System.out.println("lines deleted");
                 lineDAO.deleteAll();
             }
@@ -276,45 +276,51 @@ public class Services {
             LineDAO lineDAO = new LineDAO(mongoClient);
 
             LinkedList<Line> lineList = lineDAO.retrieveAll();
+            if (lineList.size() > 0) {
+                Bus firstBus = busDAO.getBusById(lineList.get(0).getBus().getId());
+                Date precedTime = firstBus.getLastModif();
+                Date now = new Date();
 
-            Bus firstBus = busDAO.getBusById(lineList.get(0).getBus().getId());
-            Date precedTime = firstBus.getLastModif();
-            Date now = new Date();
+                for (Line line : lineList) {
+                    System.out.println(line.getName());
 
-            for (Line line : lineList) {
-                Bus bus = busDAO.getBusById(line.getBus().getId());
-                for (BusStopLine busStopLine : line.getBusStops()) {
+                    Bus bus = busDAO.getBusById(line.getBus().getId());
+                    for (BusStopLine busStopLine : line.getBusStops()) {
+                        System.out.println(busStopLine.getBusStop().getBusStopID());
 
-                    if (busStopLine.getTime().getTime() >= now.getTime()) {
-                        // Update bus position
-                        bus.setPosition(busStopLine.getBusStop());
+                        if (busStopLine.getTime().getTime() >= now.getTime()) {
+                            System.out.println("---------- 1");
+                            // Update bus position
+                            bus.setPosition(busStopLine.getBusStop());
 
-                        // Update passengers position
-                        for (Person person : bus.getPassengers()) {
-                            Person completePerson = personDAO.getPersonById(person.getId());
-                            completePerson.setDeparture(busStopLine.getBusStop());
-                            completePerson.setTimeDeparture(now);
-                            personDAO.updatePerson(completePerson);
+                            // Update passengers position
+                            for (Person person : bus.getPassengers()) {
+                                Person completePerson = personDAO.getPersonById(person.getId());
+                                completePerson.setDeparture(busStopLine.getBusStop());
+                                completePerson.setTimeDeparture(now);
+                                personDAO.updatePerson(completePerson);
+                            }
+                            break;
+                        } else if (busStopLine.getTime().getTime() >= precedTime.getTime()) {
+                            System.out.println("---------- 2");
+
+                            // New passengers get on the bus
+                            for (Person person : busStopLine.getGetOnPersons()) {
+                                bus.addPassenger(person);
+                            }
+                            // Passenger get off if it is their stop
+                            for (Person person : bus.getPassengers()) {
+                                bus.removePassenger(person);
+                                personDAO.deletePerson(person);
+                            }
+                            line.removeBusStopLine(busStopLine);
+                            lineDAO.updateLine(line);
                         }
-                        break;
-                    } else if (busStopLine.getTime().getTime() >= precedTime.getTime()) {
-                        // New passengers get on the bus
-                        for (Person person : busStopLine.getGetOnPersons()) {
-                            bus.addPassenger(person);
-                        }
-                        // Passenger get off if it is their stop
-                        for (Person person : bus.getPassengers()) {
-                            bus.removePassenger(person);
-                            personDAO.deletePerson(person);
-                        }
-                        line.removeBusStopLine(busStopLine);
-                        lineDAO.updateLine(line);
                     }
+                    bus.setLastModif(now);
+                    busDAO.updateBus(bus);
                 }
-                bus.setLastModif(now);
-                busDAO.updateBus(bus);
             }
-
             getBusLines(mongoClient, result);
             getBusStops(mongoClient, result);
 
@@ -487,6 +493,12 @@ public class Services {
         CalculSimulationThread thread = new CalculSimulationThread(simulation);
         context.setAttribute("SIMULATION_THREAD", thread);
         thread.start();
+        return true;
+    }
+    
+    public static boolean stopSimulation(Thread t){
+        t.interrupt();
+        t.stop();
         return true;
     }
 }
