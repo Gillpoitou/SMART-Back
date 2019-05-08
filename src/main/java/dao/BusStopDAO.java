@@ -27,6 +27,7 @@ import com.mongodb.client.model.Field;
 import com.mongodb.client.model.Field;
 import static com.mongodb.client.model.Filters.eq;
 import com.mongodb.client.model.Projections;
+import com.mongodb.client.model.Updates;
 import converter.BusStopConverter;
 import java.util.Vector;
 import modele.BusStop;
@@ -125,5 +126,9 @@ public class BusStopDAO {
         }
         
         return busStop;
+    }
+    
+    public void resetPersons(BusStop busStop){
+        this.coll.updateMany(eq("_id", new ObjectId(busStop.getId())), Updates.combine(Updates.set("nbPersonsWaiting", 0), Updates.set("nbPersonsComing", 0)));
     }
 }

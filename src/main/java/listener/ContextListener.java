@@ -46,8 +46,6 @@ public class ContextListener implements ServletContextListener {
             long requestTimeInterval = 1800000;
             sce.getServletContext().setAttribute("REQUEST_TIME_INTERVAL", requestTimeInterval);
 
-            Services.initDBValues(mongoClient);
-
         } catch (Exception e) {
             System.out.println(e.getMessage());
             throw new RuntimeException("MongoClient init failed or initialization failed");

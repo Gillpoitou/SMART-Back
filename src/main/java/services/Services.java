@@ -387,21 +387,39 @@ public class Services {
         }
     }
 
-    public static void initDBValues(MongoClient mongoClient) throws Exception {
-        BusDAO busDAO = new BusDAO(mongoClient);
-        BusStopDAO busStopDAO = new BusStopDAO(mongoClient);
+    public static boolean initDBValues(MongoClient mongoClient) {
+        //Remet à 0 les passengers des bus, leur position, et la last modif à heure courrante
+        //Remet à 0 les personsWaiting et coming à chaque arrêt de bus
+        //Supprime toutes les persons
 
-        ArrayList<Bus> buses = busDAO.selectAllBus();
+        try {
+            BusDAO busDAO = new BusDAO(mongoClient);
+            BusStopDAO busStopDAO = new BusStopDAO(mongoClient);
+            PersonDAO personDAO = new PersonDAO(mongoClient);
 
-        Date currentDate = new Date();
+            ArrayList<Bus> buses = busDAO.selectAllBus();
 
-        for (Bus bus : buses) {
+            Date currentDate = new Date();
 
-            bus.setLastModif(currentDate);
-//            bus.setNbPassengers(0);
-//            bus.setPassengers(new ArrayList<Person>());
-//            bus.setPosition(busStopDAO.getBusStopByName("Charpennes"));
-            bus = busDAO.updateBus(bus);
+            for (Bus bus : buses) {
+                bus.setLastModif(currentDate);
+                bus.setNbPassengers(0);
+                bus.setPassengers(new ArrayList<Person>());
+                bus.setPosition(busStopDAO.getBusStopByName("Charpennes"));
+                bus = busDAO.updateBus(bus);
+            }
+
+            Vector<BusStop> busStops = busStopDAO.selectBusStops();
+            for (BusStop busStop : busStops) {
+                busStopDAO.resetPersons(busStop);
+            }
+
+            personDAO.deleteAllPersons();
+            
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
         }
     }
 
