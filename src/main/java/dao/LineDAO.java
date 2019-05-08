@@ -59,12 +59,13 @@ public class LineDAO {
         return l;
     }
 
-    public Line updateLine(Line l) {
-        Document doc = LineConverter.toDocument(l);
-        this.coll.updateOne(
-                eq("_id", new ObjectId(l.getId())),
+    public Line updateLine(Line line) {
+        Document doc = LineConverter.toDocument(line);
+        this.coll.replaceOne(
+                eq("_id", new ObjectId(line.getId())),
                 doc);
-        return l;
+        
+        return line;
     }
 
     public void deleteLine(Line l) {

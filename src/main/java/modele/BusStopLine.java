@@ -80,7 +80,7 @@ public class BusStopLine {
     }
     
     public String toString(){
-        String result = busStop.getName() + ": "+time+" (nbGetOn: "+nbGetOn+", nbGetOff: "+nbGetOff+") \n";
+        String result = busStop.getName() + ": "+time+" (nbGetOn: "+nbGetOn+", nbGetOff: "+nbGetOff+", nbBetOnPerson  : " + getOnPersons.size()+") \n";
         return result;
     }
 }

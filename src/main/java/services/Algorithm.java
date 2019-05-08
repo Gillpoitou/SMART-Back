@@ -280,6 +280,7 @@ public class Algorithm {
             BusStopLine currentBusStop = new BusStopLine(currentCalculatedLine.get(0).getDeparture(), 0, 0, new Date(theCurrentDate.getTime() + duration * 1000));
             currentBusStop.setNbGetOn(currentBusStop.getNbGetOn() + 1);
             currentLine.add(currentBusStop);
+            currentBusStop.addGetOnPerson(currentCalculatedLine.get(0));
 
             Date arrivalDate = new Date(theCurrentDate.getTime() + duration * 1000);
             if (arrivalDate.compareTo(currentCalculatedLine.get(0).getTimeDeparture()) < 0) {

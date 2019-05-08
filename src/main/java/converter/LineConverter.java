@@ -40,8 +40,10 @@ public class LineConverter {
         doc.append("busStops", busStops);
 
         if (l.getId() != null) {
-            doc.append("_id", l.getId());
+            doc.append("_id", new ObjectId(l.getId()));
         }
+        
+        System.out.println(doc);
 
         return doc;
     }
