@@ -204,7 +204,7 @@ public class Algorithm {
     }
 
     public static ArrayList<Line> createLines(ArrayList<ArrayList<Person>> lines) {
-        System.out.println("Calcul Lines");
+        //System.out.println("Calcul Lines");
         ArrayList<Line> result = new ArrayList<>();
         int duration;
         Date theCurrentDate;
@@ -237,7 +237,7 @@ public class Algorithm {
                 // Si c'est un départ
                 if (j == currentCalculatedLine.indexOf(currentCalculatedLine.get(j))) {
                     if (!currentBusStop.getBusStop().getName().equals(currentCalculatedLine.get(j).getDeparture().getName())) {
-                        System.out.println("currentDate depart "+ theCurrentDate);
+                        //System.out.println("currentDate depart "+ theCurrentDate);
                         duration = (int) durations[currentBusStop.getBusStop().getBusStopID()][currentCalculatedLine.get(j).getDeparture().getBusStopID()];
                         currentBusStop = new BusStopLine(currentCalculatedLine.get(j).getDeparture(), 0, 0, new Date(theCurrentDate.getTime() + duration * 1000));
                         currentLine.add(currentBusStop);
@@ -256,11 +256,11 @@ public class Algorithm {
                     // Si c'est une arrivée
                 } else {
                     if (!currentBusStop.getBusStop().getName().equals(currentCalculatedLine.get(j).getArrival().getName())) {
-                        System.out.println("currentDate arrivee "+ theCurrentDate);
+                        //System.out.println("currentDate arrivee "+ theCurrentDate);
                         duration = (int) durations[currentBusStop.getBusStop().getBusStopID()][currentCalculatedLine.get(j).getArrival().getBusStopID()];
-                        System.out.println("from "+currentBusStop.getBusStop().getBusStopID());
-                        System.out.println("to " +currentCalculatedLine.get(j).getArrival().getBusStopID());
-                        System.out.println(duration);
+                        //System.out.println("from "+currentBusStop.getBusStop().getBusStopID());
+                        //System.out.println("to " +currentCalculatedLine.get(j).getArrival().getBusStopID());
+                        //System.out.println(duration);
                         
                         currentBusStop = new BusStopLine(currentCalculatedLine.get(j).getArrival(), 0, 0, new Date(theCurrentDate.getTime() + duration * 1000));
                         currentLine.add(currentBusStop);
@@ -301,11 +301,11 @@ public class Algorithm {
         for (int i = 0; i < requests.size(); i++) {
             tabuList.put(requests.get(i).getId(), -1000);     //to free every move
         }
-        int TABU_LENGTH = 4;
+        int TABU_LENGTH = Math.min(20, requests.size()-2);
 
         int iter = 0;
         int bestLastUpdate = 0;
-        int convergence = 40;
+        int convergence = 50;
         int routesNb = sol.size();
 
         while (iter - bestLastUpdate < convergence) {
@@ -361,6 +361,7 @@ public class Algorithm {
 
             //update bestSol if needed
             if (currentCost < bestSolCost && feasibleLines(sol)) {
+                System.out.println("Updating best tabu" + bestSolCost+" to "+currentCost);
                 bestSol = createCopy(sol);
                 bestSolCost = currentCost;
 
@@ -389,13 +390,13 @@ public class Algorithm {
                 //to avoid being confused by possibles loop of the line
                 int k = 0;
                 Date firstStopDate = stops.get(k).getTime();
-                
+                /*
                 System.out.println(journey.get(j));
                 System.out.println("dep "+ DepId+"  arr "+ArrId+"  date"+ depDate);
                 System.out.println(journey);
                 System.out.println(stops);
                 
-                System.out.println();
+                System.out.println();*/
                 while (depDate.after(firstStopDate)) {
                     k++;
                     firstStopDate = stops.get(k).getTime();
@@ -476,7 +477,7 @@ public class Algorithm {
         LinkedList<Person> route = new LinkedList<>(aRoute);
         LinkedList<Person> neighbour = new LinkedList<>(route);
 
-        int stop = 50;
+        int stop = Math.min(40, aRoute.size()*2);
 
         double previousCost = getRouteCost(route, busNb);
         double neighbourCost;
@@ -490,7 +491,7 @@ public class Algorithm {
             //System.out.println("NCost : "+neighbourCost);
             if (neighbourCost < previousCost && feasibleLine(new ArrayList<>(neighbour), busNb)) {
                 //if needed update route and reset i
-                System.out.println("Updating cost Opt: " + previousCost +" to "+ neighbourCost);
+                System.out.println("    Updating cost Opt: " + previousCost +" to "+ neighbourCost);
                 previousCost = neighbourCost;
                 copyRoute(neighbour, route);
                 i = 0;
