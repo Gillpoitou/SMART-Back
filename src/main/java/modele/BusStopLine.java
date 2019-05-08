@@ -72,7 +72,11 @@ public class BusStopLine {
     }
     
     public void addGetOnPerson (Person person){
-        getOnPersons.add(person);
+        this.getOnPersons.add(person);
+    }
+    
+    public void removeGetOnPerson (Person person){
+        this.getOnPersons.remove(person);
     }
     
     public String toString(){

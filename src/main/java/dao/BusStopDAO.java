@@ -67,7 +67,7 @@ public class BusStopDAO {
         for (Document busStopDoc : busStopDocs) {
             BusStop busStop = BusStopConverter.toBusStop(busStopDoc);
             result.add(busStop);
-        
+
         }
         return result;
     }
@@ -99,18 +99,30 @@ public class BusStopDAO {
             Document next = iterator.next();
             BusStop currentBusStop = BusStopConverter.geoJsonToBusStop((Document) next.get("busStop"));
             currentBusStop.setBusStopID(currentID);
-            
+
             result.add(currentBusStop);
             currentID++;
         }
 
         return result;
     }
-    
-    public BusStop updateBusStop(BusStop busStop){
+
+    public BusStop updateBusStop(BusStop busStop) {
         this.coll.replaceOne(eq("_id", new ObjectId(busStop.getId())),
                 BusStopConverter.toDocument(busStop)
-                );
+        );
+
+        return busStop;
+    }
+
+    public BusStop getBusStopByName(String name) {
+        Document doc = this.coll.find(eq("name", name)).first();
+
+        BusStop busStop = new BusStop();
+
+        if (doc != null) {
+            busStop = BusStopConverter.toBusStop(doc);
+        }
         
         return busStop;
     }
