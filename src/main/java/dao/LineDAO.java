@@ -32,10 +32,23 @@ public class LineDAO {
 
         FindIterable<Document> lines = coll.find();
         for (Document d : lines) {
+            System.out.println(d);
+
             result.add(LineConverter.toLine(d));
+
         }
 
         return result;
+    }
+
+    public Line retrieveLineByBusId(String busId) {
+        Document doc = coll.find(eq("bus._id", new ObjectId(busId))).first();
+//        System.out.println(doc);
+        Line line = null;
+        if (doc != null) {
+            line = LineConverter.toLine(doc);
+        }
+        return line;
     }
 
     public Line createLine(Line l) {
@@ -57,5 +70,9 @@ public class LineDAO {
     public void deleteLine(Line l) {
         this.coll.deleteOne(
                 eq("_id", new ObjectId(l.getId())));
+    }
+
+    public void deleteAll() {
+        this.coll.drop();
     }
 }

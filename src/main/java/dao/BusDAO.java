@@ -14,6 +14,7 @@ import static com.mongodb.client.model.Filters.eq;
 import com.mongodb.client.model.Projections;
 import static com.mongodb.client.model.Projections.exclude;
 import converter.BusConverter;
+import converter.BusStopConverter;
 import java.util.ArrayList;
 import java.util.Vector;
 import org.bson.Document;
@@ -49,12 +50,19 @@ public class BusDAO {
 
         FindIterable<Document> busDocs = coll.find();
         for (Document busDoc : busDocs) {
-            System.out.println(busDoc);
             Bus bus = BusConverter.toBus(busDoc);
             allBus.add(bus);
         }
 
         return allBus;
+    }
+
+    public Bus updateBus(Bus bus) {
+        this.coll.replaceOne(eq("_id", new ObjectId(bus.getId())),
+                BusConverter.toDocument(bus)
+        );
+
+        return bus;
     }
 
 }

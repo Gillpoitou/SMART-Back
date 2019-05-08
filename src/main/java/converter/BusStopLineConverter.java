@@ -24,9 +24,16 @@ public class BusStopLineConverter {
         Document doc = new Document("busStop", BusStopConverter.toConstantDocument(busStopLine.getBusStop()))
                 .append("nbGetOn", busStopLine.getNbGetOn())
                 .append("nbGetOff", busStopLine.getNbGetOff())
-                .append("time", busStopLine.getTime())
-                .append("getOnPersons", busStopLine.getGetOnPersons());
+                .append("time", busStopLine.getTime());
         
+        ArrayList<Document> persons = new ArrayList<Document>();
+                
+        for(Person p : busStopLine.getGetOnPersons()){
+            persons.add(PersonConverter.toConstantDocument(p));
+        }
+        
+        doc.append("getOnPersons", persons);
+
         return doc;
     }
     

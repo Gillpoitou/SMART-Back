@@ -20,15 +20,16 @@ import modele.*;
 public class Algorithm {
 
     private static double[][] durations;
-    private static double percentage;
-    private static Date currentDate;
+    private static double pourcentage;
+    private static Date[] currentDate;
     private static Bus[] buses;
 
-    public static ArrayList<Line> calculateLines(double[][] journeyDurations, Bus[] aBuses, ArrayList<Person> requests, Date theCurrentDate) {
+    public static ArrayList<Line> calculateLines(double[][] journeyDurations, Bus[] aBuses, ArrayList<Person> requests, Date[] theCurrentDate) {
+        System.out.println("ALGO");
         durations = journeyDurations;
         currentDate = theCurrentDate;
         buses = aBuses;
-        percentage = 3;
+        pourcentage = 3;
 
         //call tabu who is calling greedy to initialise and then optimise the 
         //dispatchment of persons and the route of each line (optRoute)
@@ -43,10 +44,10 @@ public class Algorithm {
         //Créer les lignes avec BusStop
         percentage = 3;
         ArrayList<ArrayList<Person>> lines = greedyAlgo(buses, requests);
-
-        optRoute(lines.get(0), 0);
-
-        if (lines != null) {
+        
+//        optRoute(lines.get(0), 0);
+        
+        if(lines != null){
             ArrayList<Line> result = createLines(lines);
             return result;
         }
@@ -62,6 +63,7 @@ public class Algorithm {
         for (int k = 0; k < requests.size(); k++) {
 
             Person request = requests.get(k);
+            System.out.println(k);
             System.out.println(request.getId());
             boolean feasible = false;
             while (feasible == false) {
@@ -72,9 +74,9 @@ public class Algorithm {
                     int indexDepartureI = currentLine.indexOf(currentLine.get(i));
                     int indexArrivalI = currentLine.lastIndexOf(currentLine.get(i));
 
-                    int durationK = (int) (durations[requests.get(k).getDeparture().getBusStopID()][requests.get(k).getArrival().getBusStopID()] * percentage);
+                    int durationK = (int) (durations[requests.get(k).getDeparture().getBusStopID()][requests.get(k).getArrival().getBusStopID()] * pourcentage);
                     Date dateArrivalK = new Date(requests.get(k).getTimeDeparture().getTime() + durationK * 1000);
-                    int durationI = (int) (durations[currentLine.get(i).getDeparture().getBusStopID()][currentLine.get(i).getArrival().getBusStopID()] * percentage);
+                    int durationI = (int) (durations[currentLine.get(i).getDeparture().getBusStopID()][currentLine.get(i).getArrival().getBusStopID()] * pourcentage);
                     Date dateArrivalI = new Date(currentLine.get(i).getTimeDeparture().getTime() + durationI * 1000);
 
                     if (i == indexDepartureI) {
@@ -101,12 +103,14 @@ public class Algorithm {
                         }
                     }
                 }
-                /*
+                
+                System.out.println("nouvel essai");
+                
                 for(Person person: currentLine){
                     System.out.println(person.getId());
-                }*/
+                }
 
-                if (feasibleLine(currentLine, buses[busLines.indexOf(currentLine)])) {
+                if (feasibleLine(currentLine, busLines.indexOf(currentLine))) {
                     feasible = true;
                     currentLine = busLines.get(0);
                 } else {
@@ -143,7 +147,7 @@ public class Algorithm {
     public static boolean feasibleLines(ArrayList<ArrayList<Person>> lines) {
         int i = 0;
         for (ArrayList<Person> line : lines) {
-            if (!feasibleLine(line, buses[i])) {
+            if (!feasibleLine(line, i)) {
                 return false;
             }
             i++;
@@ -151,13 +155,13 @@ public class Algorithm {
         return true;
     }
 
-    public static boolean feasibleLine(ArrayList<Person> line, Bus bus) {
+    public static boolean feasibleLine(ArrayList<Person> line, int index) {
         int personNb = 0;
         int duration;
-        System.out.println("Feasible");
-        Date precedDate = currentDate;
-        Date arrival = currentDate;
-        BusStop preced = bus.getPosition();
+
+        Date precedDate = currentDate[index];
+        Date arrival = currentDate[index];
+        BusStop preced = buses[index].getPosition();
 
         for (int i = 0; i < line.size(); i++) {
             // Si c'est un départ
@@ -181,7 +185,7 @@ public class Algorithm {
                     preced = line.get(i).getArrival();
                 }
 
-                int durationMin = (int) ((durations[line.get(i).getDeparture().getBusStopID()][line.get(i).getArrival().getBusStopID()] * 1000) * percentage);
+                int durationMin = (int) ((durations[line.get(i).getDeparture().getBusStopID()][line.get(i).getArrival().getBusStopID()] * 1000) * pourcentage);
                 Date maxDate = new Date(line.get(i).getTimeDeparture().getTime() + durationMin);
                 if (arrival.compareTo(maxDate) > 0) {
                     return false;
@@ -191,7 +195,7 @@ public class Algorithm {
                 }
             }
 
-            if (personNb > bus.getNbPlaces()) {
+            if (personNb > buses[index].getNbPlaces()) {
                 return false;
             }
         }
@@ -205,7 +209,7 @@ public class Algorithm {
 
         for (int i = 0; i < lines.size(); i++) {
             ArrayList<Person> currentCalculatedLine = lines.get(i);
-            theCurrentDate = currentDate;
+            theCurrentDate = currentDate[i];
             ArrayList<BusStopLine> currentLine = new ArrayList<>();
 
             duration = (int) durations[buses[i].getPosition().getBusStopID()][currentCalculatedLine.get(0).getDeparture().getBusStopID()];
@@ -267,7 +271,7 @@ public class Algorithm {
 
         //Careful: never change the person's attributes
         ArrayList<ArrayList<Person>> bestSol = createCopy(sol);
-        ArrayList<ArrayList<Person>> neighbour = createCopy(sol);
+        ArrayList<ArrayList<Person>> neighbour;
         ArrayList<ArrayList<Person>> bestNeighbour = createCopy(sol);
 
         double currentCost = getCost(sol, solLines);
@@ -450,7 +454,7 @@ public class Algorithm {
             //test if neighbour is better
             neighbourCost = getRouteCost(neighbour, busNb);
             //System.out.println("NCost : "+neighbourCost);
-            if (neighbourCost < previousCost && feasibleLine(new ArrayList<>(neighbour), buses[busNb])) {
+            if (neighbourCost < previousCost && feasibleLine(new ArrayList<>(neighbour), busNb)) {
                 //if needed update route and reset i
                 previousCost = neighbourCost;
                 System.out.println("Updating cost: " + previousCost);

@@ -5,6 +5,8 @@
  */
 package listener;
 
+import com.mongodb.ConnectionString;
+import com.mongodb.MongoClientSettings;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import java.util.Date;
@@ -12,6 +14,7 @@ import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import javax.servlet.ServletContext;
 import javax.servlet.annotation.WebListener;
+import services.Services;
 
 /**
  *
@@ -24,10 +27,16 @@ public class ContextListener implements ServletContextListener {
     public void contextInitialized(ServletContextEvent sce) {
         try {
             ServletContext ctx = sce.getServletContext();
-            MongoClient mongoClient = MongoClients.create(ctx.getInitParameter("MONGODB_STRING_CONNEXION"));
+
+            MongoClientSettings settings = MongoClientSettings.builder()
+                    .addCommandListener(new MongoCommandListener())
+                    .applyConnectionString(new ConnectionString(ctx.getInitParameter("MONGODB_STRING_CONNEXION")))
+                    .build();
+
+            MongoClient mongoClient = MongoClients.create(settings);
             System.out.println("MongoClient initialized successfully");
             sce.getServletContext().setAttribute("MONGO_CLIENT", mongoClient);
-            
+
             int personCounter = 0;
             sce.getServletContext().setAttribute("PERSON_COUNTER", personCounter);
             Date lastBusRequestDate = new Date();
@@ -36,8 +45,10 @@ public class ContextListener implements ServletContextListener {
             sce.getServletContext().setAttribute("MAX_REQUEST_NB", maxRequestNb);
             long requestTimeInterval = 1800000;
             sce.getServletContext().setAttribute("REQUEST_TIME_INTERVAL", requestTimeInterval);
-        } catch (Exception e){
-            throw new RuntimeException("MongoClient init failed");
+
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            throw new RuntimeException("MongoClient init failed or initialization failed");
         }
 
     }
@@ -46,6 +57,11 @@ public class ContextListener implements ServletContextListener {
     public void contextDestroyed(ServletContextEvent sce) {
         MongoClient mongo = (MongoClient) sce.getServletContext()
                 .getAttribute("MONGO_CLIENT");
+        Thread t = (Thread) sce.getServletContext().getAttribute("SIMULATION_THREAD");
+        if (t != null) {
+            t.interrupt();
+            t.stop();
+        }
         mongo.close();
         System.out.println("MongoClient closed successfully");
     }
