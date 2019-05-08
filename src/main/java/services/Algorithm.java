@@ -209,9 +209,9 @@ public class Algorithm {
         Date theCurrentDate;
 
         for (int i = 0; i < lines.size(); i++) {
-            for(Person person: lines.get(i)){
+            /*for(Person person: lines.get(i)){
                 System.out.println(person.getId());
-            }
+            }*/
             ArrayList<Person> currentCalculatedLine = lines.get(i);
             theCurrentDate = currentDate[i];
             ArrayList<BusStopLine> currentLine = new ArrayList<>();
@@ -416,13 +416,15 @@ public class Algorithm {
                 double value = realDuration / bestDuration;
 
                 //DEBUG
+                /*
                 System.out.println("realD: " + realDuration + "   bestD: " + bestDuration + "   Val: " + value);
                 System.out.println(journey.get(j));
                 System.out.println("dep "+ departureId+"  arr "+arrivalId+"  date"+ depDate);
                 System.out.println(journey);
                 System.out.println(stops);
+                
                 System.out.println();
-                if (value < 1) System.exit(0);
+                if (value < 1) System.exit(0);*/
 
                 cost += value;
             }
@@ -498,7 +500,7 @@ public class Algorithm {
 
         //copy buffer in neighbour
         Iterator<Person> it = buffer.iterator();
-        for (int i = r1; i <= r2; i++) {
+        for (int i = r1; i < r2; i++) {
             neighbour.set(i, it.next());
         }
     }

@@ -25,7 +25,7 @@ public class Main {
      * @throws java.text.ParseException
      */
     public static void main(String[] args) throws ParseException {
-        double[][] durations = {{0, 5*60, 6*60}, {3*60, 0, 2*60}, {60*9, 4*60, 0}};
+        double[][] durations = {{0, 5*60, 6*60}, {5*60, 0, 3*60}, {60*6, 4*60, 0}};
         BusStop busStop1 = new BusStop("BusStop 1", "Stop 1", 0, 0, 0, 2, 1, null);
         BusStop busStop2 = new BusStop("BusStop 2", "Stop 2", 0, 0, 1, 1, 2, null);
         BusStop busStop3 = new BusStop("BusStop 3", "Stop 3", 0, 0, 2, 2, 2, null);
@@ -73,6 +73,7 @@ public class Main {
         /*for(Line line: result){
             System.out.println(line.toString());
         }*/
+        System.out.println("SUUUUUUUUUUUUUUU");
     }
     
 }
