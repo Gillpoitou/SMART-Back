@@ -32,7 +32,7 @@ public class ContextListener implements ServletContextListener {
                     .addCommandListener(new MongoCommandListener())
                     .applyConnectionString(new ConnectionString(ctx.getInitParameter("MONGODB_STRING_CONNEXION")))
                     .build();
-            
+
             MongoClient mongoClient = MongoClients.create(settings);
             System.out.println("MongoClient initialized successfully");
             sce.getServletContext().setAttribute("MONGO_CLIENT", mongoClient);
@@ -57,10 +57,12 @@ public class ContextListener implements ServletContextListener {
     public void contextDestroyed(ServletContextEvent sce) {
         MongoClient mongo = (MongoClient) sce.getServletContext()
                 .getAttribute("MONGO_CLIENT");
-        Thread t = (Thread)sce.getServletContext().getAttribute("SIMULATION_THREAD");
-        t.interrupt();
+        Thread t = (Thread) sce.getServletContext().getAttribute("SIMULATION_THREAD");
+        if (t != null) {
+            t.interrupt();
+            t.stop();
+        }
         mongo.close();
-        
         System.out.println("MongoClient closed successfully");
     }
 

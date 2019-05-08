@@ -26,8 +26,8 @@ import org.bson.types.ObjectId;
 public class PersonConverter {
     
      public static Document toDocument(Person person) {
-        Document doc = new Document("arrival", BusStopConverter.toDocument(person.getArrival()))
-                .append("departure", BusStopConverter.toDocument(person.getDeparture()))
+        Document doc = new Document("arrival", BusStopConverter.toConstantDocument(person.getArrival()))
+                .append("departure", BusStopConverter.toConstantDocument(person.getDeparture()))
                 .append("timeDeparture", person.getTimeDeparture());
 
         if (person.getId() != null) {

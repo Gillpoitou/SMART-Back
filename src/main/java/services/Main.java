@@ -61,7 +61,7 @@ public class Main {
         
         
         
-        ArrayList<Line> result = Algorithm.calculateLines(durations, buses, requests, currentDate);
+//        ArrayList<Line> result = Algorithm.calculateLines(durations, buses, requests, currentDate);
         
         /*for(Line line: result){
             System.out.println(line.toString());

@@ -40,64 +40,64 @@ public class CalculSimulationThread extends Thread {
 
     @Override
     public void run() {
-        
+
+        System.out.println("thread id : " + this.getId());
         //number of call in a blocks of 2 secondes
         int calls = Math.round(simulation.getNumberTravelers() / 1800);
         if (calls <= 0) {
             calls = 1;
         }
-        
+
         Date startingDate = new Date();
         Date currentDate = new Date();
-        while(currentDate.getTime() < startingDate.getTime() + 600000){
-          
-        
-        for (int i = 0; i < calls; i++) {
-            String idDpt = "";
-            String idArr = "";
+        while (currentDate.getTime() < startingDate.getTime() + 600000) {
 
-            //while the random departure is equal to random arrival we chose others bus stops
-            while (idDpt.equals(idArr)) {
-                System.out.println(idDpt); 
-                System.out.println(idArr); 
-                //pick a random departure
-                double randomDpt = Math.random();
-                double currentCumulatedFrequency = 0;
-                for (int j = 0; j < frequencies.length; j++) {
-                    currentCumulatedFrequency += frequencies[j];
-                    if (randomDpt < currentCumulatedFrequency) {
-                        idDpt = simulation.getBusStopsRatios().get(j).getId();
-                        break;
+            for (int i = 0; i < calls; i++) {
+                String idDpt = "";
+                String idArr = "";
+
+                //while the random departure is equal to random arrival we chose others bus stops
+                while (idDpt.equals(idArr)) {
+                    System.out.println(idDpt);
+                    System.out.println(idArr);
+                    //pick a random departure
+                    double randomDpt = Math.random();
+                    double currentCumulatedFrequency = 0;
+                    for (int j = 0; j < frequencies.length; j++) {
+                        currentCumulatedFrequency += frequencies[j];
+                        if (randomDpt < currentCumulatedFrequency) {
+                            idDpt = simulation.getBusStopsRatios().get(j).getId();
+                            break;
+                        }
                     }
+
+                    //pick a random arrival
+                    double randomArr = Math.random();
+                    currentCumulatedFrequency = 0;
+                    for (int j = 0; j < frequencies.length; j++) {
+                        currentCumulatedFrequency += frequencies[j];
+                        if (randomArr < currentCumulatedFrequency) {
+                            idArr = simulation.getBusStopsRatios().get(j).getId();
+                            break;
+                        }
+                    }
+
                 }
 
-                //pick a random arrival
-                double randomArr = Math.random();
-                currentCumulatedFrequency = 0;
-                for (int j = 0; j < frequencies.length; j++) {
-                    currentCumulatedFrequency += frequencies[j];
-                    if (randomArr < currentCumulatedFrequency) {
-                        idArr = simulation.getBusStopsRatios().get(j).getId();
-                        break;
-                    }
-                }
-                
+                JsonObject body = new JsonObject();
+                JsonObject person = new JsonObject();
+
+                SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+                Date date = new Date();
+                person.addProperty("departure_date", sdf.format(date));
+                person.addProperty("departure", idDpt);
+                person.addProperty("arrival", idArr);
+                body.add("person", person);
+
+                post("http://localhost:8080/OptiBus_Back/ActionServlet?action=postBusRequest", body.toString());
+                System.out.println("bus request posted");
             }
-            
-            JsonObject body = new JsonObject();
-           JsonObject person = new JsonObject();
-           
-        SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
-        Date date = new Date();
-           person.addProperty("departure_date", sdf.format(date));
-           person.addProperty("departure", idDpt);
-           person.addProperty("arrival", idArr);
-           body.add("person",person);
-           
-           post("http://localhost:8080/OptiBus_Back/ActionServlet?action=postBusRequest",body.toString());
-           System.out.println("bus request posted");
-        }
-        currentDate = new Date();
+            currentDate = new Date();
             try {
                 TimeUnit.SECONDS.sleep(2);
             } catch (InterruptedException ex) {

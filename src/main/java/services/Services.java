@@ -13,6 +13,7 @@ import com.mongodb.client.MongoClient;
 import converter.BusConverter;
 import converter.BusStopConverter;
 import converter.LineConverter;
+import converter.PersonConverter;
 import dao.BusDAO;
 import dao.BusStopDAO;
 import dao.LineDAO;
@@ -63,6 +64,7 @@ public class Services {
             Person pers = personDAO.createPerson(person);
             Date currentDate = new Date();
             if (personCounter + 1 >= maxRequestNb || currentDate.getTime() >= lastRequestDate.getTime() + maxTimeInterval) {
+                System.out.println("Algo calcul");
                 if (!callAlgoCalculation(mongoClient)) {
                     return false;
                 }
@@ -102,25 +104,27 @@ public class Services {
             PersonDAO personDAO = new PersonDAO(mongoClient);
             ArrayList<Person> persons = personDAO.selectAllPersons();
             Date currentDate = new Date(); //create current date time
-            Date maxCurrentDate = new Date();
-
+//            Date maxCurrentDate = new Date();
+            Date[] busDates = new Date[buses.size()];
+            
             LineDAO lineDAO = new LineDAO(mongoClient);
             Bus[] busesArray = new Bus[buses.size()];
             for (int k = 0; k < buses.size(); k++) {
                 Bus currentBus = buses.get(k);
                 Line currentLine = lineDAO.retrieveLineByBusId(currentBus.getId());
-
+                busDates[k] = currentDate;
+                
                 if (currentLine != null) {
                     BusStop position;
                     for (BusStopLine bsl : currentLine.getBusStops()) {
                         if (bsl.getTime().after(currentDate)) {
                             position = bsl.getBusStop();
-
                             currentBus.setPosition(position);
-
-                            if (bsl.getTime().after(maxCurrentDate)) {
-                                maxCurrentDate = bsl.getTime();
-                            }
+                            
+                            busDates[k] = bsl.getTime();
+//                            if (bsl.getTime().after(maxCurrentDate)) {
+//                                maxCurrentDate = bsl.getTime();
+//                            }
                             break;
                         }
                     }
@@ -128,15 +132,30 @@ public class Services {
                 busesArray[k] = currentBus;
             }
 
-            //call algo
-            ArrayList<Line> lines = Algorithm.calculateLines(durations, busesArray, persons, maxCurrentDate);
+            for (int i = 0; i < busesArray.length; i++) {
+                System.out.println(BusConverter.toDocument(busesArray[i]));
+            }
 
-            lineDAO.deleteAll();
+            for (Person person : persons) {
+                System.out.println(PersonConverter.toDocument(person));
+            }
+
+//            System.out.println(maxCurrentDate.toString());
+
+            System.out.println("Before algo");
+            //call algo
+            ArrayList<Line> lines = Algorithm.calculateLines(durations, busesArray, persons, busDates);
+
+            System.out.println("After algo");
+
+            if (lineDAO.retrieveAll().size() > 0) {
+                System.out.println("lines deleted");
+                lineDAO.deleteAll();
+            }
             for (Line l : lines) {
                 System.out.println(l.toString());
                 lineDAO.createLine(l);
             }
-
             return true;
         } catch (Exception e) {
             return false;
@@ -280,7 +299,7 @@ public class Services {
 
     public static void test(MongoClient mongoClient) {
 
-//        callAlgoCalculation(mongoClient);
+        callAlgoCalculation(mongoClient);
 //        BusDAO busDAO = new BusDAO(mongoClient);
 //        BusStopDAO busStopDAO = new BusStopDAO(mongoClient);
 //
@@ -415,7 +434,7 @@ public class Services {
             }
 
             personDAO.deleteAllPersons();
-            
+
             return true;
         } catch (Exception e) {
             e.printStackTrace();
