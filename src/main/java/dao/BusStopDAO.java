@@ -131,4 +131,8 @@ public class BusStopDAO {
     public void resetPersons(BusStop busStop){
         this.coll.updateMany(eq("_id", new ObjectId(busStop.getId())), Updates.combine(Updates.set("nbPersonsWaiting", 0), Updates.set("nbPersonsComing", 0)));
     }
+    
+    public void decrementPersonsWaiting(String id){
+        this.coll.updateOne(eq("_id", new ObjectId(id)), Updates.inc("nbPersonsWaiting", -1));
+    }
 }

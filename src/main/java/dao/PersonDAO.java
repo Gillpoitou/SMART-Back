@@ -38,19 +38,20 @@ public class PersonDAO {
     }
 
     public Person getPersonById(String id) {
-        Person p = (Person) PersonConverter.toPerson((Document) coll.find(eq("_id", id)));
+        Person p = (Person) PersonConverter.toPerson((Document) coll.find(eq("_id", new ObjectId(id))).first());
         return p;
     }
 
     public Person updatePerson(Person p) {
         Document doc = PersonConverter.toDocument(p);
-        this.coll.updateOne(
+        this.coll.replaceOne(
                 eq("_id", new ObjectId(p.getId())),
                 doc);
         return p;
     }
 
     public void deletePerson(Person p) {
+        System.out.println("delete person : " + p.getId());
         this.coll.deleteOne(
                 eq("_id", new ObjectId(p.getId())));
     }

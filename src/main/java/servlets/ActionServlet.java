@@ -18,6 +18,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Date;
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -210,6 +211,7 @@ public class ActionServlet extends HttpServlet {
                 }
                 break;
             case "startSimulation":
+                response.setContentType("text");
                 data = this.parsePostBody(request.getReader());
                 JsonElement jelement = new JsonParser().parse(data);
                 JsonObject jobject = jelement.getAsJsonObject();
@@ -220,6 +222,21 @@ public class ActionServlet extends HttpServlet {
                         out.println("Simulation started");
                     }
                 }
+                break;
+            case "stopSimulation":
+                response.setContentType("text");
+                ServletContext servletContext = request.getServletContext();
+
+                Thread t = (Thread) servletContext.getAttribute("SIMULATION_THREAD");
+
+                if (t != null) {
+                    Services.stopSimulation(t);
+                }
+
+                try (PrintWriter out = response.getWriter()) {
+                    out.println("Simulation stopped");
+                }
+
                 break;
 
             default:
