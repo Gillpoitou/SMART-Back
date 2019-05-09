@@ -27,29 +27,29 @@ public class MongoCommandListener implements CommandListener {
 //                event.getConnectionDescription()
 //                        .getConnectionId(),
 //                event.getConnectionDescription().getServerAddress()));
-        System.out.println(String.format("comand sent : %s", event.getCommand().toString()));
+        //System.out.println(String.format("comand sent : %s", event.getCommand().toString()));
     }
 
     @Override
     public void commandSucceeded(final CommandSucceededEvent event) {
-        System.out.println(String.format("Successfully executed command '%s' with id %s "
-                + "on connection '%s' to server '%s'",
-                event.getCommandName(),
-                event.getRequestId(),
-                event.getConnectionDescription()
-                        .getConnectionId(),
-                event.getConnectionDescription().getServerAddress()));
+//        System.out.println(String.format("Successfully executed command '%s' with id %s "
+//                + "on connection '%s' to server '%s'",
+//                event.getCommandName(),
+//                event.getRequestId(),
+//                event.getConnectionDescription()
+//                        .getConnectionId(),
+//                event.getConnectionDescription().getServerAddress()));
     }
 
     @Override
     public void commandFailed(final CommandFailedEvent event) {
-        System.out.println(String.format("Failed execution of command '%s' with id %s "
-                + "on connection '%s' to server '%s' with exception '%s'",
-                event.getCommandName(),
-                event.getRequestId(),
-                event.getConnectionDescription()
-                        .getConnectionId(),
-                event.getConnectionDescription().getServerAddress(),
-                event.getThrowable()));
+//        System.out.println(String.format("Failed execution of command '%s' with id %s "
+//                + "on connection '%s' to server '%s' with exception '%s'",
+//                event.getCommandName(),
+//                event.getRequestId(),
+//                event.getConnectionDescription()
+//                        .getConnectionId(),
+//                event.getConnectionDescription().getServerAddress(),
+//                event.getThrowable()));
     }
 }

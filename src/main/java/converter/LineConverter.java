@@ -43,7 +43,7 @@ public class LineConverter {
             doc.append("_id", new ObjectId(l.getId()));
         }
         
-        System.out.println(doc);
+        //System.out.println(doc);
 
         return doc;
     }

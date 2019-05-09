@@ -41,7 +41,7 @@ public class CalculSimulationThread extends Thread {
     @Override
     public void run() {
 
-        System.out.println("thread id : " + this.getId());
+        //System.out.println("thread id : " + this.getId());
         //number of call in a blocks of 2 secondes
         int calls = Math.round(simulation.getNumberTravelers() / 1800);
         if (calls <= 0) {
@@ -58,8 +58,8 @@ public class CalculSimulationThread extends Thread {
 
                 //while the random departure is equal to random arrival we chose others bus stops
                 while (idDpt.equals(idArr)) {
-                    System.out.println(idDpt);
-                    System.out.println(idArr);
+                    //System.out.println(idDpt);
+                    //System.out.println(idArr);
                     //pick a random departure
                     double randomDpt = Math.random();
                     double currentCumulatedFrequency = 0;
@@ -95,7 +95,7 @@ public class CalculSimulationThread extends Thread {
                 body.add("person", person);
 
                 post("http://localhost:8080/OptiBus_Back/ActionServlet?action=postBusRequest", body.toString());
-                System.out.println("bus request posted");
+                //System.out.println("bus request posted");
             }
             currentDate = new Date();
             try {
@@ -104,7 +104,7 @@ public class CalculSimulationThread extends Thread {
                 Logger.getLogger(CalculSimulationThread.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
-        System.out.println("Simulation finished");
+        //System.out.println("Simulation finished");
         this.interrupt();
     }
 

@@ -26,7 +26,7 @@ public class Algorithm {
     private static Bus[] buses;
 
     public static ArrayList<Line> calculateLines(double[][] journeyDurations, Bus[] aBuses, ArrayList<Person> requests, Date[] theCurrentDate) {
-        System.out.println("ALGO");
+        System.out.println("STARTING ALGO");
         durations = journeyDurations;
         currentDate = theCurrentDate;
         buses = aBuses;
@@ -72,11 +72,11 @@ public class Algorithm {
             Date maxJourneyDuration = new Date(request.getTimeDeparture().getTime() + journeyDuration * ((int) pourcentage * 1000));
 
             if (minBusDuration.getTime() < maxJourneyDuration.getTime()) {
-                System.out.println("prend un velov");
+                System.out.println("    Prend un velov");
             }
 
-            System.out.println(k);
-            System.out.println(request.getId());
+            //System.out.println(k);
+            //System.out.println(request.getId());
             boolean feasible = false;
             while (feasible == false) {
                 busLines.get(currentIndex).add(request);
@@ -102,7 +102,7 @@ public class Algorithm {
                             busLines.get(currentIndex).remove(busLines.get(currentIndex).size() - 1);
                             break;
                         }
-                        System.out.println("---- 1");
+                        //System.out.println("---- 1");
 
                     } else {
                         if (request.getTimeDeparture().compareTo(dateArrivalI) <= 0 && endIsDeparture) {
@@ -115,32 +115,32 @@ public class Algorithm {
                             busLines.get(currentIndex).remove(busLines.get(currentIndex).size() - 1);
                             break;
                         }
-                        System.out.println("----- 2");
+                        //System.out.println("----- 2");
                     }
                 }
 
-                System.out.println("nouvel essai");
+                //System.out.println("nouvel essai");
 
                 for (Person person : busLines.get(currentIndex)) {
-                    System.out.println(person.getId());
+                    //System.out.println(person.getId());
                 }
 
                 if (feasibleLine(busLines.get(currentIndex), currentIndex)) {
 
-                    System.out.println("----- 3");
+                    //System.out.println("----- 3");
 
                     feasible = true;
 //                    currentLine = busLines.get(0);
                     currentIndex = 0;
                 } else {
-                    System.out.println("------ 4");
+                    //System.out.println("------ 4");
 
                     busLines.get(currentIndex).remove(request);
                     busLines.get(currentIndex).remove(request);
 
-                    System.out.println(lineNb);
-                    System.out.println(currentIndex);
-                    System.out.println(busLines.size());
+                    //System.out.println(lineNb);
+                    //System.out.println(currentIndex);
+                    //System.out.println(busLines.size());
 
                     if (currentIndex == lineNb) {
                         if (currentIndex != buses.length - 1) {
@@ -149,19 +149,19 @@ public class Algorithm {
 //                            currentLine = newLine;
                             currentIndex++;
                             lineNb++;
-                            System.out.println("----- 5");
+                            //System.out.println("----- 5");
 
                         } else {
                             System.out.println("Pas assez de bus");
                             return null;
                         }
                     } else {
-                        System.out.println(" **** " + (currentIndex + 1));
-                        System.out.println(" **** " + busLines.size());
+                        //System.out.println(" **** " + (currentIndex + 1));
+                        //System.out.println(" **** " + busLines.size());
 
 //                        currentLine = busLines.get(busLines.indexOf(currentLine) + 1);
                         currentIndex++;
-                        System.out.println("----- 6");
+                        //System.out.println("----- 6");
                     }
                 }
             }
@@ -399,7 +399,7 @@ public class Algorithm {
 
             //update bestSol if needed
             if (currentCost < bestSolCost && feasibleLines(sol)) {
-                System.out.println("Updating best tabu" + bestSolCost+" to "+currentCost);
+                System.out.println("    Updating best tabu" + bestSolCost+" to "+currentCost);
                 bestSol = createCopy(sol);
                 bestSolCost = currentCost;
 
@@ -529,7 +529,7 @@ public class Algorithm {
             //System.out.println("NCost : "+neighbourCost);
             if (neighbourCost < previousCost && feasibleLine(new ArrayList<>(neighbour), busNb)) {
                 //if needed update route and reset i
-                System.out.println("    Updating cost Opt: " + previousCost +" to "+ neighbourCost);
+                System.out.println("        Updating cost Opt: " + previousCost +" to "+ neighbourCost);
                 previousCost = neighbourCost;
                 copyRoute(neighbour, route);
                 i = 0;

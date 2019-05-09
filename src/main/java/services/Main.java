@@ -18,6 +18,8 @@ import modele.Person;
  *
  * @author 
  */
+
+//Main to test the execution of Algorithm on a small instance of our problem
 public class Main {
 
     /**
@@ -73,7 +75,7 @@ public class Main {
         /*for(Line line: result){
             System.out.println(line.toString());
         }*/
-        System.out.println("SUUUUUUUUUUUUUUU");
+        System.out.println("END");
     }
     
 }

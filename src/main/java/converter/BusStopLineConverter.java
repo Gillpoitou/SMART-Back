@@ -31,7 +31,7 @@ public class BusStopLineConverter {
         ArrayList<Document> persons = new ArrayList<Document>();
 
         for (Person p : busStopLine.getGetOnPersons()) {
-            System.out.println("******* " + p.getId());
+            //System.out.println("******* " + p.getId());
             persons.add(PersonConverter.toConstantDocument(p));
         }
 

@@ -51,7 +51,7 @@ public class PersonDAO {
     }
 
     public void deletePerson(Person p) {
-        System.out.println("delete person : " + p.getId());
+        //System.out.println("delete person : " + p.getId());
         this.coll.deleteOne(
                 eq("_id", new ObjectId(p.getId())));
     }

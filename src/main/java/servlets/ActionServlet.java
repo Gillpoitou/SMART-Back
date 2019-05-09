@@ -47,7 +47,7 @@ public class ActionServlet extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        System.out.println(request.getParameter("action"));
+        System.out.println(request.getParameter("Action"));
         String data;
 
         MongoClient mongoClient = (MongoClient) request.getServletContext()
@@ -177,7 +177,7 @@ public class ActionServlet extends HttpServlet {
             case "postAlgoParameters":
                 response.setContentType("text");
                 data = this.parsePostBody(request.getReader());
-                System.out.println(data);
+                //System.out.println(data);
 
                 try {
                     AlgoParameters aP = AlgoParametersConverter.jsonToAlgoParameters(data);
@@ -216,7 +216,7 @@ public class ActionServlet extends HttpServlet {
                 JsonElement jelement = new JsonParser().parse(data);
                 JsonObject jobject = jelement.getAsJsonObject();
                 JsonObject simulation = jobject.get("simulation").getAsJsonObject();
-                System.out.println(simulation);
+                //System.out.println(simulation);
                 if (Services.startSimulation(simulation, request.getServletContext())) {
                     try (PrintWriter out = response.getWriter()) {
                         out.println("Simulation started");

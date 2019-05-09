@@ -89,8 +89,8 @@ public class BusStopConverter {
 
             Vector<BusStopPath> paths = new Vector<BusStopPath>();
             List<Document> _paths = (List<Document>) doc.get("paths");
-//        System.out.println(doc);
-//        System.out.println(_paths.size());
+            //System.out.println(doc);
+            //System.out.println(_paths.size());
             for (Document d : _paths) {
                 paths.add(BusStopPathConverter.toBusStopPath(d));
             }
